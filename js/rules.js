@@ -7,7 +7,7 @@
    VALIDATE COMPLETE WARBAND
    ============================================================ */
 
-export function validateWarband(
+function validateWarband(
     warband,
     definition,
     equipmentData
@@ -130,7 +130,7 @@ export function validateWarband(
    VALIDATION SUMMARY
    ============================================================ */
 
-export function getValidationSummary(
+function getValidationSummary(
     validation
 ) {
 
@@ -357,7 +357,7 @@ function validateFighterTypes(
    INDIVIDUAL FIGHTER
    ============================================================ */
 
-export function validateFighter(
+function validateFighter(
     fighter,
     definition,
     equipmentData,
@@ -545,7 +545,7 @@ function validateProfile(
    EQUIPMENT VALIDATION
    ============================================================ */
 
-export function validateEquipment(
+function validateEquipment(
     fighter,
     fighterType,
     definition,
@@ -667,7 +667,7 @@ export function validateEquipment(
    EQUIPMENT LIST RESOLUTION
    ============================================================ */
 
-export function getEquipmentListForFighter(
+function getEquipmentListForFighter(
     fighterType,
     definition
 ) {
@@ -760,7 +760,7 @@ export function getEquipmentListForFighter(
    FIND EQUIPMENT
    ============================================================ */
 
-export function findEquipment(
+function findEquipment(
     equipmentId,
     equipmentData
 ) {
@@ -844,7 +844,7 @@ export function findEquipment(
    EQUIPMENT COST
    ============================================================ */
 
-export function calculateEquipmentCost(
+function calculateEquipmentCost(
     equipment,
     equipmentData
 ) {
@@ -889,7 +889,7 @@ export function calculateEquipmentCost(
    FIGHTER COST
    ============================================================ */
 
-export function calculateFighterCost(
+function calculateFighterCost(
     fighter,
     equipmentData
 ) {
@@ -923,7 +923,7 @@ export function calculateFighterCost(
    WARBAND VALUE
    ============================================================ */
 
-export function calculateWarbandValue(
+function calculateWarbandValue(
     warband,
     equipmentData
 ) {
@@ -959,7 +959,7 @@ export function calculateWarbandValue(
    EXPERIENCE
    ============================================================ */
 
-export function calculateExperience(
+function calculateExperience(
     warband
 ) {
 
@@ -995,7 +995,7 @@ export function calculateExperience(
    WARBAND RATING
    ============================================================ */
 
-export function calculateWarbandRating(
+function calculateWarbandRating(
     warband,
     equipmentData
 ) {
@@ -1017,7 +1017,7 @@ export function calculateWarbandRating(
    TREASURY
    ============================================================ */
 
-export function validateTreasury(
+function validateTreasury(
     warband,
     result = null
 ) {
@@ -1083,7 +1083,7 @@ export function validateTreasury(
    EQUIPMENT PURCHASE VALIDATION
    ============================================================ */
 
-export function validateEquipmentPurchase(
+function validateEquipmentPurchase(
     warband,
     fighter,
     equipmentId,
@@ -1322,7 +1322,7 @@ export function validateEquipmentPurchase(
    EQUIPMENT CHANGE VALIDATION
    ============================================================ */
 
-export function validateEquipmentChange(
+function validateEquipmentChange(
     warband,
     fighter,
     newEquipment,
@@ -1627,7 +1627,7 @@ export function validateEquipmentChange(
    APPLY EQUIPMENT CHANGE
    ============================================================ */
 
-export function applyEquipmentChange(
+function applyEquipmentChange(
     warband,
     fighter,
     newEquipment,
@@ -1728,10 +1728,10 @@ export function applyEquipmentChange(
 
 
 /* ============================================================
-   DEFAULT EXPORT
+   RULES ENGINE (GLOBAL)
    ============================================================ */
 
-export default {
+const RulesEngine = {
 
     validateWarband,
 
