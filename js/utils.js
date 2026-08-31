@@ -95,6 +95,31 @@ function getCurrentWarband() {
 
 
 /* ============================================================
+   CURRENT GAME
+   ============================================================ */
+
+function getCurrentGame() {
+
+    if (
+        typeof state === "undefined" ||
+        !state.currentGameId
+    ) {
+
+        return null;
+
+    }
+
+
+    return state.games.find(
+        game =>
+            game.id ===
+            state.currentGameId
+    ) || null;
+
+}
+
+
+/* ============================================================
    WARBAND CALCULATIONS
    ============================================================ */
 

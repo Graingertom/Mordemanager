@@ -51,6 +51,13 @@ function normaliseWarbands(warbands) {
                         warband.fighters
                     )
                         ? warband.fighters
+                        : [],
+
+                settlements:
+                    Array.isArray(
+                        warband.settlements
+                    )
+                        ? warband.settlements
                         : []
 
             };
@@ -483,6 +490,9 @@ function openWarband(id) {
     state.currentWarbandId =
         id;
 
+    state.currentGameId =
+        null;
+
 
     renderApplication();
 
@@ -721,6 +731,40 @@ function renderWarbandPage() {
                         <div>
 
                             <h2>
+                                Settlements
+                            </h2>
+
+                            <p>
+                                Territory this warband controls.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="mm-button mm-button-primary"
+                            onclick="showAddSettlement('${escapeAttribute(warband.id)}')"
+                        >
+                            + Add Settlement
+                        </button>
+
+                    </div>
+
+
+                    ${renderSettlements(
+                        warband
+                    )}
+
+                </section>
+
+
+                <section class="mm-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h2>
                                 Warband Information
                             </h2>
 
@@ -748,6 +792,371 @@ function renderWarbandPage() {
         <div id="modal-container"></div>
 
     `;
+
+}
+
+
+/* ============================================================
+   SETTLEMENTS
+   ============================================================ */
+
+function renderSettlements(
+    warband
+) {
+
+    const settlements =
+        Array.isArray(warband.settlements)
+            ? warband.settlements
+            : [];
+
+
+    if (!settlements.length) {
+
+        return `
+
+            <div class="mm-empty-state mm-empty-small">
+
+                <div class="mm-empty-icon">
+                    ⚑
+                </div>
+
+                <h3>
+                    No settlements
+                </h3>
+
+                <p>
+                    This warband does not
+                    control any territory yet.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div class="mm-settlement-list">
+
+            ${settlements
+                .map(
+                    settlement =>
+                        renderSettlement(
+                            warband,
+                            settlement
+                        )
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function renderSettlement(
+    warband,
+    settlement
+) {
+
+    return `
+
+        <article class="mm-settlement-card">
+
+            <div>
+
+                <strong>
+                    ${escapeHtml(
+                        settlement.name
+                    )}
+                </strong>
+
+                ${
+                    settlement.note
+                        ? `
+                            <p>
+                                ${escapeHtml(
+                                    settlement.note
+                                )}
+                            </p>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <button
+                class="mm-button mm-button-small mm-button-danger"
+                onclick="confirmRemoveSettlement('${escapeAttribute(warband.id)}', '${escapeAttribute(settlement.id)}', '${escapeAttribute(settlement.name)}')"
+            >
+                Remove
+            </button>
+
+        </article>
+
+    `;
+
+}
+
+
+function showAddSettlement(
+    warbandId
+) {
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Add Settlement
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <label class="mm-field">
+
+                    <span>
+                        Settlement Name
+                    </span>
+
+                    <input
+                        id="new-settlement-name"
+                        type="text"
+                        placeholder="Hallow's Fen"
+                        autocomplete="off"
+                    >
+
+                </label>
+
+
+                <label class="mm-field">
+
+                    <span>
+                        Note
+                    </span>
+
+                    <input
+                        id="new-settlement-note"
+                        type="text"
+                        placeholder="Optional"
+                        autocomplete="off"
+                    >
+
+                </label>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="addSettlement('${escapeAttribute(warbandId)}')"
+                >
+                    Add Settlement
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function addSettlement(
+    warbandId
+) {
+
+    const warband =
+        state.warbands.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    const nameInput =
+        document.getElementById(
+            "new-settlement-name"
+        );
+
+
+    const noteInput =
+        document.getElementById(
+            "new-settlement-note"
+        );
+
+
+    const name =
+        nameInput?.value.trim();
+
+
+    if (!name) {
+
+        nameInput?.focus();
+
+        return;
+
+    }
+
+
+    if (!Array.isArray(warband.settlements)) {
+
+        warband.settlements = [];
+
+    }
+
+
+    warband.settlements.push({
+
+        id:
+            generateId("settlement"),
+
+        name,
+
+        note:
+            noteInput?.value.trim() || ""
+
+    });
+
+
+    savePlayerData();
+
+
+    closeModal();
+
+
+    renderApplication();
+
+}
+
+
+function confirmRemoveSettlement(
+    warbandId,
+    settlementId,
+    settlementName
+) {
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Remove Settlement
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p>
+                    Remove
+                    ${escapeHtml(settlementName)}
+                    from this warband?
+                </p>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-danger"
+                    onclick="removeSettlement('${escapeAttribute(warbandId)}', '${escapeAttribute(settlementId)}')"
+                >
+                    Remove
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function removeSettlement(
+    warbandId,
+    settlementId
+) {
+
+    const warband =
+        state.warbands.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    warband.settlements =
+        (warband.settlements || [])
+            .filter(
+                settlement =>
+                    settlement.id !== settlementId
+            );
+
+
+    savePlayerData();
+
+
+    renderApplication();
 
 }
 

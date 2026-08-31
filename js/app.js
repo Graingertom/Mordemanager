@@ -49,6 +49,8 @@ const state = {
 
     currentWarbandId: null,
 
+    currentGameId: null,
+
     currentModal: null
 
 };
@@ -207,6 +209,9 @@ async function loadPlayerData() {
     }
 
 
+    let storedGames = null;
+
+
     if (storedData) {
 
         try {
@@ -219,6 +224,24 @@ async function loadPlayerData() {
                 normaliseWarbands(
                     parsed.warbands || []
                 );
+
+
+            /*
+             * Games were added to the saved payload
+             * after warbands were. Older saved data
+             * may not have a games field at all, in
+             * which case we fall through to the seed
+             * file below.
+             */
+
+            if (
+                Array.isArray(parsed.games)
+            ) {
+
+                storedGames =
+                    parsed.games;
+
+            }
 
         } catch (error) {
 
@@ -282,8 +305,22 @@ async function loadPlayerData() {
     }
 
 
+    if (storedGames) {
+
+        state.games =
+            normaliseGames(
+                storedGames
+            );
+
+        return;
+
+    }
+
+
     /*
-     * Games remain separate for now.
+     * No saved games locally.
+     *
+     * Load initial development data.
      */
 
     try {
@@ -301,9 +338,9 @@ async function loadPlayerData() {
 
 
             state.games =
-                Array.isArray(data.games)
-                    ? data.games
-                    : [];
+                normaliseGames(
+                    data.games || []
+                );
 
         } else {
 
@@ -339,7 +376,10 @@ function savePlayerData() {
             JSON.stringify({
 
                 warbands:
-                    state.warbands
+                    state.warbands,
+
+                games:
+                    state.games
 
             })
 
@@ -381,7 +421,11 @@ function renderApplication() {
     }
 
 
-    if (state.currentWarbandId) {
+    if (state.currentGameId) {
+
+        renderGamePage();
+
+    } else if (state.currentWarbandId) {
 
         renderWarbandPage();
 
@@ -571,6 +615,10 @@ Object.assign(
         openWarband,
 
         closeWarband,
+
+        openGame,
+
+        closeGame,
 
         showEquipment,
 

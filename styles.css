@@ -791,7 +791,8 @@ a {
 }
 
 .mm-field input,
-.mm-field select {
+.mm-field select,
+.mm-field textarea {
     width: 100%;
 
     min-height: 44px;
@@ -813,14 +814,21 @@ a {
     outline: none;
 }
 
+.mm-field textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
 .mm-field input:hover,
-.mm-field select:hover {
+.mm-field select:hover,
+.mm-field textarea:hover {
     border-color:
         var(--border-light);
 }
 
 .mm-field input:focus,
-.mm-field select:focus {
+.mm-field select:focus,
+.mm-field textarea:focus {
     border-color:
         var(--gold);
 
@@ -1125,5 +1133,211 @@ a {
 .mm-modal-footer .mm-button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+}
+
+
+/* ============================================================
+   CARD STAT ROWS
+   (shared by warband cards, game cards, overview panels)
+   ============================================================ */
+
+.mm-warband-stats,
+.mm-overview-stats {
+    display: flex;
+
+    gap: 20px;
+
+    margin: 16px 0;
+
+    padding: 14px 0;
+
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.mm-warband-stats > div,
+.mm-overview-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mm-warband-stats strong,
+.mm-overview-stats strong {
+    font-size: 18px;
+}
+
+.mm-warband-stats span,
+.mm-overview-stats span {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.mm-card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.mm-card-actions .mm-button {
+    flex: 1;
+}
+
+.mm-warband-overview {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.mm-warband-overview h1 {
+    margin: 10px 0 0;
+}
+
+
+/* ============================================================
+   SETTLEMENTS
+   ============================================================ */
+
+.mm-settlement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mm-settlement-card {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    padding: 14px 16px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.mm-settlement-card p {
+    margin: 4px 0 0;
+
+    color: var(--muted);
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   SCENARIO
+   ============================================================ */
+
+.mm-scenario-card {
+    padding: 18px 20px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.mm-scenario-card h3 {
+    margin: 0 0 8px;
+
+    color: var(--gold-light);
+}
+
+.mm-scenario-card p {
+    margin: 0;
+
+    color: var(--text);
+
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   WARBANDS WITHIN A GAME
+   ============================================================ */
+
+.mm-game-warband-card {
+    margin-bottom: 15px;
+}
+
+.mm-game-warband-detail {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    margin-bottom: 16px;
+}
+
+.mm-game-warband-detail strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--muted);
+}
+
+.mm-game-warband-detail ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.mm-game-warband-detail li {
+    margin: 2px 0;
+}
+
+
+/* ============================================================
+   ADD WARBAND TO GAME
+   ============================================================ */
+
+.mm-warband-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mm-warband-select-option {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px 14px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    color: var(--text);
+
+    text-align: left;
+    cursor: pointer;
+}
+
+.mm-warband-select-option:hover {
+    border-color: var(--gold);
+
+    background: var(--panel-hover);
+}
+
+.mm-warband-select-option span {
+    color: var(--muted);
+    font-size: 13px;
 }
 
