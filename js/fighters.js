@@ -5,6 +5,148 @@
 
 
 /* ============================================================
+   DATA NORMALISATION
+   ============================================================ */
+
+function normaliseFighter(
+    fighter,
+    index
+) {
+
+    const typeId =
+        fighter.type ||
+        fighter.fighterType ||
+        fighter.typeId;
+
+
+    /*
+     * At the moment Reikland is the only
+     * implemented warband definition.
+     */
+
+    const definition =
+        state.warbandDefinitions.reikland;
+
+
+    const fighterType =
+        definition?.fighterTypes?.find(
+            type =>
+                type.id === typeId
+        );
+
+
+    const profile =
+        fighter.profile ||
+        fighter.stats ||
+        fighter.characteristics ||
+        fighterType?.profile ||
+        {};
+
+
+    return {
+
+        id:
+            fighter.id ||
+            generateId("fighter"),
+
+
+        type:
+            typeId ||
+            fighterType?.id ||
+            "unknown",
+
+
+        typeName:
+            fighter.typeName ||
+            fighterType?.name ||
+            fighter.name ||
+            `Fighter ${index + 1}`,
+
+
+        category:
+            fighter.category ||
+            fighterType?.category ||
+            "henchman",
+
+
+        name:
+            fighter.name ||
+            `${fighterType?.name || "Fighter"} ${index + 1}`,
+
+
+        profile: {
+
+            M: profile.M ?? "-",
+
+            WS: profile.WS ?? "-",
+
+            BS: profile.BS ?? "-",
+
+            S: profile.S ?? "-",
+
+            T: profile.T ?? "-",
+
+            W: profile.W ?? "-",
+
+            I: profile.I ?? "-",
+
+            A: profile.A ?? "-",
+
+            Ld: profile.Ld ?? "-"
+
+        },
+
+
+        baseCost:
+            fighter.baseCost ??
+            fighter.cost ??
+            fighterType?.cost ??
+            0,
+
+
+        equipment:
+            Array.isArray(
+                fighter.equipment
+            )
+                ? fighter.equipment
+                : [],
+
+
+        skills:
+            Array.isArray(
+                fighter.skills
+            )
+                ? fighter.skills
+                : [],
+
+
+        experience:
+            Number(
+                fighter.experience
+            ) || 0,
+
+
+        injuries:
+            Array.isArray(
+                fighter.injuries
+            )
+                ? fighter.injuries
+                : [],
+
+
+        advances:
+            Array.isArray(
+                fighter.advances
+            )
+                ? fighter.advances
+                : []
+
+    };
+
+}
+
+
+/* ============================================================
    ADD FIGHTER MODAL
    ============================================================ */
 
@@ -98,18 +240,6 @@ function showAddFighter() {
    FIGHTER TYPE OPTION
    ============================================================ */
 
-/* ============================================================
-   FIGHTER TYPE OPTION
-   ============================================================ */
-
-/* ============================================================
-   FIGHTER TYPE OPTION
-   ============================================================ */
-
-/* ============================================================
-   FIGHTER TYPE OPTION
-   ============================================================ */
-
 function renderFighterTypeOption(type, warband) {
 
     const currentCount =
@@ -143,23 +273,6 @@ function renderFighterTypeOption(type, warband) {
         warbandFull;
 
 
-    /*
-     * Make absolutely sure we are passing
-     * the fighter type ID.
-     */
-
-    const fighterTypeId =
-        String(type.id);
-
-
-    console.log(
-        "Creating fighter button:",
-        type.name,
-        "->",
-        fighterTypeId
-    );
-
-
     return `
 
         <button
@@ -169,7 +282,7 @@ function renderFighterTypeOption(type, warband) {
                 ${disabled ? "is-disabled" : ""}
             "
             ${disabled ? "disabled" : ""}
-            onclick="window.MordeManager.addFighter('${escapeAttribute(type.id)}')"
+            onclick="addFighter('${escapeAttribute(type.id)}')"
         >
 
             <div>
@@ -219,46 +332,11 @@ function renderFighterTypeOption(type, warband) {
 }
 
 
-
-
-
-
-/* ============================================================
-   ADD FIGHTER
-   ============================================================ */
-
-/* ============================================================
-   ADD FIGHTER
-   ============================================================ */
-
-/* ============================================================
-   ADD FIGHTER
-   ============================================================ */
-
 /* ============================================================
    ADD FIGHTER
    ============================================================ */
 
 function addFighter(typeId) {
-
-    console.log(
-        "========== ADD FIGHTER =========="
-    );
-
-    console.log(
-        "Received fighter type ID:",
-        typeId
-    );
-
-    console.log(
-        "Received type:",
-        typeof typeId
-    );
-
-
-    /* --------------------------------------------------------
-       CURRENT WARBAND
-       -------------------------------------------------------- */
 
     const currentWarband =
         getCurrentWarband();
@@ -274,16 +352,6 @@ function addFighter(typeId) {
 
     }
 
-
-    console.log(
-        "Current warband:",
-        currentWarband
-    );
-
-
-    /* --------------------------------------------------------
-       WARBAND DEFINITION
-       -------------------------------------------------------- */
 
     const definition =
         state.warbandDefinitions[
@@ -303,41 +371,12 @@ function addFighter(typeId) {
     }
 
 
-    console.log(
-        "Warband type:",
-        currentWarband.type
-    );
-
-
-    console.log(
-        "Fighter type IDs:",
-        (definition.fighterTypes || [])
-            .map(type => type.id)
-    );
-
-
-    /* --------------------------------------------------------
-       FIND FIGHTER TYPE
-       -------------------------------------------------------- */
-
     const fighterType =
         (definition.fighterTypes || [])
             .find(
                 type =>
                     type.id === typeId
             );
-
-
-    console.log(
-        "Looking for ID:",
-        typeId
-    );
-
-
-    console.log(
-        "Matched fighter type:",
-        fighterType
-    );
 
 
     if (!fighterType) {
@@ -450,48 +489,18 @@ function addFighter(typeId) {
 
         advances: [],
 
-        injuries: [],
-
-        alive: true,
-
-        notes: "",
-
-        status: "active"
+        injuries: []
 
     };
 
-
-    /* --------------------------------------------------------
-       ADD TO WARBAND
-       -------------------------------------------------------- */
 
     currentWarband.fighters.push(
         fighter
     );
 
 
-    console.log(
-        "Fighter added:",
-        fighter
-    );
+    savePlayerData();
 
-
-    /* --------------------------------------------------------
-       SAVE
-       -------------------------------------------------------- */
-
-    if (
-        typeof savePlayerData === "function"
-    ) {
-
-        savePlayerData();
-
-    }
-
-
-    /* --------------------------------------------------------
-       CLOSE MODAL / REFRESH
-       -------------------------------------------------------- */
 
     closeModal();
 
@@ -514,21 +523,13 @@ function addFighter(typeId) {
 }
 
 
-
-
-
 /* ============================================================
    RENDER FIGHTERS
    ============================================================ */
 
 function renderFighters(warband) {
 
-    const fighters =
-        Array.isArray(warband?.fighters)
-            ? warband.fighters
-            : [];
-
-    if (!fighters.length) {
+    if (!warband.fighters.length) {
 
         return `
 
@@ -550,31 +551,23 @@ function renderFighters(warband) {
             </div>
 
         `;
+
     }
 
 
     const heroes =
-        fighters.filter(
+        warband.fighters.filter(
             fighter =>
-                fighter.category === "hero"
+                fighter.category ===
+                "hero"
         );
+
 
     const henchmen =
-        fighters.filter(
+        warband.fighters.filter(
             fighter =>
-                fighter.category === "henchman"
-        );
-
-    /*
-     * Anything that doesn't fit the two standard
-     * categories is still displayed rather than lost.
-     */
-
-    const other =
-        fighters.filter(
-            fighter =>
-                fighter.category !== "hero" &&
-                fighter.category !== "henchman"
+                fighter.category ===
+                "henchman"
         );
 
 
@@ -582,97 +575,59 @@ function renderFighters(warband) {
 
         ${
             heroes.length
+                ? `
 
-            ?
+                    <div class="mm-fighter-group">
 
-            `
+                        <h3>
+                            Heroes
+                        </h3>
 
-                <div class="mm-fighter-group">
+                        <div class="mm-fighter-list">
 
-                    <h3>
-                        Heroes
-                    </h3>
+                            ${heroes
+                                .map(
+                                    renderFighter
+                                )
+                                .join("")}
 
-                    <div class="mm-fighter-list">
-
-                        ${heroes
-                            .map(renderFighter)
-                            .join("")}
+                        </div>
 
                     </div>
 
-                </div>
-
-            `
-
-            :
-
-            ""
+                `
+                : ""
         }
 
 
         ${
             henchmen.length
+                ? `
 
-            ?
+                    <div class="mm-fighter-group">
 
-            `
+                        <h3>
+                            Henchmen
+                        </h3>
 
-                <div class="mm-fighter-group">
+                        <div class="mm-fighter-list">
 
-                    <h3>
-                        Henchmen
-                    </h3>
+                            ${henchmen
+                                .map(
+                                    renderFighter
+                                )
+                                .join("")}
 
-                    <div class="mm-fighter-list">
-
-                        ${henchmen
-                            .map(renderFighter)
-                            .join("")}
-
-                    </div>
-
-                </div>
-
-            `
-
-            :
-
-            ""
-        }
-
-
-        ${
-            other.length
-
-            ?
-
-            `
-
-                <div class="mm-fighter-group">
-
-                    <h3>
-                        Other Fighters
-                    </h3>
-
-                    <div class="mm-fighter-list">
-
-                        ${other
-                            .map(renderFighter)
-                            .join("")}
+                        </div>
 
                     </div>
 
-                </div>
-
-            `
-
-            :
-
-            ""
+                `
+                : ""
         }
 
     `;
+
 }
 
 
@@ -685,79 +640,46 @@ function renderFighter(fighter) {
     const profile =
         fighter.profile || {};
 
+
     const equipment =
-        Array.isArray(fighter.equipment)
+        Array.isArray(
+            fighter.equipment
+        )
             ? fighter.equipment
             : [];
-
-    const status =
-        fighter.status ||
-        "active";
 
 
     return `
 
-        <article
-            class="
-                mm-fighter-card
-                ${
-                    status !== "active"
-                        ? "is-" +
-                          escapeAttribute(status)
-                        : ""
-                }
-            "
-        >
+        <article class="mm-fighter-card">
 
             <div class="mm-fighter-main">
 
                 <div class="mm-fighter-name">
 
                     <span class="mm-badge">
-
                         ${escapeHtml(
-                            fighter.category ||
-                            "fighter"
+                            fighter.category
                         )}
-
                     </span>
 
-                    <h3>
-                        ${escapeHtml(
-                            fighter.name ||
-                            "Unnamed Fighter"
-                        )}
-                    </h3>
+
+                    <button
+                        type="button"
+                        class="mm-fighter-name-button"
+                        onclick="showFighterDetails('${escapeAttribute(fighter.id)}')"
+                    >
+                        <h3>
+                            ${escapeHtml(fighter.name)}
+                        </h3>
+                    </button>
+
 
                     <span class="mm-fighter-type">
-
                         ${escapeHtml(
-                            fighter.typeName ||
-                            fighter.type ||
-                            ""
+                            fighter.typeName
                         )}
-
                     </span>
-
-                    ${
-                        status !== "active"
-
-                        ?
-
-                        `
-                            <span class="mm-fighter-status">
-
-                                ${escapeHtml(
-                                    status
-                                )}
-
-                            </span>
-                        `
-
-                        :
-
-                        ""
-                    }
 
                 </div>
 
@@ -820,66 +742,30 @@ function renderFighter(fighter) {
                     Equipment
                 </strong>
 
+
                 <div class="mm-equipment-tags">
 
                     ${
                         equipment.length
 
-                        ?
+                            ? equipment
+                                .map(
+                                    renderEquipmentTag
+                                )
+                                .join("")
 
-                        equipment
-                            .map(
-                                item =>
-                                    renderEquipmentTag(
-                                        item
-                                    )
-                            )
-                            .join("")
+                            : `
 
-                        :
+                                <span class="mm-muted">
+                                    None
+                                </span>
 
-                        `
-                            <span class="mm-muted">
-                                None
-                            </span>
-                        `
+                            `
                     }
 
                 </div>
 
             </div>
-
-            <div class="mm-fighter-skills">
-
-    <strong>
-        Skills
-    </strong>
-
-    <div class="mm-skill-tags">
-
-        ${
-            Array.isArray(fighter.skills) &&
-            fighter.skills.length
-
-            ?
-
-            renderSkills(
-                fighter.skills
-            )
-
-            :
-
-            `
-                <span class="mm-muted">
-                    None
-                </span>
-            `
-        }
-
-    </div>
-
-</div>
-
 
 
             <div class="mm-fighter-footer">
@@ -888,17 +774,7 @@ function renderFighter(fighter) {
 
                     ${calculateFighterCost(
                         fighter
-                    )}
-
-                    gc
-
-                    <small>
-                        · ${
-                            Number(
-                                fighter.experience
-                            ) || 0
-                        } XP
-                    </small>
+                    )} gc
 
                 </span>
 
@@ -906,37 +782,20 @@ function renderFighter(fighter) {
                 <div>
 
                     <button
-                        type="button"
-                        class="
-                            mm-button
-                            mm-button-small
-                        "
-                        onclick="
-                            showEditFighter(
-                                '${escapeAttribute(
-                                    fighter.id
-                                )}'
-                            )
-                        "
+                        class="mm-button mm-button-small"
+                        onclick="showEditFighter('${escapeAttribute(fighter.id)}')"
                     >
                         Edit
                     </button>
 
 
                     <button
-                        type="button"
                         class="
                             mm-button
                             mm-button-small
                             mm-button-danger
                         "
-                        onclick="
-                            deleteFighter(
-                                '${escapeAttribute(
-                                    fighter.id
-                                )}'
-                            )
-                        "
+                        onclick="deleteFighter('${escapeAttribute(fighter.id)}')"
                     >
                         Remove
                     </button>
@@ -948,6 +807,7 @@ function renderFighter(fighter) {
         </article>
 
     `;
+
 }
 
 
@@ -969,12 +829,13 @@ function renderStat(
             </span>
 
             <strong>
-                ${value ?? "-"}
+                ${escapeHtml(value)}
             </strong>
 
         </div>
 
     `;
+
 }
 
 
@@ -982,35 +843,49 @@ function renderStat(
    EDIT FIGHTER
    ============================================================ */
 
-function showEditFighter(fighterId) {
+function showEditFighter(
+    fighterId
+) {
 
     const warband =
         getCurrentWarband();
 
+
     const fighter =
-        warband?.fighters?.find(
+        warband?.fighters.find(
             item =>
-                item.id === fighterId
+                item.id ===
+                fighterId
         );
 
+
     if (!fighter) {
+
         return;
+
     }
+
 
     const definition =
         state.warbandDefinitions[
             warband.type
         ];
 
+
     const fighterType =
         definition?.fighterTypes?.find(
             type =>
-                type.id === fighter.type
+                type.id ===
+                fighter.type
         );
 
+
     if (!fighterType) {
+
         return;
+
     }
+
 
     const availableEquipment =
         getAvailableEquipment(
@@ -1027,26 +902,17 @@ function showEditFighter(fighterId) {
                 <div>
 
                     <span class="mm-badge">
-
                         ${escapeHtml(
-                            fighter.category ||
-                            "fighter"
+                            fighter.category
                         )}
-
                     </span>
+
 
                     <h2>
                         ${escapeHtml(
                             fighter.name
                         )}
                     </h2>
-
-                    <p>
-                        ${escapeHtml(
-                            fighter.typeName ||
-                            fighter.type
-                        )}
-                    </p>
 
                 </div>
 
@@ -1070,6 +936,7 @@ function showEditFighter(fighterId) {
                         Name
                     </span>
 
+
                     <input
                         id="edit-fighter-name"
                         type="text"
@@ -1087,17 +954,68 @@ function showEditFighter(fighterId) {
                         Profile
                     </h3>
 
+
+                    <p class="mm-muted">
+
+                        Starting characteristics are
+                        defined by the warband rules.
+                        Advances and injuries will modify
+                        these values through the campaign
+                        system.
+
+                    </p>
+
+
                     <div class="mm-profile-editor">
 
                         ${Object.entries(
-                            fighter.profile || {}
+                            fighter.profile
                         )
                             .map(
                                 ([stat, value]) =>
-                                    renderEditableStat(
-                                        fighter.id,
+                                    renderReadOnlyStat(
                                         stat,
                                         value
+                                    )
+                            )
+                            .join("")}
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-editor-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h3>
+                                Equipment
+                            </h3>
+
+                            <p>
+                                Select equipment
+                                available to this fighter.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="fighter-equipment-validation"></div>
+
+
+                    <div class="mm-equipment-selection">
+
+                        ${availableEquipment
+                            .map(
+                                item =>
+                                    renderEquipmentCheckbox(
+                                        fighter,
+                                        item
                                     )
                             )
                             .join("")}
@@ -1113,21 +1031,19 @@ function showEditFighter(fighterId) {
                         Experience
                     </h3>
 
+
                     <label class="mm-field">
 
                         <span>
                             Experience
                         </span>
 
+
                         <input
                             id="edit-fighter-xp"
                             type="number"
                             min="0"
-                            value="${
-                                Number(
-                                    fighter.experience
-                                ) || 0
-                            }"
+                            value="${fighter.experience || 0}"
                         >
 
                     </label>
@@ -1138,53 +1054,17 @@ function showEditFighter(fighterId) {
                 <section class="mm-editor-section">
 
                     <h3>
-                        Equipment
+                        Current Equipment Value
                     </h3>
 
-                    <div class="mm-equipment-selection">
 
-                        ${
-                            availableEquipment.length
+                    <p>
 
-                            ?
+                        ${calculateFighterCost(
+                            fighter
+                        )} gc
 
-                            availableEquipment
-                                .map(
-                                    item =>
-                                        renderEquipmentCheckbox(
-                                            fighter,
-                                            item
-                                        )
-                                )
-                                .join("")
-
-                            :
-
-                            `
-                                <p class="mm-muted">
-                                    No equipment available.
-                                </p>
-                            `
-                        }
-
-                    </div>
-
-                </section>
-
-
-                <section class="mm-editor-section">
-
-                    <h3>
-                        Notes
-                    </h3>
-
-                    <textarea
-                        id="edit-fighter-notes"
-                        class="mm-textarea"
-                        rows="4"
-                    >${escapeHtml(
-                        fighter.notes || ""
-                    )}</textarea>
+                    </p>
 
                 </section>
 
@@ -1203,17 +1083,8 @@ function showEditFighter(fighterId) {
 
 
                 <button
-                    class="
-                        mm-button
-                        mm-button-primary
-                    "
-                    onclick="
-                        saveFighterChanges(
-                            '${escapeAttribute(
-                                fighter.id
-                            )}'
-                        )
-                    "
+                    class="mm-button mm-button-primary"
+                    onclick="saveFighterChanges('${escapeAttribute(fighter.id)}')"
                 >
                     Save Fighter
                 </button>
@@ -1223,42 +1094,162 @@ function showEditFighter(fighterId) {
         </div>
 
     `);
+
+
+    setupFighterEquipmentValidation(
+        fighter,
+        definition
+    );
+
 }
 
 
 /* ============================================================
-   EDITABLE STAT
+   LIVE EQUIPMENT VALIDATION
    ============================================================ */
 
-function renderEditableStat(
-    fighterId,
+function setupFighterEquipmentValidation(
+    fighter,
+    definition
+) {
+
+    const checkboxes =
+        document.querySelectorAll(
+            ".mm-equipment-selection input[type='checkbox']"
+        );
+
+
+    const validationContainer =
+        document.getElementById(
+            "fighter-equipment-validation"
+        );
+
+
+    if (
+        !checkboxes.length ||
+        !validationContainer
+    ) {
+
+        return;
+
+    }
+
+
+    function validateSelection() {
+
+        const selectedEquipment =
+            Array.from(
+                checkboxes
+            )
+                .filter(
+                    checkbox =>
+                        checkbox.checked
+                )
+                .map(
+                    checkbox =>
+                        checkbox.value
+                );
+
+
+        const warband =
+            getCurrentWarband();
+
+
+        if (!warband) {
+
+            return;
+
+        }
+
+
+        const validation =
+            RulesEngine.validateEquipmentChange(
+                warband,
+                fighter,
+                selectedEquipment,
+                definition,
+                state.equipment
+            );
+
+
+        validationContainer.innerHTML =
+            renderEquipmentValidation(
+                validation
+            );
+
+
+        /*
+         * Disable Save while the equipment
+         * selection is invalid.
+         */
+
+        const saveButton =
+            document.querySelector(
+                ".mm-modal-footer .mm-button-primary"
+            );
+
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                !validation.valid;
+
+        }
+
+    }
+
+
+    checkboxes.forEach(
+        checkbox => {
+
+            checkbox.addEventListener(
+                "change",
+                validateSelection
+            );
+
+        }
+    );
+
+
+    /*
+     * Validate the initial selection too.
+     */
+
+    validateSelection();
+
+}
+
+
+/* ============================================================
+   PROFILE STAT (READ ONLY)
+   ============================================================ */
+
+function renderReadOnlyStat(
     stat,
     value
 ) {
 
     return `
 
-        <label class="mm-stat-editor">
+        <div class="mm-stat-editor">
 
             <span>
-                ${escapeHtml(stat)}
+                ${escapeHtml(
+                    stat
+                )}
             </span>
 
-            <input
-                id="stat-${escapeAttribute(
-                    fighterId
-                )}-${escapeAttribute(
-                    stat
-                )}"
-                type="text"
-                value="${escapeAttribute(
-                    value
-                )}"
-            >
 
-        </label>
+            <strong>
+                ${escapeHtml(
+                    value
+                )}
+            </strong>
+
+        </div>
 
     `;
+
 }
 
 
@@ -1272,27 +1263,33 @@ function renderEquipmentCheckbox(
 ) {
 
     const selected =
-        Array.isArray(fighter.equipment) &&
         fighter.equipment.includes(
             item.id
         );
 
+
     const traits =
-        Array.isArray(item.traits)
+        Array.isArray(
+            item.traits
+        )
             ? item.traits
             : [];
 
 
     return `
 
-        <label class="mm-equipment-option">
+        <label
+            class="mm-equipment-option"
+        >
 
             <input
                 type="checkbox"
                 value="${escapeAttribute(
                     item.id
                 )}"
-                ${selected ? "checked" : ""}
+                ${selected
+                    ? "checked"
+                    : ""}
             >
 
 
@@ -1304,8 +1301,9 @@ function renderEquipmentCheckbox(
                     )}
                 </strong>
 
+
                 <small>
-                    ${Number(item.cost) || 0} gc
+                    ${item.cost ?? 0} gc
                 </small>
 
             </span>
@@ -1314,48 +1312,47 @@ function renderEquipmentCheckbox(
             ${
                 traits.length
 
-                ?
+                    ? `
 
-                `
-                    <span class="mm-equipment-traits">
+                        <span class="mm-equipment-traits">
 
-                        ${traits
-                            .map(
-                                traitId => {
+                            ${traits
+                                .map(
+                                    traitId => {
 
-                                    const trait =
-                                        state.equipment
-                                            ?.traits?.[
+                                        const trait =
+                                            getTrait(
                                                 traitId
-                                            ];
+                                            );
 
-                                    return `
 
-                                        <span
-                                            class="mm-mini-trait"
-                                        >
-                                            ${escapeHtml(
-                                                trait?.name ||
-                                                traitId
-                                            )}
-                                        </span>
+                                        return `
 
-                                    `;
-                                }
-                            )
-                            .join("")}
+                                            <span
+                                                class="mm-mini-trait"
+                                            >
+                                                ${escapeHtml(
+                                                    trait?.name ||
+                                                    traitId
+                                                )}
+                                            </span>
 
-                    </span>
-                `
+                                        `;
 
-                :
+                                    }
+                                )
+                                .join("")}
 
-                ""
+                        </span>
+
+                    `
+                    : ""
             }
 
         </label>
 
     `;
+
 }
 
 
@@ -1370,9 +1367,13 @@ function saveFighterChanges(
     const warband =
         getCurrentWarband();
 
+
     if (!warband) {
+
         return;
+
     }
+
 
     const fighter =
         warband.fighters.find(
@@ -1380,28 +1381,40 @@ function saveFighterChanges(
                 item.id === fighterId
         );
 
+
     if (!fighter) {
+
         return;
+
     }
 
 
-    /* --------------------------------------------------------
-       BASIC DETAILS
-       -------------------------------------------------------- */
+    const definition =
+        state.warbandDefinitions[
+            warband.type
+        ];
+
+
+    if (!definition) {
+
+        alert(
+            "The warband rules could not be found."
+        );
+
+        return;
+
+    }
+
 
     const nameInput =
         document.getElementById(
             "edit-fighter-name"
         );
 
+
     const xpInput =
         document.getElementById(
             "edit-fighter-xp"
-        );
-
-    const notesInput =
-        document.getElementById(
-            "edit-fighter-notes"
         );
 
 
@@ -1416,62 +1429,23 @@ function saveFighterChanges(
     }
 
 
-    fighter.experience =
-        Math.max(
-            0,
-            Number(
-                xpInput?.value
-            ) || 0
-        );
+    if (xpInput) {
 
-
-    if (notesInput) {
-
-        fighter.notes =
-            notesInput.value;
+        fighter.experience =
+            Math.max(
+                0,
+                Number(
+                    xpInput.value
+                ) || 0
+            );
 
     }
 
 
-    /* --------------------------------------------------------
-       PROFILE
-       -------------------------------------------------------- */
-
-    Object.keys(
-        fighter.profile || {}
-    ).forEach(
-        stat => {
-
-            const input =
-                document.getElementById(
-                    `stat-${fighter.id}-${stat}`
-                );
-
-            if (!input) {
-                return;
-            }
-
-            const numericValue =
-                Number(input.value);
-
-            if (
-                !Number.isNaN(
-                    numericValue
-                )
-            ) {
-
-                fighter.profile[stat] =
-                    numericValue;
-
-            }
-
-        }
-    );
-
-
-    /* --------------------------------------------------------
-       EQUIPMENT
-       -------------------------------------------------------- */
+    /*
+     * Collect the equipment selected
+     * in the editor.
+     */
 
     const checkboxes =
         document.querySelectorAll(
@@ -1479,8 +1453,10 @@ function saveFighterChanges(
         );
 
 
-    fighter.equipment =
-        Array.from(checkboxes)
+    const newEquipment =
+        Array.from(
+            checkboxes
+        )
             .filter(
                 checkbox =>
                     checkbox.checked
@@ -1491,31 +1467,176 @@ function saveFighterChanges(
             );
 
 
-    /* --------------------------------------------------------
-       SAVE
-       -------------------------------------------------------- */
+    /*
+     * Validate the proposed equipment
+     * change BEFORE modifying the fighter.
+     */
 
     if (
-        typeof savePlayerData ===
-        "function"
+        typeof RulesEngine === "undefined" ||
+        typeof RulesEngine.validateEquipmentChange !==
+            "function"
     ) {
 
-        savePlayerData();
+        alert(
+            "The rules engine is not available."
+        );
+
+        return;
 
     }
+
+
+    const validation =
+        RulesEngine.validateEquipmentChange(
+            warband,
+            fighter,
+            newEquipment,
+            definition,
+            state.equipment
+        );
+
+
+    /*
+     * Block invalid equipment selections.
+     */
+
+    if (!validation.valid) {
+
+        const messages =
+            validation.errors
+                .map(
+                    error =>
+                        `• ${error.message}`
+                )
+                .join("\n");
+
+
+        alert(
+            "Fighter cannot be saved:\n\n" +
+            messages
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * Apply the validated equipment change.
+     *
+     * This updates both the fighter's
+     * equipment and the warband treasury.
+     */
+
+    try {
+
+        RulesEngine.applyEquipmentChange(
+            warband,
+            fighter,
+            newEquipment,
+            definition,
+            state.equipment
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Equipment change failed:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "The equipment change could not be applied."
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+     * Persist only after ALL validation
+     * and rule changes have succeeded.
+     */
+
+    savePlayerData();
 
 
     closeModal();
 
 
-    if (
-        typeof renderApplication ===
-        "function"
-    ) {
+    renderApplication();
 
-        renderApplication();
+}
+
+
+/* ============================================================
+   EQUIPMENT VALIDATION FEEDBACK
+   ============================================================ */
+
+function renderEquipmentValidation(
+    validation
+) {
+
+    if (!validation) {
+
+        return "";
 
     }
+
+
+    if (validation.valid) {
+
+        return `
+
+            <div class="mm-validation mm-validation-success">
+
+                <strong>
+                    ✓ Equipment selection is valid
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div class="mm-validation mm-validation-error">
+
+            <strong>
+                ⚠ Equipment selection is invalid
+            </strong>
+
+
+            <ul>
+
+                ${validation.errors
+                    .map(
+                        error => `
+
+                            <li>
+                                ${escapeHtml(
+                                    error.message
+                                )}
+                            </li>
+
+                        `
+                    )
+                    .join("")}
+
+            </ul>
+
+        </div>
+
+    `;
 
 }
 
@@ -1528,32 +1649,38 @@ function getAvailableEquipment(
     fighterType
 ) {
 
-    if (!fighterType) {
+    const listName =
+        fighterType?.equipmentList;
+
+
+    if (!listName) {
+
         return [];
+
     }
 
-    const listName =
-        fighterType.equipmentList;
 
-    const currentWarband =
-        getCurrentWarband();
-
-    const warbandType =
-        currentWarband?.type ||
-        "reikland";
+    /*
+     * Equipment lists belong to the
+     * warband definition.
+     */
 
     const definition =
-        state.warbandDefinitions[
-            warbandType
-        ];
+        state.warbandDefinitions.reikland;
+
 
     const equipmentList =
         definition
             ?.equipmentLists
-            ?.[listName];
+            ?.[
+                listName
+            ];
+
 
     if (!equipmentList) {
+
         return [];
+
     }
 
 
@@ -1565,22 +1692,32 @@ function getAvailableEquipment(
 
         ...(equipmentList.armour || []),
 
-        ...(equipmentList.miscellaneous || [])
+        ...(equipmentList.miscellaneous || []),
+
+        ...(equipmentList.misc || []),
+
+        ...(equipmentList.special || [])
 
     ];
 
 
-    return [
-        ...new Set(ids)
-    ]
+    /*
+     * Remove duplicates.
+     */
+
+    const uniqueIds =
+        [...new Set(ids)];
+
+
+    return uniqueIds
+
         .map(
-            id =>
-                typeof getEquipment ===
-                "function"
-                    ? getEquipment(id)
-                    : null
+            getEquipment
         )
-        .filter(Boolean);
+
+        .filter(
+            Boolean
+        );
 
 }
 
@@ -1596,18 +1733,26 @@ function deleteFighter(
     const warband =
         getCurrentWarband();
 
+
     if (!warband) {
+
         return;
+
     }
+
 
     const fighter =
         warband.fighters.find(
             item =>
-                item.id === fighterId
+                item.id ===
+                fighterId
         );
 
+
     if (!fighter) {
+
         return;
+
     }
 
 
@@ -1616,107 +1761,88 @@ function deleteFighter(
             `Remove ${fighter.name} from the warband?`
         );
 
+
     if (!confirmed) {
+
         return;
+
     }
 
 
-    warband.fighters =
-        warband.fighters.filter(
+    /*
+     * Refund the fighter's base cost and
+     * remove them from the roster.
+     *
+     * Equipment carried by the fighter is
+     * not currently resold (matches prior
+     * behaviour - selling equipment back
+     * will be handled by the campaign
+     * rules later).
+     */
+
+    const index =
+        warband.fighters.findIndex(
             item =>
-                item.id !== fighterId
+                item.id === fighterId
         );
 
 
-    if (
-        typeof savePlayerData ===
-        "function"
-    ) {
+    warband.treasury +=
+        Number(fighter.baseCost) || 0;
 
-        savePlayerData();
+
+    warband.fighters.splice(
+        index,
+        1
+    );
+
+
+    const validation =
+        validateCurrentWarband(
+            warband
+        );
+
+
+    if (validation.errors.length) {
+
+        const proceed =
+            confirm(
+                "This change creates rule errors:\n\n" +
+                validation.errors
+                    .map(
+                        error =>
+                            `• ${error.message}`
+                    )
+                    .join("\n") +
+                "\n\nSave anyway?"
+            );
+
+
+        if (!proceed) {
+
+            /*
+             * Undo the removal.
+             */
+
+            warband.treasury -=
+                Number(fighter.baseCost) || 0;
+
+            warband.fighters.splice(
+                index,
+                0,
+                fighter
+            );
+
+            return;
+
+        }
 
     }
 
 
-    if (
-        typeof renderApplication ===
-        "function"
-    ) {
+    savePlayerData();
 
-        renderApplication();
 
-    }
+    renderApplication();
 
 }
-
-
-/* ============================================================
-   PUBLIC API
-   ============================================================ */
-
-window.MordeManager =
-    window.MordeManager || {};
-
-
-Object.assign(
-    window.MordeManager,
-    {
-        showAddFighter,
-        addFighter,
-        renderFighters,
-        renderFighter,
-        showEditFighter,
-        saveFighterChanges,
-        deleteFighter,
-        getAvailableEquipment
-    }
-);
-
-
-/* ------------------------------------------------------------
-   Backwards compatibility
-   ------------------------------------------------------------ */
-
-window.addFighter = addFighter;
-window.showAddFighter = showAddFighter;
-window.showEditFighter = showEditFighter;
-window.saveFighterChanges = saveFighterChanges;
-window.deleteFighter = deleteFighter;
-
-
-
-/* ============================================================
-   LEGACY GLOBAL API
-   ============================================================ */
-
-/*
- * Your current UI uses inline onclick handlers such as:
- *
- *     onclick="addFighter('captain')"
- *
- * These assignments keep those handlers working while we
- * gradually move toward the MordeManager namespace.
- */
-
-window.showAddFighter =
-    showAddFighter;
-
-window.addFighter =
-    addFighter;
-
-window.showEditFighter =
-    showEditFighter;
-
-window.saveFighterChanges =
-    saveFighterChanges;
-
-window.deleteFighter =
-    deleteFighter;
-
-window.renderFighters =
-    renderFighters;
-
-window.renderFighter =
-    renderFighter;
-
-

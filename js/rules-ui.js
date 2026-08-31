@@ -8,88 +8,59 @@
    WARBAND VALIDATION PANEL
    ============================================================ */
 
-function renderWarbandValidation(warband) {
-
-    if (
-        typeof validateWarband !== "function"
-    ) {
-
-        return "";
-
-    }
-
+function renderWarbandValidation(
+    warband
+) {
 
     const result =
-        validateWarband(warband);
+        validateCurrentWarband(
+            warband
+        );
 
 
-    const totalProblems =
-        result.errors.length +
-        result.warnings.length;
+    let statusClass;
+    let icon;
+    let title;
 
 
-    /* --------------------------------------------------------
-       Completely valid
-       -------------------------------------------------------- */
+    if (result.errors.length) {
 
-    if (
-        result.valid &&
-        result.warnings.length === 0
-    ) {
+        statusClass =
+            "mm-validation-error";
 
-        return `
+        icon = "✕";
 
-            <section class="mm-validation mm-validation-valid">
+        title =
+            "Warband has rule errors.";
 
-                <div class="mm-validation-icon">
-                    ✓
-                </div>
+    } else if (result.warnings.length) {
 
-                <div class="mm-validation-content">
+        statusClass =
+            "mm-validation-warning";
 
-                    <strong>
-                        Warband Legal
-                    </strong>
+        icon = "!";
 
-                    <p>
-                        All current roster checks passed.
-                    </p>
+        title =
+            "Warband is valid with warnings.";
 
-                </div>
+    } else {
 
-            </section>
+        statusClass =
+            "mm-validation-valid";
 
-        `;
+        icon = "✓";
+
+        title =
+            "Warband is valid.";
 
     }
 
 
-    /* --------------------------------------------------------
-       Build error list
-       -------------------------------------------------------- */
-
-    const errors =
-        result.errors
-            .map(
-                item =>
-                    renderValidationItem(
-                        item,
-                        "error"
-                    )
-            )
-            .join("");
-
-
-    const warnings =
-        result.warnings
-            .map(
-                item =>
-                    renderValidationItem(
-                        item,
-                        "warning"
-                    )
-            )
-            .join("");
+    const messages = [
+        ...result.errors,
+        ...result.warnings,
+        ...result.info
+    ];
 
 
     return `
@@ -97,62 +68,88 @@ function renderWarbandValidation(warband) {
         <section
             class="
                 mm-validation
-                ${
-                    result.valid
-                        ? "mm-validation-warning"
-                        : "mm-validation-error"
-                }
+                ${statusClass}
             "
         >
 
-            <div class="mm-validation-header">
-
-                <div class="mm-validation-icon">
-
-                    ${
-                        result.valid
-                            ? "⚠"
-                            : "✕"
-                    }
-
-                </div>
-
-                <div>
-
-                    <strong>
-
-                        ${
-                            result.valid
-                                ? "Warband Needs Attention"
-                                : "Warband Has Rule Violations"
-                        }
-
-                    </strong>
-
-                    <p>
-
-                        ${totalProblems}
-
-                        ${
-                            totalProblems === 1
-                                ? " issue"
-                                : " issues"
-                        }
-
-                        found.
-
-                    </p>
-
-                </div>
-
+            <div class="mm-validation-icon">
+                ${icon}
             </div>
 
 
-            <div class="mm-validation-list">
+            <div class="mm-validation-content">
 
-                ${errors}
+                <div class="mm-validation-header">
 
-                ${warnings}
+                    <div>
+
+                        <strong>
+                            ${title}
+                        </strong>
+
+                        <p>
+                            ${result.errors.length}
+                            error${result.errors.length === 1 ? "" : "s"},
+                            ${result.warnings.length}
+                            warning${result.warnings.length === 1 ? "" : "s"}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    messages.length
+
+                        ? `
+
+                            <div class="mm-validation-list">
+
+                                ${messages
+                                    .map(
+                                        item => `
+
+                                            <div
+                                                class="
+                                                    mm-validation-item
+                                                "
+                                            >
+
+                                                <span
+                                                    class="
+                                                        mm-validation-item-icon
+                                                    "
+                                                >
+                                                    ${
+                                                        result.errors.includes(item)
+                                                            ? "✕"
+                                                            : "!"
+                                                    }
+                                                </span>
+
+
+                                                <span
+                                                    class="
+                                                        mm-validation-message
+                                                    "
+                                                >
+                                                    ${escapeHtml(
+                                                        item.message
+                                                    )}
+                                                </span>
+
+                                            </div>
+
+                                        `
+                                    )
+                                    .join("")}
+
+                            </div>
+
+                        `
+                        : ""
+                }
 
             </div>
 
@@ -161,227 +158,3 @@ function renderWarbandValidation(warband) {
     `;
 
 }
-
-
-/* ============================================================
-   VALIDATION ITEM
-   ============================================================ */
-
-function renderValidationItem(
-    item,
-    type
-) {
-
-    const icon =
-        type === "error"
-            ? "✕"
-            : "⚠";
-
-
-    /*
-     * If the validation result contains a fighter ID,
-     * allow the user to jump directly to that fighter.
-     */
-
-    const action =
-        item.fighterId
-
-            ?
-
-            `
-                <button
-                    class="mm-validation-link"
-                    onclick="
-                        focusFighter(
-                            '${escapeAttribute(item.fighterId)}'
-                        )
-                    "
-                >
-                    View fighter
-                </button>
-            `
-
-            :
-
-            "";
-
-
-    return `
-
-        <div
-            class="
-                mm-validation-item
-                mm-validation-item-${type}
-            "
-        >
-
-            <span class="mm-validation-item-icon">
-                ${icon}
-            </span>
-
-            <span class="mm-validation-message">
-                ${escapeHtml(item.message)}
-            </span>
-
-            ${action}
-
-        </div>
-
-    `;
-
-}
-
-
-/* ============================================================
-   FOCUS FIGHTER
-   ============================================================ */
-
-function focusFighter(fighterId) {
-
-    if (!fighterId) {
-        return;
-    }
-
-
-    /*
-     * First try to find the fighter on the current page.
-     */
-
-    const element =
-        document.querySelector(
-            `[data-fighter-id="${CSS.escape(fighterId)}"]`
-        );
-
-
-    if (element) {
-
-        element.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "center"
-
-        });
-
-
-        element.classList.add(
-            "mm-fighter-highlight"
-        );
-
-
-        setTimeout(
-            () => {
-
-                element.classList.remove(
-                    "mm-fighter-highlight"
-                );
-
-            },
-            2000
-        );
-
-
-        return;
-
-    }
-
-
-    /*
-     * If it isn't currently rendered, try opening
-     * the fighter editor.
-     */
-
-    if (
-        typeof showEditFighter === "function"
-    ) {
-
-        showEditFighter(
-            fighterId
-        );
-
-    }
-
-}
-
-
-/* ============================================================
-   RULE SOURCE CARD
-   ============================================================ */
-
-function renderRulesSourceCard(source) {
-
-    if (!source) {
-        return "";
-    }
-
-
-    return `
-
-        <div class="mm-rules-source-card">
-
-            <div>
-
-                <span class="mm-badge">
-                    Rules Source
-                </span>
-
-                <h3>
-                    ${escapeHtml(
-                        source.document ||
-                        "Mordheim Rules"
-                    )}
-                </h3>
-
-            </div>
-
-
-            ${
-                source.url
-
-                    ?
-
-                    `
-                        <a
-                            class="mm-button"
-                            href="${escapeAttribute(source.url)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Open Rules ↗
-                        </a>
-                    `
-
-                    :
-
-                    ""
-            }
-
-        </div>
-
-    `;
-
-}
-
-
-/* ============================================================
-   PUBLIC API
-   ============================================================ */
-
-window.MordeManagerRulesUI = {
-
-    renderWarbandValidation,
-
-    renderValidationItem,
-
-    focusFighter,
-
-    renderRulesSourceCard
-
-};
-
-
-window.renderWarbandValidation =
-    renderWarbandValidation;
-
-window.focusFighter =
-    focusFighter;

@@ -100,19 +100,26 @@ function getCurrentWarband() {
 
 function calculateFighterCost(fighter) {
 
-    if (!fighter) {
+    if (
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateFighterCost === "function"
+    ) {
 
-        return 0;
+        return RulesEngine.calculateFighterCost(
+            fighter,
+            state.equipment
+        );
 
     }
 
 
-    const baseCost =
-        Number(fighter.baseCost) || 0;
-
+    /*
+     * Fallback for development if the
+     * rules engine has not loaded yet.
+     */
 
     const equipmentCost =
-        (fighter.equipment || [])
+        (fighter?.equipment || [])
             .reduce(
 
                 (total, equipmentId) => {
@@ -130,22 +137,28 @@ function calculateFighterCost(fighter) {
             );
 
 
-    return baseCost + equipmentCost;
+    return (Number(fighter?.baseCost) || 0) + equipmentCost;
 
 }
 
 
 function calculateWarbandValue(warband) {
 
-    if (!warband) {
+    if (
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateWarbandValue === "function"
+    ) {
 
-        return 0;
+        return RulesEngine.calculateWarbandValue(
+            warband,
+            state.equipment
+        );
 
     }
 
 
     const fighters =
-        Array.isArray(warband.fighters)
+        Array.isArray(warband?.fighters)
             ? warband.fighters
             : [];
 
@@ -168,25 +181,24 @@ function calculateWarbandValue(warband) {
 
 function calculateWarbandRating(warband) {
 
-    if (!warband) {
+    if (
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateWarbandRating === "function"
+    ) {
 
-        return 0;
+        return RulesEngine.calculateWarbandRating(
+            warband,
+            state.equipment
+        );
 
     }
 
 
     const fighters =
-        Array.isArray(warband.fighters)
+        Array.isArray(warband?.fighters)
             ? warband.fighters
             : [];
 
-
-    /*
-     * This is deliberately kept simple for now.
-     *
-     * Later we can implement the exact campaign
-     * warband rating calculation from the rules.
-     */
 
     const fighterValue =
         calculateWarbandValue(warband);
@@ -251,32 +263,6 @@ function generateDefaultFighterName(
 
 
     return `${fighterType.name} ${count}`;
-
-}
-
-
-function getFighterType(
-    warband,
-    fighter
-) {
-
-    if (!warband || !fighter) {
-
-        return null;
-
-    }
-
-
-    const definition =
-        state.warbandDefinitions[
-            warband.type
-        ];
-
-
-    return definition?.fighterTypes?.find(
-        type =>
-            type.id === fighter.type
-    ) || null;
 
 }
 
@@ -478,190 +464,3 @@ function renderAcknowledgement() {
 }
 
 
-/* ============================================================
-   WARBand VALIDATION
-   ============================================================ */
-
-function validateWarband(warband) {
-
-    const errors = [];
-    const warnings = [];
-
-
-    if (!warband) {
-
-        errors.push(
-            "Warband could not be found."
-        );
-
-        return {
-            valid: false,
-            errors,
-            warnings
-        };
-
-    }
-
-
-    const definition =
-        state.warbandDefinitions[
-            warband.type
-        ];
-
-
-    if (!definition) {
-
-        errors.push(
-            "Warband rules definition could not be found."
-        );
-
-        return {
-            valid: false,
-            errors,
-            warnings
-        };
-
-    }
-
-
-    const fighters =
-        Array.isArray(warband.fighters)
-            ? warband.fighters
-            : [];
-
-
-    /* --------------------------------------------------------
-       TOTAL SIZE
-       -------------------------------------------------------- */
-
-    if (
-        fighters.length <
-        definition.minimumWarbandSize
-    ) {
-
-        errors.push(
-            `Warband requires at least ${definition.minimumWarbandSize} fighters.`
-        );
-
-    }
-
-
-    if (
-        fighters.length >
-        definition.maximumWarbandSize
-    ) {
-
-        errors.push(
-            `Warband cannot contain more than ${definition.maximumWarbandSize} fighters.`
-        );
-
-    }
-
-
-    /* --------------------------------------------------------
-       FIGHTER TYPE LIMITS
-       -------------------------------------------------------- */
-
-    for (
-        const fighterType
-        of definition.fighterTypes || []
-    ) {
-
-        const count =
-            fighters.filter(
-                fighter =>
-                    fighter.type ===
-                    fighterType.id
-            ).length;
-
-
-        if (
-            fighterType.min !== null &&
-            fighterType.min !== undefined &&
-            count < fighterType.min
-        ) {
-
-            errors.push(
-                `You need at least ${fighterType.min} ${fighterType.name}.`
-            );
-
-        }
-
-
-        if (
-            fighterType.max !== null &&
-            fighterType.max !== undefined &&
-            count > fighterType.max
-        ) {
-
-            errors.push(
-                `You can have no more than ${fighterType.max} ${fighterType.name}.`
-            );
-
-        }
-
-    }
-
-
-    return {
-
-        valid: errors.length === 0,
-
-        errors,
-
-        warnings
-
-    };
-
-}
-
-
-function renderWarbandValidation(warband) {
-
-    const result =
-        validateWarband(warband);
-
-
-    if (result.valid) {
-
-        return `
-
-            <div class="mm-validation mm-validation-success">
-
-                <strong>
-                    ✓ Warband currently legal
-                </strong>
-
-            </div>
-
-        `;
-
-    }
-
-
-    return `
-
-        <div class="mm-validation mm-validation-error">
-
-            <strong>
-                ⚠ Warband needs attention
-            </strong>
-
-            <ul>
-
-                ${result.errors
-                    .map(
-                        error =>
-                            `<li>
-                                ${escapeHtml(error)}
-                            </li>`
-                    )
-                    .join("")}
-
-            </ul>
-
-        </div>
-
-    `;
-
-}

@@ -51,6 +51,21 @@ function getEquipment(id) {
     }
 
 
+    /*
+     * Also support a future direct
+     * object structure.
+     */
+
+    if (
+        equipment.items &&
+        typeof equipment.items === "object"
+    ) {
+
+        return equipment.items[id] || null;
+
+    }
+
+
     return null;
 
 }
@@ -227,31 +242,20 @@ function showEquipment(
                 </div>
 
 
-                ${
-                    item.availability !== undefined
+                <div class="mm-rule-stat">
 
-                    ?
+                    <span>
+                        Availability
+                    </span>
 
-                    `
-                        <div class="mm-rule-stat">
+                    <strong>
+                        ${escapeHtml(
+                            item.availability ||
+                            "Unknown"
+                        )}
+                    </strong>
 
-                            <span>
-                                Availability
-                            </span>
-
-                            <strong>
-                                ${escapeHtml(
-                                    item.availability
-                                )}
-                            </strong>
-
-                        </div>
-                    `
-
-                    :
-
-                    ""
-                }
+                </div>
 
 
                 ${

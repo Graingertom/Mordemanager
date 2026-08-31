@@ -2,6 +2,8 @@
    MORDEMANAGER - RULES ENGINE
    ============================================================ */
 
+const RulesEngine = (() => {
+
 
 /* ============================================================
    VALIDATE COMPLETE WARBAND
@@ -1728,10 +1730,10 @@ function applyEquipmentChange(
 
 
 /* ============================================================
-   RULES ENGINE (GLOBAL)
+   PUBLIC SURFACE
    ============================================================ */
 
-const RulesEngine = {
+return {
 
     validateWarband,
 
@@ -1764,3 +1766,5 @@ const RulesEngine = {
     getEquipmentListForFighter
 
 };
+
+})();

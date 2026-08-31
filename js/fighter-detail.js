@@ -234,7 +234,7 @@ function renderFighterDetailModal(warband, fighter) {
                                 <div class="mm-trait-list">
 
                                     ${skills
-                                        .map(renderRuleSkill)
+                                        .map(renderSkillTag)
                                         .join("")}
 
                                 </div>
@@ -409,7 +409,7 @@ function renderFighterEquipmentDetail(equipmentId) {
             type="button"
             class="mm-detail-row mm-detail-row-button"
             onclick="
-                showEquipmentDetails(
+                showEquipment(
                     '${escapeAttribute(item.id)}'
                 )
             "
@@ -427,7 +427,7 @@ function renderFighterEquipmentDetail(equipmentId) {
                             <div class="mm-trait-list">
 
                                 ${traits
-                                    .map(renderRuleTrait)
+                                    .map(renderTraitButton)
                                     .join("")}
 
                             </div>
