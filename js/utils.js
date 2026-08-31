@@ -120,6 +120,71 @@ function getCurrentGame() {
 
 
 /* ============================================================
+   CURRENT PLAYER
+   ============================================================ */
+
+/*
+ * There is no real account system yet. This is a
+ * lightweight, local stand-in so a game with warbands
+ * belonging to different people can still tell "yours"
+ * apart from everyone else's - it is not authentication,
+ * just a name this browser remembers.
+ */
+
+function getCurrentPlayerName() {
+
+    try {
+
+        return localStorage.getItem(
+            "mordemanager-player-name"
+        ) || "";
+
+    } catch (error) {
+
+        return "";
+
+    }
+
+}
+
+
+function setCurrentPlayerName(name) {
+
+    try {
+
+        localStorage.setItem(
+            "mordemanager-player-name",
+            name || ""
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Unable to save player name:",
+            error
+        );
+
+    }
+
+}
+
+
+function ownsWarband(warband) {
+
+    if (!warband?.owner) {
+
+        return true;
+
+    }
+
+
+    return warband.owner ===
+        getCurrentPlayerName();
+
+}
+
+
+/* ============================================================
    WARBAND CALCULATIONS
    ============================================================ */
 

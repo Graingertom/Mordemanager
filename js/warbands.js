@@ -39,6 +39,9 @@ function normaliseWarbands(warbands) {
                     warband.createdAt ||
                     new Date().toISOString(),
 
+                owner:
+                    warband.owner || "",
+
                 treasury:
                     Number.isFinite(
                         Number(warband.treasury)
@@ -331,6 +334,25 @@ function showCreateWarband() {
 
                 </label>
 
+
+                <label class="mm-field">
+
+                    <span>
+                        Owner
+                    </span>
+
+                    <input
+                        id="new-warband-owner"
+                        type="text"
+                        placeholder="Whose warband is this?"
+                        autocomplete="off"
+                        value="${escapeAttribute(
+                            getCurrentPlayerName()
+                        )}"
+                    >
+
+                </label>
+
             </div>
 
 
@@ -415,6 +437,12 @@ function createWarband() {
     }
 
 
+    const ownerInput =
+        document.getElementById(
+            "new-warband-owner"
+        );
+
+
     const warband = {
 
         id:
@@ -426,6 +454,9 @@ function createWarband() {
 
         createdAt:
             new Date().toISOString(),
+
+        owner:
+            ownerInput?.value.trim() || "",
 
         treasury:
             Number(
@@ -480,6 +511,15 @@ function openWarband(id) {
     }
 
 
+    /*
+     * Remember where we came from so the warband
+     * page's back button can return there, instead
+     * of always going to the dashboard.
+     */
+
+    state.returnToGameId =
+        state.currentGameId;
+
     state.currentWarbandId =
         id;
 
@@ -497,8 +537,43 @@ function closeWarband() {
     state.currentWarbandId =
         null;
 
+    state.returnToGameId =
+        null;
+
 
     renderApplication();
+
+}
+
+
+function returnToGame() {
+
+    const gameId =
+        state.returnToGameId;
+
+
+    state.returnToGameId =
+        null;
+
+
+    if (
+        gameId &&
+        state.games.some(
+            game =>
+                game.id === gameId
+        )
+    ) {
+
+        openGame(
+            gameId
+        );
+
+        return;
+
+    }
+
+
+    closeWarband();
 
 }
 
@@ -562,6 +637,15 @@ function renderWarbandPage() {
         );
 
 
+    const returnGame =
+        state.returnToGameId
+            ? state.games.find(
+                game =>
+                    game.id === state.returnToGameId
+            )
+            : null;
+
+
     app.innerHTML = `
 
         <div class="mm-app">
@@ -570,12 +654,25 @@ function renderWarbandPage() {
 
                 <div>
 
-                    <button
-                        class="mm-back-button"
-                        onclick="closeWarband()"
-                    >
-                        ← My Warbands
-                    </button>
+                    ${
+                        returnGame
+                            ? `
+                                <button
+                                    class="mm-back-button"
+                                    onclick="returnToGame()"
+                                >
+                                    ← Back to ${escapeHtml(returnGame.name)}
+                                </button>
+                            `
+                            : `
+                                <button
+                                    class="mm-back-button"
+                                    onclick="closeWarband()"
+                                >
+                                    ← My Warbands
+                                </button>
+                            `
+                    }
 
 
                     <div class="mm-logo">

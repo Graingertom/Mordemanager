@@ -4,8 +4,8 @@
     {
       "name": "mordemanager",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8957"],
-      "port": 8957
+      "runtimeArgs": ["-m", "http.server", "8971"],
+      "port": 8971
     }
   ]
 }

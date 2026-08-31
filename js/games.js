@@ -1214,15 +1214,35 @@ function renderGameWarbandCard(
                         )}
                     </h2>
 
+                    ${
+                        warband.owner
+                            ? `
+                                <p>
+                                    Owned by ${escapeHtml(warband.owner)}
+                                </p>
+                            `
+                            : ""
+                    }
+
                 </div>
 
 
-                <button
-                    class="mm-button mm-button-small"
-                    onclick="openWarband('${escapeAttribute(warband.id)}')"
-                >
-                    Open Warband
-                </button>
+                ${
+                    ownsWarband(warband)
+                        ? `
+                            <button
+                                class="mm-button mm-button-small"
+                                onclick="openWarband('${escapeAttribute(warband.id)}')"
+                            >
+                                Open Warband
+                            </button>
+                        `
+                        : `
+                            <span class="mm-muted">
+                                Not your warband
+                            </span>
+                        `
+                }
 
             </div>
 

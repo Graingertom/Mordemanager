@@ -51,6 +51,14 @@ const state = {
 
     currentGameId: null,
 
+    /*
+     * Set when a warband is opened from within a game,
+     * so its back button can return there instead of
+     * always going to the dashboard.
+     */
+
+    returnToGameId: null,
+
     currentModal: null
 
 };
@@ -470,6 +478,17 @@ function renderDashboard() {
                 <div class="mm-header-actions">
 
                     <button
+                        class="mm-button"
+                        onclick="showSetPlayerName()"
+                    >
+                        Playing as:
+                        ${escapeHtml(
+                            getCurrentPlayerName() || "Unset"
+                        )}
+                    </button>
+
+
+                    <button
                         class="mm-button mm-button-primary"
                         onclick="showCreateWarband()"
                     >
@@ -518,6 +537,111 @@ function renderDashboard() {
         <div id="modal-container"></div>
 
     `;
+
+}
+
+
+/* ============================================================
+   PLAYER NAME
+   ============================================================ */
+
+function showSetPlayerName() {
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Playing As
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p class="mm-muted">
+                    Warbands you create are marked as
+                    yours under this name. In a game with
+                    other players' warbands, only the ones
+                    matching this name can be opened for
+                    editing from that game.
+                </p>
+
+
+                <label class="mm-field">
+
+                    <span>
+                        Your Name
+                    </span>
+
+                    <input
+                        id="player-name-input"
+                        type="text"
+                        placeholder="Tom"
+                        autocomplete="off"
+                        value="${escapeAttribute(
+                            getCurrentPlayerName()
+                        )}"
+                    >
+
+                </label>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="savePlayerName()"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function savePlayerName() {
+
+    const input =
+        document.getElementById(
+            "player-name-input"
+        );
+
+
+    setCurrentPlayerName(
+        input?.value.trim() || ""
+    );
+
+
+    closeModal();
+
+
+    renderApplication();
 
 }
 
