@@ -1,0 +1,277 @@
+{
+    "id": "mordheim-equipment",
+    "name": "Mordheim Equipment",
+
+    "source": {
+        "organisation": "Broheim",
+        "document": "Master Equipment List / Mordheim Core Rules",
+        "website": "https://broheim.net",
+        "url": "https://broheim.net/downloads/resources/Master%20Equipment%20List.pdf"
+    },
+
+    "categories": [
+        {
+            "id": "close-combat",
+            "name": "Close Combat Weapons"
+        },
+        {
+            "id": "missile",
+            "name": "Missile Weapons"
+        },
+        {
+            "id": "armour",
+            "name": "Armour"
+        },
+        {
+            "id": "miscellaneous",
+            "name": "Miscellaneous"
+        }
+    ],
+
+    "traits": {
+        "parry": {
+            "id": "parry",
+            "name": "Parry",
+            "category": "combat",
+            "summary": "This weapon has the Parry special rule.",
+            "source": "mordheim-core"
+        },
+
+        "strike-first": {
+            "id": "strike-first",
+            "name": "Strike First",
+            "category": "combat",
+            "summary": "This weapon has the Strike First special rule.",
+            "source": "mordheim-core"
+        },
+
+        "unwieldy": {
+            "id": "unwieldy",
+            "name": "Unwieldy",
+            "category": "combat",
+            "summary": "This weapon has the Unwieldy special rule.",
+            "source": "mordheim-core"
+        },
+
+        "requires-two-hands": {
+            "id": "requires-two-hands",
+            "name": "Two-handed",
+            "category": "equipment",
+            "summary": "This weapon requires both hands to use.",
+            "source": "mordheim-core"
+        }
+    },
+
+    "equipment": [
+
+        {
+            "id": "dagger",
+            "name": "Dagger",
+            "category": "close-combat",
+            "cost": 2,
+            "firstFree": true,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "mace",
+            "name": "Mace",
+            "category": "close-combat",
+            "cost": 3,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "hammer",
+            "name": "Hammer",
+            "category": "close-combat",
+            "cost": 3,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "axe",
+            "name": "Axe",
+            "category": "close-combat",
+            "cost": 5,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "sword",
+            "name": "Sword",
+            "category": "close-combat",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [
+                "parry"
+            ],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "morning-star",
+            "name": "Morning Star",
+            "category": "close-combat",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [
+                "unwieldy"
+            ],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "double-handed-weapon",
+            "name": "Double-handed Weapon",
+            "category": "close-combat",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [
+                "requires-two-hands",
+                "unwieldy"
+            ],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "spear",
+            "name": "Spear",
+            "category": "close-combat",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [
+                "strike-first"
+            ],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "halberd",
+            "name": "Halberd",
+            "category": "close-combat",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [
+                "requires-two-hands"
+            ],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "crossbow",
+            "name": "Crossbow",
+            "category": "missile",
+            "cost": 25,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "pistol",
+            "name": "Pistol",
+            "category": "missile",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "duelling-pistol",
+            "name": "Duelling Pistol",
+            "category": "missile",
+            "cost": 25,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "bow",
+            "name": "Bow",
+            "category": "missile",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "light-armour",
+            "name": "Light Armour",
+            "category": "armour",
+            "cost": 20,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "heavy-armour",
+            "name": "Heavy Armour",
+            "category": "armour",
+            "cost": 50,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "shield",
+            "name": "Shield",
+            "category": "armour",
+            "cost": 5,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "buckler",
+            "name": "Buckler",
+            "category": "armour",
+            "cost": 5,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "helmet",
+            "name": "Helmet",
+            "category": "armour",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common",
+            "traits": [],
+            "source": "mordheim-core"
+        }
+
+    ]
+}

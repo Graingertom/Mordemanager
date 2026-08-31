@@ -1,0 +1,153 @@
+{
+    "id": "mordheim-core",
+    "name": "Mordheim Core Rules",
+    "game": "Mordheim",
+
+    "source": {
+        "organisation": "Broheim",
+        "website": "https://broheim.net",
+        "document": "Mordheim Core Rules Printable",
+        "url": "https://broheim.net/downloads/rules/Mordheim%20Core%20Rules%20Printable.pdf"
+    },
+
+    "acknowledgement": "This application is a fan-made management tool. Rules references are based on Mordheim material made available through Broheim. Mordheim and its original rules are property of their respective rights holders.",
+
+    "ruleCategories": [
+        {
+            "id": "warband",
+            "name": "Warbands",
+            "description": "Rules concerning the creation and management of a warband."
+        },
+        {
+            "id": "heroes",
+            "name": "Heroes",
+            "description": "Rules concerning Heroes, experience and advances."
+        },
+        {
+            "id": "henchmen",
+            "name": "Henchmen",
+            "description": "Rules concerning Henchmen and Henchmen groups."
+        },
+        {
+            "id": "equipment",
+            "name": "Equipment",
+            "description": "Rules concerning weapons, armour and other equipment."
+        },
+        {
+            "id": "experience",
+            "name": "Experience",
+            "description": "Rules concerning experience and advances."
+        },
+        {
+            "id": "injuries",
+            "name": "Injuries",
+            "description": "Rules concerning injuries suffered during games."
+        },
+        {
+            "id": "post-game",
+            "name": "Post-game",
+            "description": "Rules concerning the sequence following a battle."
+        }
+    ],
+
+    "stats": [
+        {
+            "id": "M",
+            "name": "Movement",
+            "shortName": "M"
+        },
+        {
+            "id": "WS",
+            "name": "Weapon Skill",
+            "shortName": "WS"
+        },
+        {
+            "id": "BS",
+            "name": "Ballistic Skill",
+            "shortName": "BS"
+        },
+        {
+            "id": "S",
+            "name": "Strength",
+            "shortName": "S"
+        },
+        {
+            "id": "T",
+            "name": "Toughness",
+            "shortName": "T"
+        },
+        {
+            "id": "W",
+            "name": "Wounds",
+            "shortName": "W"
+        },
+        {
+            "id": "I",
+            "name": "Initiative",
+            "shortName": "I"
+        },
+        {
+            "id": "A",
+            "name": "Attacks",
+            "shortName": "A"
+        },
+        {
+            "id": "Ld",
+            "name": "Leadership",
+            "shortName": "Ld"
+        }
+    ],
+
+    "rules": [
+        {
+            "id": "starting-warband",
+            "category": "warband",
+            "name": "Starting a Warband",
+            "summary": "A warband is assembled using its starting treasury and the restrictions defined by its warband list.",
+            "source": {
+                "document": "Mordheim Core Rules",
+                "organisation": "Broheim"
+            }
+        },
+        {
+            "id": "heroes",
+            "category": "heroes",
+            "name": "Heroes",
+            "summary": "Heroes form the leaders and experienced fighters of a warband and can gain experience and advances.",
+            "source": {
+                "document": "Mordheim Core Rules",
+                "organisation": "Broheim"
+            }
+        },
+        {
+            "id": "henchmen",
+            "category": "henchmen",
+            "name": "Henchmen",
+            "summary": "Henchmen are recruited according to the restrictions of the warband and may be organised into Henchmen groups.",
+            "source": {
+                "document": "Mordheim Core Rules",
+                "organisation": "Broheim"
+            }
+        },
+        {
+            "id": "experience",
+            "category": "experience",
+            "name": "Experience",
+            "summary": "Fighters can gain experience through battles and use experience to receive advances.",
+            "source": {
+                "document": "Mordheim Core Rules",
+                "organisation": "Broheim"
+            }
+        },
+        {
+            "id": "warband-rating",
+            "category": "warband",
+            "name": "Warband Rating",
+            "summary": "A warband's rating represents the overall experience and strength of the warband.",
+            "source": {
+                "document": "Mordheim Core Rules",
+                "organisation": "Broheim"
+            }
+        }
+    ]
+}

@@ -1,0 +1,367 @@
+{
+    "id": "reikland",
+    "name": "Reikland Mercenaries",
+    "faction": "Reikland",
+    "race": "Human",
+
+    "description": "Professional and disciplined human mercenaries from Reikland.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 15,
+
+    "source": {
+        "document": "Mordheim Core Rules / Mercenaries",
+        "publisher": "Games Workshop",
+        "providedBy": "Broheim",
+        "url": "https://www.broheim.net/downloads/warbands/official/Mercenaries.pdf"
+    },
+
+    "specialRules": [
+        {
+            "id": "reikland-discipline",
+            "name": "Reikland Discipline",
+            "summary": "Warriors may use their Captain's Leadership characteristic when within 12\" of the Captain, rather than the normal 6\" range.",
+            "type": "leadership",
+            "effects": {
+                "captainLeadershipRange": 12
+            }
+        },
+        {
+            "id": "reikland-marksmen",
+            "name": "Excellent Archers",
+            "summary": "Reikland Marksmen add +1 to their Ballistic Skill.",
+            "type": "profileModifier",
+            "target": "marksman",
+            "effects": {
+                "BS": 1
+            }
+        }
+    ],
+
+    "fighterTypes": [
+        {
+            "id": "captain",
+            "name": "Mercenary Captain",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 60,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 4,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "mercenary",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": true,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any warrior within 6\" of the Captain may use his Leadership characteristic when taking Leadership tests."
+                }
+            ]
+        },
+
+        {
+            "id": "champion",
+            "name": "Champion",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 35,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "mercenary",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "youngblood",
+            "name": "Youngblood",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 15,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 2,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 6
+            },
+
+            "equipmentList": "mercenary",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": false,
+                "speed": true
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "warrior",
+            "name": "Warrior",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "mercenary",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "marksman",
+            "name": "Marksman",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 7,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 4,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "profileModifiers": {
+                "BS": 1
+            },
+
+            "equipmentList": "marksman",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "excellent-archers",
+                    "name": "Excellent Archers",
+                    "summary": "Reikland Marksmen add +1 to their Ballistic Skill."
+                }
+            ]
+        },
+
+        {
+            "id": "swordsman",
+            "name": "Swordsman",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 35,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "mercenary",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "expert-swordsmen",
+                    "name": "Expert Swordsmen",
+                    "summary": "Swordsmen may re-roll failed hits when charging while armed with a normal sword. This does not apply when armed with a double-handed sword or other weapon."
+                }
+            ]
+        }
+    ],
+
+    "equipmentLists": {
+
+        "mercenary": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "morning-star",
+                "double-handed-weapon",
+                "spear",
+                "halberd"
+            ],
+
+            "missile": [
+                "crossbow",
+                "pistol",
+                "duelling-pistol",
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "marksman": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword"
+            ],
+
+            "missile": [
+                "crossbow",
+                "pistol",
+                "bow",
+                "long-bow",
+                "blunderbuss",
+                "handgun",
+                "hunting-rifle"
+            ],
+
+            "armour": [
+                "light-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "captain": 20,
+        "champion": 8,
+        "youngblood": 0,
+        "warrior": 0,
+        "marksman": 0,
+        "swordsman": 0
+    },
+
+    "rulesNotes": [
+        "A Mercenary warband must include a minimum of 3 models.",
+        "A Mercenary warband may contain a maximum of 15 models.",
+        "The warband must include exactly one Captain.",
+        "The warband may include up to two Champions.",
+        "The warband may include up to two Youngbloods.",
+        "The warband may include any number of Warriors.",
+        "The warband may include up to seven Marksmen.",
+        "The warband may include up to five Swordsmen.",
+        "Marksmen use the Marksman Equipment List.",
+        "All other listed Mercenary fighters use the Mercenary Equipment List."
+    ]
+}

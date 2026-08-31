@@ -1,0 +1,64 @@
+{
+    "id": "mordheim-skills",
+    "name": "Mordheim Skills",
+
+    "source": {
+        "organisation": "Broheim",
+        "document": "Master Skill List",
+        "website": "https://broheim.net",
+        "url": "https://broheim.net/downloads/resources/Master%20Skill%20List.pdf"
+    },
+
+    "skillCategories": [
+        {
+            "id": "combat",
+            "name": "Combat",
+            "description": "Skills associated with close combat."
+        },
+        {
+            "id": "shooting",
+            "name": "Shooting",
+            "description": "Skills associated with missile weapons and shooting."
+        },
+        {
+            "id": "academic",
+            "name": "Academic",
+            "description": "Knowledge and specialist skills."
+        },
+        {
+            "id": "strength",
+            "name": "Strength",
+            "description": "Skills based on physical strength."
+        },
+        {
+            "id": "speed",
+            "name": "Speed",
+            "description": "Skills based on movement and agility."
+        }
+    ],
+
+    "skills": [],
+
+    "warbandAccess": {
+        "reikland": {
+            "captain": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+
+            "champion": [
+                "combat",
+                "shooting",
+                "strength"
+            ],
+
+            "youngblood": [
+                "combat",
+                "speed"
+            ]
+        }
+    }
+}

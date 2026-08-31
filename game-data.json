@@ -1,0 +1,228 @@
+{
+    "gameSystems": [
+        {
+            "id": "mordheim",
+            "name": "Mordheim",
+            "version": "Prototype",
+            "currency": "gc"
+        }
+    ],
+
+    "characteristicDefinitions": [
+        { "id": "M", "name": "Movement" },
+        { "id": "WS", "name": "Weapon Skill" },
+        { "id": "BS", "name": "Ballistic Skill" },
+        { "id": "S", "name": "Strength" },
+        { "id": "T", "name": "Toughness" },
+        { "id": "W", "name": "Wounds" },
+        { "id": "I", "name": "Initiative" },
+        { "id": "A", "name": "Attacks" },
+        { "id": "Ld", "name": "Leadership" },
+        { "id": "Cl", "name": "Cool" },
+        { "id": "Will", "name": "Willpower" },
+        { "id": "Int", "name": "Intelligence" }
+    ],
+
+    "traits": [
+
+        {
+            "id": "power",
+            "name": "Power",
+            "type": "weapon_trait",
+            "description": "This weapon has the Power trait.",
+            "source": "Mordheim Weapons"
+        },
+
+        {
+            "id": "parry",
+            "name": "Parry",
+            "type": "weapon_trait",
+            "description": "A weapon with Parry allows the fighter to attempt to parry an incoming close combat attack.",
+            "source": "Mordheim Weapons"
+        },
+
+        {
+            "id": "scarce",
+            "name": "Scarce",
+            "type": "weapon_trait",
+            "description": "This item is subject to the Scarce/Rare availability rules.",
+            "source": "Mordheim Trading"
+        },
+
+        {
+            "id": "silent",
+            "name": "Silent",
+            "type": "weapon_trait",
+            "description": "This weapon has the Silent trait.",
+            "source": "Mordheim Weapons"
+        },
+
+        {
+            "id": "toxin",
+            "name": "Toxin",
+            "type": "weapon_trait",
+            "description": "This weapon has the Toxin trait and uses the applicable toxin rules.",
+            "source": "Mordheim Weapons"
+        }
+    ],
+
+    "skills": [
+
+        {
+            "id": "step-aside",
+            "name": "Step Aside",
+            "type": "combat",
+            "description": "The fighter can attempt to avoid a successful close combat hit.",
+            "source": "Mordheim Skills"
+        },
+
+        {
+            "id": "duelist",
+            "name": "Duelist",
+            "type": "combat",
+            "description": "Can make reaction attacks before the opponent makes attacks as part of a Charge.",
+            "source": "Campaign Rules"
+        },
+
+        {
+            "id": "counter-attack",
+            "name": "Counter-Attack",
+            "type": "combat",
+            "description": "The fighter gains additional attacks when making reaction attacks for attacks that were successfully parried, missed, or otherwise avoided.",
+            "source": "Campaign Rules"
+        }
+    ],
+
+    "weapons": [
+
+        {
+            "id": "power-sword",
+            "name": "Power Sword",
+            "cost": 40,
+            "category": "melee",
+            "profile": {
+                "short": null,
+                "long": null,
+                "accuracy": null,
+                "strength": "+1",
+                "ap": "-2",
+                "damage": "1",
+                "ammo": null
+            },
+            "traits": [
+                "power",
+                "parry"
+            ]
+        },
+
+        {
+            "id": "needle-pistol",
+            "name": "Needle Pistol",
+            "cost": 30,
+            "category": "ranged",
+            "profile": {
+                "short": "4\"",
+                "long": "9\"",
+                "accuracy": "+2",
+                "strength": null,
+                "ap": "-1",
+                "damage": "1",
+                "ammo": "6+"
+            },
+            "traits": [
+                "scarce",
+                "silent",
+                "toxin"
+            ]
+        }
+    ],
+
+    "armour": [
+
+        {
+            "id": "layered-flak",
+            "name": "Layered Flak Armour",
+            "cost": 20,
+            "save": "5+",
+            "special": "Save 5+, or 4+ vs Blast."
+        },
+
+        {
+            "id": "armoured-undersuit",
+            "name": "Armoured Undersuit",
+            "cost": 25,
+            "save": "5+",
+            "special": "+1 to Save."
+        },
+
+        {
+            "id": "displacer-field",
+            "name": "Displacer Field",
+            "cost": 25,
+            "save": "N/A",
+            "special": "4+ Invulnerable; Displaced 6\"."
+        }
+    ],
+
+    "fighterTypes": [
+
+        {
+            "id": "leader",
+            "name": "Leader",
+            "category": "hero"
+        },
+
+        {
+            "id": "hero",
+            "name": "Hero",
+            "category": "hero"
+        },
+
+        {
+            "id": "henchman",
+            "name": "Henchman",
+            "category": "henchman"
+        }
+    ],
+
+    "warbands": [
+
+        {
+            "id": "reikland",
+            "name": "Reikland Mercenaries",
+            "gameSystem": "mordheim",
+            "startingTreasury": 500
+        }
+    ],
+
+    "rules": [
+
+        {
+            "id": "starting-warband",
+            "name": "Starting Warband",
+            "type": "campaign",
+            "description": "A starting warband is recruited using the applicable warband list and starting treasury."
+        },
+
+        {
+            "id": "warband-rating",
+            "name": "Warband Rating",
+            "type": "campaign",
+            "description": "Warband rating is calculated from the number of warriors and their accumulated experience according to the selected ruleset."
+        },
+
+        {
+            "id": "experience",
+            "name": "Experience",
+            "type": "campaign",
+            "description": "Heroes and Henchmen gain experience and may receive advancements according to their applicable experience tables."
+        },
+
+        {
+            "id": "rare-equipment",
+            "name": "Rare Equipment",
+            "type": "equipment",
+            "description": "Rare equipment may require successful trading or availability rolls before it can be purchased."
+        }
+    ]
+}

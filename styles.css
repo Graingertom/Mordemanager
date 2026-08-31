@@ -1,0 +1,1942 @@
+:root {
+    --bg: #0d0f12;
+    --panel: #171a1f;
+    --panel-light: #20252c;
+    --panel-hover: #282e36;
+
+    --border: #3a4049;
+    --border-light: #505762;
+
+    --text: #eeeae0;
+    --muted: #aaa69d;
+
+    --gold: #c49a52;
+    --gold-light: #f0c978;
+    --gold-dark: #8e6b32;
+
+    --red: #8d3c35;
+    --red-light: #c75b50;
+
+    --green: #587653;
+    --green-light: #76a66b;
+
+    --danger: #a94b42;
+    --danger-light: #d4675d;
+
+    --focus: #e1bd78;
+
+    --radius: 8px;
+    --radius-large: 12px;
+
+    --shadow:
+        0 8px 25px rgba(0, 0, 0, .35);
+
+    --shadow-hover:
+        0 12px 30px rgba(0, 0, 0, .5);
+}
+
+
+/* ============================================================
+   RESET / BASE
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #292d33 0,
+            #17191d 30%,
+            var(--bg) 70%
+        );
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    line-height: 1.45;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+a {
+    color: var(--gold-light);
+}
+
+#app {
+    min-height: 100vh;
+    display: flex;
+}
+
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.sidebar {
+    width: 250px;
+
+    flex-shrink: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #0d0f11,
+            #0a0b0d
+        );
+
+    border-right: 1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 20px 14px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 8px 10px 25px;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    background: var(--gold);
+    color: #151515;
+
+    border-radius: 6px;
+
+    font-size: 22px;
+
+    box-shadow:
+        0 4px 12px rgba(196, 154, 82, .2);
+}
+
+.brand strong {
+    display: block;
+    letter-spacing: 2px;
+}
+
+.brand span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 3px;
+}
+
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    color: var(--muted);
+    background: transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease;
+}
+
+.nav-item:hover {
+    background: var(--panel);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.nav-item.active {
+    background: var(--panel-light);
+    border-color: var(--gold-dark);
+    color: var(--gold-light);
+}
+
+
+/* ============================================================
+   SIDEBAR USER
+   ============================================================ */
+
+.sidebar-footer {
+    margin-top: auto;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+
+    border-top: 1px solid var(--border);
+}
+
+.avatar {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: var(--red);
+
+    display: grid;
+    place-items: center;
+}
+
+.user-card strong {
+    display: block;
+}
+
+.user-card small {
+    color: var(--muted);
+}
+
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+
+.main {
+    flex: 1;
+    min-width: 0;
+
+    padding: 28px 36px;
+
+    max-width: 1600px;
+}
+
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 32px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.topbar p {
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.button {
+    border: 1px solid var(--border);
+
+    padding: 10px 15px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    color: var(--text);
+    background: var(--panel);
+
+    transition:
+        .15s ease;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, .2);
+}
+
+.button:hover {
+    border-color: var(--gold);
+    background: var(--panel-hover);
+    transform: translateY(-1px);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+.button.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+
+    color: #181510;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 3px 10px rgba(196, 154, 82, .25);
+}
+
+.button.primary:hover {
+    background: var(--gold-light);
+    border-color: var(--gold-light);
+}
+
+.button.secondary {
+    background: var(--panel);
+}
+
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(150px, 1fr));
+
+    gap: 14px;
+
+    margin-bottom: 35px;
+}
+
+.stat-card {
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    padding: 18px;
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+}
+
+.stat-card span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.stat-card strong {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 28px;
+
+    color: var(--gold-light);
+}
+
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 25px 0 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.section-header p {
+    color: var(--muted);
+    margin: 5px 0 0;
+}
+
+
+/* ============================================================
+   WARBANDS
+   ============================================================ */
+
+.warband-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(280px, 1fr));
+
+    gap: 15px;
+}
+
+.warband-card {
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 18px;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+.warband-card:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--gold);
+
+    background: var(--panel-light);
+
+    box-shadow: var(--shadow-hover);
+}
+
+.warband-card h3 {
+    margin: 0;
+}
+
+.warband-card .type {
+    color: var(--gold-light);
+    font-size: 13px;
+}
+
+.warband-meta {
+    display: flex;
+    gap: 18px;
+
+    margin-top: 20px;
+
+    color: var(--muted);
+}
+
+.warband-meta strong {
+    color: var(--text);
+    display: block;
+}
+
+
+/* ============================================================
+   FIGHTERS
+   ============================================================ */
+
+.fighter-section {
+    margin-top: 25px;
+}
+
+.fighter-card {
+    background:
+        linear-gradient(
+            135deg,
+            var(--panel),
+            #14171b
+        );
+
+    border: 1px solid var(--border);
+
+    margin-bottom: 10px;
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, .25);
+
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+}
+
+.fighter-card:hover {
+    border-color: var(--border-light);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, .4);
+}
+
+.fighter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 18px;
+
+    background: var(--panel-light);
+}
+
+.fighter-name {
+    font-weight: 700;
+}
+
+.fighter-type {
+    color: var(--gold-light);
+    font-size: 12px;
+}
+
+.profile {
+    display: grid;
+
+    grid-template-columns:
+        repeat(9, 1fr);
+
+    border-top: 1px solid var(--border);
+}
+
+.profile-stat {
+    padding: 10px;
+    text-align: center;
+
+    border-right: 1px solid var(--border);
+
+    transition:
+        background .15s ease;
+}
+
+.profile-stat:hover {
+    background: rgba(196, 154, 82, .07);
+}
+
+.profile-stat:last-child {
+    border-right: 0;
+}
+
+.profile-stat span {
+    display: block;
+
+    font-size: 10px;
+    color: var(--muted);
+
+    margin-bottom: 4px;
+}
+
+.profile-stat strong {
+    font-size: 15px;
+}
+
+
+/* ============================================================
+   TRAITS
+   ============================================================ */
+
+.traits {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    padding: 12px 18px;
+}
+
+.trait {
+    border: 1px solid #66552f;
+
+    background: #282319;
+
+    color: var(--gold-light);
+
+    border-radius: 20px;
+
+    padding: 4px 9px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease;
+}
+
+.trait:hover {
+    background: #39301f;
+    border-color: var(--gold);
+}
+
+
+/* ============================================================
+   RULES
+   ============================================================ */
+
+.rules-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(240px, 1fr));
+
+    gap: 15px;
+}
+
+.reference-card {
+    background: var(--panel);
+
+    color: var(--text);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 22px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease,
+        transform .15s ease;
+}
+
+.reference-card:hover {
+    border-color: var(--gold);
+    background: var(--panel-light);
+    transform: translateY(-1px);
+}
+
+.reference-card span {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.reference-card strong {
+    display: block;
+}
+
+.reference-card small {
+    display: block;
+
+    color: var(--muted);
+
+    margin-top: 7px;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   GAMES
+   ============================================================ */
+
+.game-card {
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 18px;
+
+    margin-bottom: 12px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-status {
+    color: var(--green-light);
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, .82);
+
+    backdrop-filter:
+        blur(3px);
+
+    display: grid;
+    place-items: center;
+
+    z-index: 100;
+
+    padding: 20px;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal {
+    position: relative;
+
+    width: min(700px, 95vw);
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background:
+        linear-gradient(
+            145deg,
+            #1b1e23,
+            #141619
+        );
+
+    border: 1px solid var(--border-light);
+
+    border-radius: var(--radius-large);
+
+    padding: 28px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, .65);
+}
+
+.modal-close {
+    position: absolute;
+
+    right: 14px;
+    top: 10px;
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    background: transparent;
+    border: 1px solid transparent;
+
+    border-radius: 6px;
+
+    color: var(--muted);
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        color .15s ease,
+        border-color .15s ease;
+}
+
+.modal-close:hover {
+    background: var(--panel-light);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.modal h2 {
+    color: var(--gold-light);
+}
+
+.modal p {
+    line-height: 1.6;
+    color: #c9c6bd;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media(max-width: 900px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .brand div:not(.brand-icon),
+    .nav-item span:not(:first-child) {
+        display: none;
+    }
+
+    .brand-icon {
+        margin: auto;
+    }
+
+    .nav-item {
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .main {
+        padding: 20px;
+    }
+}
+
+
+@media(max-width: 600px) {
+
+    .topbar {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .topbar-actions {
+        width: 100%;
+    }
+
+    .topbar-actions .button {
+        flex: 1;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .profile {
+        overflow-x: auto;
+        min-width: 700px;
+    }
+
+    .modal {
+        width: 100%;
+        max-height: 92vh;
+        padding: 20px;
+    }
+}
+
+
+/* ============================================================
+   VALIDATION
+   ============================================================ */
+
+.mm-validation {
+    display: flex;
+    gap: 1rem;
+
+    padding: 1rem 1.25rem;
+
+    margin-bottom: 1.5rem;
+
+    border: 1px solid;
+
+    border-radius: 10px;
+}
+
+.mm-validation-valid {
+    border-color: #4b8f5a;
+    background: rgba(75, 143, 90, 0.12);
+}
+
+.mm-validation-warning {
+    border-color: #c9962c;
+    background: rgba(201, 150, 44, 0.12);
+}
+
+.mm-validation-error {
+    border-color: #a84242;
+    background: rgba(168, 66, 66, 0.12);
+}
+
+.mm-validation-icon {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.mm-validation-content {
+    flex: 1;
+}
+
+.mm-validation-content strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.mm-validation-content p {
+    margin: 0;
+    opacity: 0.75;
+}
+
+.mm-validation-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.mm-validation-list {
+    flex: 1;
+}
+
+.mm-validation-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+
+.mm-validation-item-icon {
+    width: 1.25rem;
+    text-align: center;
+}
+
+.mm-validation-message {
+    flex: 1;
+}
+
+.mm-validation-link {
+    background: none;
+    border: 0;
+
+    color: inherit;
+
+    text-decoration: underline;
+
+    cursor: pointer;
+
+    opacity: 0.75;
+}
+
+.mm-validation-link:hover {
+    opacity: 1;
+}
+
+
+/* ============================================================
+   FIGHTER HIGHLIGHT
+   ============================================================ */
+
+.mm-fighter-highlight {
+    animation:
+        mm-fighter-highlight 2s ease;
+}
+
+@keyframes mm-fighter-highlight {
+
+    0% {
+        box-shadow:
+            0 0 0 3px
+            rgba(201, 150, 44, .9);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0
+            transparent;
+    }
+
+}
+
+
+/* ============================================================
+   TESTING / FIGHTER SELECTION
+   ============================================================ */
+
+/*
+ * Fighter type buttons are deliberately very obvious
+ * while we are testing the add-fighter system.
+ */
+
+.mm-fighter-type-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(220px, 1fr)
+        );
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.mm-fighter-type-option {
+    position: relative;
+
+    min-height: 120px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    text-align: left;
+
+    padding: 16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #20252b,
+            #171a1e
+        );
+
+    border: 2px solid var(--border);
+
+    border-radius: 10px;
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+.mm-fighter-type-option:hover:not(:disabled) {
+    transform: translateY(-2px);
+
+    border-color: var(--gold);
+
+    background:
+        linear-gradient(
+            145deg,
+            #2b3037,
+            #1b1f24
+        );
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, .4),
+        0 0 0 1px rgba(196, 154, 82, .15);
+}
+
+.mm-fighter-type-option:active:not(:disabled) {
+    transform: translateY(0);
+
+    border-color: var(--gold-light);
+}
+
+.mm-fighter-type-option:focus-visible {
+    border-color: var(--gold-light);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(225, 189, 120, .2);
+}
+
+.mm-fighter-type-option.is-disabled,
+.mm-fighter-type-option:disabled {
+    opacity: .4;
+
+    cursor: not-allowed;
+
+    filter: grayscale(.5);
+}
+
+.mm-fighter-type-option h3 {
+    margin:
+        8px 0 0;
+
+    color: var(--text);
+
+    font-size: 17px;
+}
+
+.mm-fighter-type-details {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 15px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid var(--border);
+
+    color: var(--gold-light);
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   MORDERMANAGER COMPONENTS
+   ============================================================ */
+
+.mm-app {
+    width: 100%;
+}
+
+.mm-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px 30px;
+
+    border-bottom:
+        1px solid var(--border);
+
+    background:
+        rgba(13, 15, 18, .8);
+
+    backdrop-filter:
+        blur(8px);
+}
+
+.mm-logo {
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    color: var(--gold-light);
+}
+
+.mm-subtitle {
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin-top: 3px;
+}
+
+.mm-main {
+    width: 100%;
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    padding: 30px;
+}
+
+.mm-button {
+    min-height: 42px;
+
+    padding:
+        9px 15px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: var(--panel);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        transform .15s ease;
+}
+
+.mm-button:hover {
+    background: var(--panel-hover);
+
+    border-color: var(--gold);
+
+    transform: translateY(-1px);
+}
+
+.mm-button:active {
+    transform: translateY(0);
+}
+
+.mm-button-primary {
+    background: var(--gold);
+
+    border-color: var(--gold);
+
+    color: #181510;
+
+    font-weight: 700;
+}
+
+.mm-button-primary:hover {
+    background: var(--gold-light);
+
+    border-color: var(--gold-light);
+
+    color: #15120d;
+}
+
+.mm-button-danger {
+    border-color: var(--danger);
+
+    color: var(--danger-light);
+}
+
+.mm-button-danger:hover {
+    background:
+        rgba(169, 75, 66, .15);
+
+    border-color:
+        var(--danger-light);
+}
+
+.mm-button-small {
+    min-height: 34px;
+
+    padding:
+        6px 10px;
+
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.mm-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 22px;
+
+    padding:
+        3px 8px;
+
+    border-radius: 5px;
+
+    background:
+        rgba(196, 154, 82, .12);
+
+    border:
+        1px solid
+        rgba(196, 154, 82, .35);
+
+    color:
+        var(--gold-light);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+}
+
+
+/* ============================================================
+   WARBAND / FIGHTER CARDS
+   ============================================================ */
+
+.mm-card,
+.mm-fighter-card {
+    background:
+        linear-gradient(
+            145deg,
+            var(--panel),
+            #14171b
+        );
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, .25);
+}
+
+.mm-card:hover,
+.mm-fighter-card:hover {
+    border-color:
+        var(--border-light);
+}
+
+.mm-warband-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+        );
+
+    gap: 15px;
+}
+
+.mm-card {
+    padding: 20px;
+}
+
+.mm-card-header h2 {
+    margin:
+        10px 0 4px;
+}
+
+.mm-card-header p {
+    margin: 0;
+
+    color: var(--muted);
+}
+
+
+/* ============================================================
+   FIGHTER NAME BUTTON
+   ============================================================ */
+
+.mm-fighter-name-button {
+    display: block;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.mm-fighter-name-button h3 {
+    margin:
+        6px 0 0;
+
+    color: var(--text);
+
+    transition:
+        color .15s ease;
+}
+
+.mm-fighter-name-button:hover h3 {
+    color: var(--gold-light);
+
+    text-decoration:
+        underline;
+}
+
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+
+.mm-profile {
+    display: grid;
+
+    grid-template-columns:
+        repeat(9, minmax(45px, 1fr));
+
+    margin-top: 15px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 6px;
+
+    overflow: hidden;
+}
+
+.mm-stat {
+    padding:
+        8px 5px;
+
+    text-align: center;
+
+    border-right:
+        1px solid var(--border);
+
+    background:
+        rgba(0, 0, 0, .12);
+}
+
+.mm-stat:last-child {
+    border-right: 0;
+}
+
+.mm-stat span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.mm-stat strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--text);
+}
+
+
+/* ============================================================
+   MODERN MODAL SYSTEM
+   ============================================================ */
+
+.mm-modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 0, 0, .82);
+
+    backdrop-filter:
+        blur(4px);
+}
+
+.mm-modal {
+    position: relative;
+
+    width:
+        min(600px, 95vw);
+
+    max-height:
+        90vh;
+
+    overflow-y:
+        auto;
+
+    background:
+        linear-gradient(
+            145deg,
+            #1b1f24,
+            #131619
+        );
+
+    border:
+        1px solid var(--border-light);
+
+    border-radius:
+        var(--radius-large);
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, .7);
+}
+
+.mm-modal-large {
+    width:
+        min(850px, 95vw);
+}
+
+.mm-modal-header {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap: 20px;
+
+    padding:
+        20px 22px;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.mm-modal-header h2 {
+    margin: 0;
+
+    color:
+        var(--gold-light);
+}
+
+.mm-modal-body {
+    padding:
+        22px;
+}
+
+.mm-modal-footer {
+    display: flex;
+
+    justify-content:
+        flex-end;
+
+    gap: 10px;
+
+    padding:
+        16px 22px;
+
+    border-top:
+        1px solid var(--border);
+}
+
+.mm-modal-close {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    border:
+        1px solid transparent;
+
+    border-radius: 6px;
+
+    background:
+        transparent;
+
+    color:
+        var(--muted);
+
+    font-size:
+        26px;
+
+    cursor: pointer;
+}
+
+.mm-modal-close:hover {
+    background:
+        var(--panel-light);
+
+    border-color:
+        var(--border);
+
+    color:
+        var(--text);
+}
+
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+.mm-field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-bottom: 18px;
+}
+
+.mm-field > span {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+}
+
+.mm-field input,
+.mm-field select {
+    width: 100%;
+
+    min-height: 44px;
+
+    padding:
+        9px 12px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 6px;
+
+    background:
+        #101216;
+
+    color:
+        var(--text);
+
+    outline: none;
+}
+
+.mm-field input:hover,
+.mm-field select:hover {
+    border-color:
+        var(--border-light);
+}
+
+.mm-field input:focus,
+.mm-field select:focus {
+    border-color:
+        var(--gold);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(196, 154, 82, .12);
+}
+
+
+/* ============================================================
+   EQUIPMENT
+   ============================================================ */
+
+.mm-equipment-option {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px;
+
+    margin-bottom:
+        8px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius: 7px;
+
+    background:
+        rgba(0, 0, 0, .15);
+
+    cursor: pointer;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease;
+}
+
+.mm-equipment-option:hover {
+    border-color:
+        var(--gold-dark);
+
+    background:
+        rgba(196, 154, 82, .06);
+}
+
+.mm-equipment-option input {
+    width: 18px;
+    height: 18px;
+
+    accent-color:
+        var(--gold);
+}
+
+.mm-equipment-option strong {
+    display: block;
+}
+
+.mm-equipment-option small {
+    color:
+        var(--muted);
+}
+
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+
+.mm-empty-state {
+    padding:
+        45px 25px;
+
+    text-align:
+        center;
+
+    border:
+        1px dashed var(--border);
+
+    border-radius:
+        var(--radius);
+
+    background:
+        rgba(0, 0, 0, .12);
+}
+
+.mm-empty-small {
+    padding:
+        30px 20px;
+}
+
+.mm-empty-icon {
+    font-size:
+        32px;
+
+    margin-bottom:
+        10px;
+
+    color:
+        var(--gold);
+}
+
+.mm-empty-state h2,
+.mm-empty-state h3 {
+    margin:
+        5px 0;
+}
+
+.mm-empty-state p {
+    color:
+        var(--muted);
+}
+
+
+/* ============================================================
+   MOBILE FIGHTER TYPE GRID
+   ============================================================ */
+
+@media(max-width: 600px) {
+
+    .mm-header {
+        padding:
+            16px 18px;
+    }
+
+    .mm-main {
+        padding:
+            20px 15px;
+    }
+
+    .mm-fighter-type-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .mm-fighter-type-option {
+        min-height:
+            105px;
+    }
+
+    .mm-profile {
+        overflow-x:
+            auto;
+
+        min-width:
+            500px;
+    }
+
+    .mm-modal-backdrop {
+        padding:
+            10px;
+    }
+
+    .mm-modal-body {
+        padding:
+            18px;
+    }
+
+    .mm-modal-footer {
+        padding:
+            14px 18px;
+    }
+}
+
+
+/* ============================================================
+   DEBUG / TESTING VISIBILITY
+   ============================================================ */
+
+/*
+ * Makes interactive controls easy to identify while
+ * developing. These do not change application logic.
+ */
+
+.mm-fighter-type-option::after {
+    content:
+        "SELECT";
+
+    position:
+        absolute;
+
+    top:
+        8px;
+
+    right:
+        8px;
+
+    padding:
+        2px 5px;
+
+    border-radius:
+        3px;
+
+    background:
+        rgba(196, 154, 82, .12);
+
+    color:
+        var(--gold-dark);
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    letter-spacing:
+        1px;
+
+    opacity:
+        0;
+
+    transition:
+        opacity .15s ease;
+}
+
+.mm-fighter-type-option:hover::after {
+    opacity:
+        1;
+}
+
+
+/* ============================================================
+   HIGHLIGHT
+   ============================================================ */
+
+.mm-fighter-highlight {
+    animation:
+        mm-fighter-highlight 2s ease;
+}
+
+@keyframes mm-fighter-highlight {
+
+    0% {
+        box-shadow:
+            0 0 0 3px
+            rgba(201, 150, 44, .9),
+            0 0 25px
+            rgba(201, 150, 44, .4);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0
+            transparent;
+    }
+
+}
+
+.mm-validation {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 6px;
+    border: 1px solid;
+}
+
+.mm-validation-success {
+    color: #b8e6b8;
+    background: rgba(40, 120, 40, 0.15);
+    border-color: #4d914d;
+}
+
+.mm-validation-error {
+    color: #ffd0d0;
+    background: rgba(140, 30, 30, 0.18);
+    border-color: #a94444;
+}
+
+.mm-validation-error strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.mm-validation-error ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.mm-validation-error li {
+    margin: 0.25rem 0;
+}
+
+.mm-modal-footer .mm-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+

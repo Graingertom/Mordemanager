@@ -1,0 +1,115 @@
+{
+    "game": {
+        "id": "mordheim",
+        "name": "Mordheim",
+        "version": "Core Rules",
+        "publisher": "Games Workshop",
+        "reference": {
+            "organisation": "Broheim",
+            "site": "broheim.net",
+            "rulesPath": "/downloads/rules/Mordheim%20Core%20Rules%20Printable%20Cover.pdf"
+        }
+    },
+
+    "sources": [
+        {
+            "id": "mordheim-core",
+            "name": "Mordheim Core Rules",
+            "organisation": "Broheim",
+            "grade": "1a",
+            "type": "official",
+            "path": "/downloads/rules/Mordheim%20Core%20Rules%20Printable%20Cover.pdf"
+        },
+
+        {
+            "id": "master-equipment",
+            "name": "Master Equipment List",
+            "organisation": "Broheim",
+            "type": "reference",
+            "path": "/downloads/resources/Master%20Equipment%20List.pdf"
+        },
+
+        {
+            "id": "master-skills",
+            "name": "Master Skill List",
+            "organisation": "Broheim",
+            "type": "reference",
+            "path": "/downloads/resources/Master%20Skill%20List.pdf"
+        }
+    ],
+
+    "stats": [
+        {
+            "id": "M",
+            "name": "Movement",
+            "short": "M"
+        },
+        {
+            "id": "WS",
+            "name": "Weapon Skill",
+            "short": "WS"
+        },
+        {
+            "id": "BS",
+            "name": "Ballistic Skill",
+            "short": "BS"
+        },
+        {
+            "id": "S",
+            "name": "Strength",
+            "short": "S"
+        },
+        {
+            "id": "T",
+            "name": "Toughness",
+            "short": "T"
+        },
+        {
+            "id": "W",
+            "name": "Wounds",
+            "short": "W"
+        },
+        {
+            "id": "I",
+            "name": "Initiative",
+            "short": "I"
+        },
+        {
+            "id": "A",
+            "name": "Attacks",
+            "short": "A"
+        },
+        {
+            "id": "Ld",
+            "name": "Leadership",
+            "short": "Ld"
+        }
+    ],
+
+    "rules": {
+
+        "warband_rating": {
+            "name": "Warband Rating",
+            "summary": "The warband rating is calculated from the number of warriors and their accumulated experience.",
+            "source": "mordheim-core"
+        },
+
+        "starting_warband": {
+            "name": "Starting a Warband",
+            "summary": "A starting warband is recruited using the starting treasury and the restrictions of its chosen warband list.",
+            "source": "mordheim-core"
+        },
+
+        "heroes": {
+            "name": "Heroes",
+            "summary": "Heroes can gain experience, receive advances and acquire skills and equipment.",
+            "source": "mordheim-core"
+        },
+
+        "henchmen": {
+            "name": "Henchmen",
+            "summary": "Henchmen are recruited into groups and normally gain experience collectively.",
+            "source": "mordheim-core"
+        }
+    }
+}
