@@ -829,6 +829,51 @@ a {
         rgba(196, 154, 82, .12);
 }
 
+.mm-cost-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 14px 16px;
+
+    border: 1px solid var(--border);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, .02);
+}
+
+.mm-cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mm-cost-row span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.mm-cost-row strong {
+    font-weight: 600;
+}
+
+.mm-cost-total {
+    padding-top: 8px;
+    margin-top: 2px;
+
+    border-top: 1px solid var(--border);
+}
+
+.mm-cost-total span {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.mm-cost-total strong {
+    color: var(--gold-light);
+    font-size: 16px;
+}
+
 
 /* ============================================================
    EQUIPMENT

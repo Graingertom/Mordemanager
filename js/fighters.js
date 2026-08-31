@@ -1054,17 +1054,18 @@ function showEditFighter(
                 <section class="mm-editor-section">
 
                     <h3>
-                        Current Equipment Value
+                        Fighter Cost
                     </h3>
 
 
-                    <p>
+                    <div id="fighter-cost-breakdown">
 
-                        ${calculateFighterCost(
-                            fighter
-                        )} gc
+                        ${renderFighterCostBreakdown(
+                            fighter,
+                            fighter.equipment
+                        )}
 
-                    </p>
+                    </div>
 
                 </section>
 
@@ -1193,6 +1194,29 @@ function setupFighterEquipmentValidation(
 
             saveButton.disabled =
                 !validation.valid;
+
+        }
+
+
+        /*
+         * Keep the cost breakdown in sync with
+         * whatever is currently checked, not just
+         * what was saved last.
+         */
+
+        const costContainer =
+            document.getElementById(
+                "fighter-cost-breakdown"
+            );
+
+
+        if (costContainer) {
+
+            costContainer.innerHTML =
+                renderFighterCostBreakdown(
+                    fighter,
+                    selectedEquipment
+                );
 
         }
 
@@ -1571,6 +1595,82 @@ function saveFighterChanges(
 
 
     renderApplication();
+
+}
+
+
+/* ============================================================
+   FIGHTER COST BREAKDOWN
+   ============================================================ */
+
+function renderFighterCostBreakdown(
+    fighter,
+    equipmentIds
+) {
+
+    const baseCost =
+        Number(fighter?.baseCost) || 0;
+
+
+    const equipmentCost =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateEquipmentCost === "function"
+            ? RulesEngine.calculateEquipmentCost(
+                equipmentIds,
+                state.equipment
+            )
+            : 0;
+
+
+    const totalCost =
+        baseCost + equipmentCost;
+
+
+    return `
+
+        <div class="mm-cost-breakdown">
+
+            <div class="mm-cost-row">
+
+                <span>
+                    Fighter Cost
+                </span>
+
+                <strong>
+                    ${baseCost} gc
+                </strong>
+
+            </div>
+
+
+            <div class="mm-cost-row">
+
+                <span>
+                    Equipment Value
+                </span>
+
+                <strong>
+                    ${equipmentCost} gc
+                </strong>
+
+            </div>
+
+
+            <div class="mm-cost-row mm-cost-total">
+
+                <span>
+                    Total Cost
+                </span>
+
+                <strong>
+                    ${totalCost} gc
+                </strong>
+
+            </div>
+
+        </div>
+
+    `;
 
 }
 
