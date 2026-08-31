@@ -1726,6 +1726,15 @@ function getAvailableEquipment(
    DELETE FIGHTER
    ============================================================ */
 
+/*
+ * Holds the fighter/index removed by performDeleteFighter
+ * while the rule-violation warning modal (if any) is open,
+ * so cancelFighterRemoval can put them back.
+ */
+
+let pendingFighterRemoval = null;
+
+
 function deleteFighter(
     fighterId
 ) {
@@ -1756,17 +1765,95 @@ function deleteFighter(
     }
 
 
-    const confirmed =
-        confirm(
-            `Remove ${fighter.name} from the warband?`
-        );
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Remove Fighter
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
 
 
-    if (!confirmed) {
+            <div class="mm-modal-body">
+
+                <p>
+                    Remove
+                    ${escapeHtml(fighter.name)}
+                    from the warband? This
+                    cannot be undone.
+                </p>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-danger"
+                    onclick="performDeleteFighter('${escapeAttribute(fighter.id)}')"
+                >
+                    Remove
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function performDeleteFighter(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+
+    if (!warband) {
 
         return;
 
     }
+
+
+    const index =
+        warband.fighters.findIndex(
+            item =>
+                item.id === fighterId
+        );
+
+
+    if (index === -1) {
+
+        return;
+
+    }
+
+
+    const fighter =
+        warband.fighters[index];
 
 
     /*
@@ -1779,13 +1866,6 @@ function deleteFighter(
      * will be handled by the campaign
      * rules later).
      */
-
-    const index =
-        warband.fighters.findIndex(
-            item =>
-                item.id === fighterId
-        );
-
 
     warband.treasury +=
         Number(fighter.baseCost) || 0;
@@ -1805,42 +1885,153 @@ function deleteFighter(
 
     if (validation.errors.length) {
 
-        const proceed =
-            confirm(
-                "This change creates rule errors:\n\n" +
-                validation.errors
-                    .map(
-                        error =>
-                            `• ${error.message}`
-                    )
-                    .join("\n") +
-                "\n\nSave anyway?"
-            );
+        pendingFighterRemoval = {
+            fighter,
+            index
+        };
 
 
-        if (!proceed) {
+        renderFighterRemovalWarning(
+            fighter,
+            validation
+        );
 
-            /*
-             * Undo the removal.
-             */
-
-            warband.treasury -=
-                Number(fighter.baseCost) || 0;
-
-            warband.fighters.splice(
-                index,
-                0,
-                fighter
-            );
-
-            return;
-
-        }
+        return;
 
     }
 
 
     savePlayerData();
+
+
+    closeModal();
+
+
+    renderApplication();
+
+}
+
+
+function renderFighterRemovalWarning(
+    fighter,
+    validation
+) {
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Rule Violations
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="cancelFighterRemoval()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p>
+                    Removing
+                    ${escapeHtml(fighter.name)}
+                    creates rule violations:
+                </p>
+
+
+                <ul>
+
+                    ${validation.errors
+                        .map(
+                            error =>
+                                `<li>
+                                    ${escapeHtml(error.message)}
+                                </li>`
+                        )
+                        .join("")}
+
+                </ul>
+
+
+                <p>
+                    Save anyway?
+                </p>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="cancelFighterRemoval()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-danger"
+                    onclick="confirmFighterRemoval()"
+                >
+                    Save Anyway
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function cancelFighterRemoval() {
+
+    const warband =
+        getCurrentWarband();
+
+
+    if (warband && pendingFighterRemoval) {
+
+        warband.treasury -=
+            Number(
+                pendingFighterRemoval.fighter.baseCost
+            ) || 0;
+
+        warband.fighters.splice(
+            pendingFighterRemoval.index,
+            0,
+            pendingFighterRemoval.fighter
+        );
+
+    }
+
+
+    pendingFighterRemoval = null;
+
+
+    closeModal();
+
+}
+
+
+function confirmFighterRemoval() {
+
+    pendingFighterRemoval = null;
+
+
+    savePlayerData();
+
+
+    closeModal();
 
 
     renderApplication();
