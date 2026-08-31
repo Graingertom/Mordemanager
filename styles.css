@@ -1233,6 +1233,33 @@ a {
     font-size: 13px;
 }
 
+.mm-settlement-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    flex-shrink: 0;
+}
+
+.mm-settlement-actions select {
+    min-height: 36px;
+
+    padding: 6px 10px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: #101216;
+
+    color: var(--text);
+
+    outline: none;
+}
+
+.mm-settlement-actions select:hover {
+    border-color: var(--border-light);
+}
+
 
 /* ============================================================
    SCENARIO

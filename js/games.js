@@ -47,6 +47,13 @@ function normaliseGames(games) {
                         ? game.warbandIds
                         : [],
 
+                settlements:
+                    Array.isArray(game.settlements)
+                        ? game.settlements.map(
+                            normaliseSettlement
+                        )
+                        : [],
+
                 scenario: {
 
                     name:
@@ -61,6 +68,30 @@ function normaliseGames(games) {
 
         }
     );
+
+}
+
+
+function normaliseSettlement(
+    settlement
+) {
+
+    return {
+
+        id:
+            settlement.id ||
+            generateId("settlement"),
+
+        name:
+            settlement.name || "Settlement",
+
+        note:
+            settlement.note || "",
+
+        warbandId:
+            settlement.warbandId || null
+
+    };
 
 }
 
@@ -734,6 +765,42 @@ function renderGamePage() {
                 </section>
 
 
+                <section class="mm-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h2>
+                                Settlements
+                            </h2>
+
+                            <p>
+                                Territory being contested or
+                                held by the warbands in this game.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="mm-button mm-button-primary"
+                            onclick="showAddGameSettlement('${escapeAttribute(game.id)}')"
+                        >
+                            + Add Settlement
+                        </button>
+
+                    </div>
+
+
+                    ${renderGameSettlements(
+                        game,
+                        warbands
+                    )}
+
+                </section>
+
+
             </main>
 
         </div>
@@ -1118,6 +1185,14 @@ function renderGameWarbandCard(
             );
 
 
+    const ownedSettlements =
+        (game.settlements || [])
+            .filter(
+                settlement =>
+                    settlement.warbandId === warband.id
+            );
+
+
     return `
 
         <article class="mm-card mm-game-warband-card">
@@ -1236,10 +1311,10 @@ function renderGameWarbandCard(
                     </strong>
 
                     ${
-                        warband.settlements?.length
+                        ownedSettlements.length
                             ? `
                                 <ul>
-                                    ${warband.settlements
+                                    ${ownedSettlements
                                         .map(
                                             settlement => `
                                                 <li>
@@ -1512,6 +1587,538 @@ function removeWarbandFromGame(
             id =>
                 id !== warbandId
         );
+
+
+    /*
+     * A warband that has left the game can no
+     * longer hold any of its settlements.
+     */
+
+    (game.settlements || []).forEach(
+        settlement => {
+
+            if (settlement.warbandId === warbandId) {
+
+                settlement.warbandId = null;
+
+            }
+
+        }
+    );
+
+
+    savePlayerData();
+
+
+    closeModal();
+
+
+    renderApplication();
+
+}
+
+
+/* ============================================================
+   GAME SETTLEMENTS
+   ============================================================ */
+
+function renderGameSettlements(
+    game,
+    warbands
+) {
+
+    const settlements =
+        Array.isArray(game.settlements)
+            ? game.settlements
+            : [];
+
+
+    if (!settlements.length) {
+
+        return `
+
+            <div class="mm-empty-state mm-empty-small">
+
+                <div class="mm-empty-icon">
+                    ⚑
+                </div>
+
+                <h3>
+                    No settlements
+                </h3>
+
+                <p>
+                    Add a settlement to start
+                    tracking territory in this game.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div class="mm-settlement-list">
+
+            ${settlements
+                .map(
+                    settlement =>
+                        renderGameSettlement(
+                            game,
+                            settlement,
+                            warbands
+                        )
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function renderGameSettlement(
+    game,
+    settlement,
+    warbands
+) {
+
+    return `
+
+        <article class="mm-settlement-card">
+
+            <div>
+
+                <strong>
+                    ${escapeHtml(
+                        settlement.name
+                    )}
+                </strong>
+
+                ${
+                    settlement.note
+                        ? `
+                            <p>
+                                ${escapeHtml(
+                                    settlement.note
+                                )}
+                            </p>
+                        `
+                        : ""
+                }
+
+            </div>
+
+
+            <div class="mm-settlement-actions">
+
+                <select
+                    onchange="reassignSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', this.value)"
+                >
+
+                    <option value="">
+                        Unclaimed
+                    </option>
+
+                    ${warbands
+                        .map(
+                            warband => `
+                                <option
+                                    value="${escapeAttribute(warband.id)}"
+                                    ${
+                                        settlement.warbandId === warband.id
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    ${escapeHtml(warband.name)}
+                                </option>
+                            `
+                        )
+                        .join("")}
+
+                </select>
+
+
+                <button
+                    class="mm-button mm-button-small mm-button-danger"
+                    onclick="confirmRemoveGameSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', '${escapeAttribute(settlement.name)}')"
+                >
+                    Remove
+                </button>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+function showAddGameSettlement(
+    gameId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const warbands =
+        game.warbandIds
+            .map(
+                warbandId =>
+                    state.warbands.find(
+                        warband =>
+                            warband.id === warbandId
+                    )
+            )
+            .filter(Boolean);
+
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Add Settlement
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <label class="mm-field">
+
+                    <span>
+                        Settlement Name
+                    </span>
+
+                    <input
+                        id="new-settlement-name"
+                        type="text"
+                        placeholder="Hallow's Fen"
+                        autocomplete="off"
+                    >
+
+                </label>
+
+
+                <label class="mm-field">
+
+                    <span>
+                        Note
+                    </span>
+
+                    <input
+                        id="new-settlement-note"
+                        type="text"
+                        placeholder="Optional"
+                        autocomplete="off"
+                    >
+
+                </label>
+
+
+                <label class="mm-field">
+
+                    <span>
+                        Held By
+                    </span>
+
+                    <select
+                        id="new-settlement-warband"
+                    >
+
+                        <option value="">
+                            Unclaimed
+                        </option>
+
+                        ${warbands
+                            .map(
+                                warband => `
+                                    <option value="${escapeAttribute(warband.id)}">
+                                        ${escapeHtml(warband.name)}
+                                    </option>
+                                `
+                            )
+                            .join("")}
+
+                    </select>
+
+                </label>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="addGameSettlement('${escapeAttribute(gameId)}')"
+                >
+                    Add Settlement
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function addGameSettlement(
+    gameId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const nameInput =
+        document.getElementById(
+            "new-settlement-name"
+        );
+
+
+    const noteInput =
+        document.getElementById(
+            "new-settlement-note"
+        );
+
+
+    const warbandInput =
+        document.getElementById(
+            "new-settlement-warband"
+        );
+
+
+    const name =
+        nameInput?.value.trim();
+
+
+    if (!name) {
+
+        nameInput?.focus();
+
+        return;
+
+    }
+
+
+    if (!Array.isArray(game.settlements)) {
+
+        game.settlements = [];
+
+    }
+
+
+    game.settlements.push({
+
+        id:
+            generateId("settlement"),
+
+        name,
+
+        note:
+            noteInput?.value.trim() || "",
+
+        warbandId:
+            warbandInput?.value || null
+
+    });
+
+
+    savePlayerData();
+
+
+    closeModal();
+
+
+    renderApplication();
+
+}
+
+
+function reassignSettlement(
+    gameId,
+    settlementId,
+    warbandId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const settlement =
+        (game.settlements || [])
+            .find(
+                item =>
+                    item.id === settlementId
+            );
+
+
+    if (!settlement) {
+
+        return;
+
+    }
+
+
+    settlement.warbandId =
+        warbandId || null;
+
+
+    savePlayerData();
+
+
+    renderApplication();
+
+}
+
+
+function confirmRemoveGameSettlement(
+    gameId,
+    settlementId,
+    settlementName
+) {
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Remove Settlement
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p>
+                    Remove
+                    ${escapeHtml(settlementName)}
+                    from this game?
+                </p>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-danger"
+                    onclick="removeGameSettlement('${escapeAttribute(gameId)}', '${escapeAttribute(settlementId)}')"
+                >
+                    Remove
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function removeGameSettlement(
+    gameId,
+    settlementId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    game.settlements =
+        (game.settlements || [])
+            .filter(
+                settlement =>
+                    settlement.id !== settlementId
+            );
 
 
     savePlayerData();

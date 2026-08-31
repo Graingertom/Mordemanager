@@ -12,6 +12,15 @@
                 "reikland"
             ],
 
+            "settlements": [
+                {
+                    "id": "settlement-hallows-fen",
+                    "name": "Hallow's Fen",
+                    "note": "Trading post near the river",
+                    "warbandId": "reikland"
+                }
+            ],
+
             "scenario": {
                 "name": "Chance Encounter",
                 "description": "Two warbands stumble across each other while searching the ruins. Neither expected company - and neither is willing to back down."
