@@ -59,7 +59,16 @@ const state = {
 
     returnToGameId: null,
 
-    currentModal: null
+    currentModal: null,
+
+    /*
+     * Real Supabase auth. Not yet wired into warband
+     * ownership - see js/auth.js.
+     */
+
+    session: null,
+
+    profile: null
 
 };
 
@@ -79,6 +88,9 @@ async function initialise() {
     console.log(
         `Mordemanager ${APP_VERSION} starting...`
     );
+
+
+    initAuth();
 
 
     try {
@@ -476,6 +488,9 @@ function renderDashboard() {
 
 
                 <div class="mm-header-actions">
+
+                    ${renderAuthControl()}
+
 
                     <button
                         class="mm-button"
