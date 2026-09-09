@@ -1269,6 +1269,37 @@ a {
    SCENARIO
    ============================================================ */
 
+.mm-special-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin-top: 10px;
+}
+
+.mm-special-rule {
+    padding: 12px 14px;
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.mm-special-rule strong {
+    display: block;
+
+    color: var(--gold-light);
+}
+
+.mm-special-rule p {
+    margin: 4px 0 0;
+
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 .mm-scenario-card {
     padding: 18px 20px;
 

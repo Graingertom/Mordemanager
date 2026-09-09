@@ -46,6 +46,17 @@ function renderFighterDetailModal(warband, fighter) {
         ? fighter.advances
         : [];
 
+    const definition =
+        state.warbandDefinitions[warband.type];
+
+    const fighterType =
+        definition?.fighterTypes?.find(
+            type => type.id === fighter.type
+        );
+
+    const specialRules =
+        fighterType?.specialRules || [];
+
     openModal(`
 
         <div class="mm-modal mm-modal-large">
@@ -103,6 +114,27 @@ function renderFighterDetailModal(warband, fighter) {
                     </div>
 
                 </section>
+
+
+                <!-- =========================================
+                     SPECIAL RULES
+                     ========================================= -->
+
+                ${
+                    specialRules.length
+                        ? `
+                            <section class="mm-detail-section">
+
+                                <h3>
+                                    Special Rules
+                                </h3>
+
+                                ${renderSpecialRules(specialRules)}
+
+                            </section>
+                        `
+                        : ""
+                }
 
 
                 <!-- =========================================

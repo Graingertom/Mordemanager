@@ -268,9 +268,15 @@ function renderFighterTypeOption(type, warband) {
         maximumWarbandSize;
 
 
+    const cannotAfford =
+        (Number(type.cost) || 0) >
+        (Number(warband.treasury) || 0);
+
+
     const disabled =
         atMaximum ||
-        warbandFull;
+        warbandFull ||
+        cannotAfford;
 
 
     return `
@@ -448,6 +454,30 @@ function addFighter(typeId) {
 
 
     /* --------------------------------------------------------
+       CHECK TREASURY
+       -------------------------------------------------------- */
+
+    const recruitCost =
+        Number(fighterType.cost) || 0;
+
+
+    const treasury =
+        Number(currentWarband.treasury) || 0;
+
+
+    if (recruitCost > treasury) {
+
+        alert(
+            `Recruiting a ${fighterType.name} costs ${recruitCost} gc, ` +
+            `but this warband only has ${treasury} gc.`
+        );
+
+        return;
+
+    }
+
+
+    /* --------------------------------------------------------
        CREATE FIGHTER
        -------------------------------------------------------- */
 
@@ -476,7 +506,7 @@ function addFighter(typeId) {
         },
 
         baseCost:
-            Number(fighterType.cost) || 0,
+            recruitCost,
 
         equipment: [],
 
@@ -497,6 +527,10 @@ function addFighter(typeId) {
     currentWarband.fighters.push(
         fighter
     );
+
+
+    currentWarband.treasury =
+        treasury - recruitCost;
 
 
     savePlayerData();

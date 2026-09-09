@@ -821,6 +821,32 @@ function renderWarbandPage() {
                         <div>
 
                             <h2>
+                                Games
+                            </h2>
+
+                            <p>
+                                Games this warband is currently part of.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    ${renderWarbandGames(
+                        warband
+                    )}
+
+                </section>
+
+
+                <section class="mm-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h2>
                                 Warband Information
                             </h2>
 
@@ -846,6 +872,110 @@ function renderWarbandPage() {
 
 
         <div id="modal-container"></div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   GAMES THIS WARBAND IS IN
+   ============================================================ */
+
+function renderWarbandGames(
+    warband
+) {
+
+    const games =
+        state.games.filter(
+            game =>
+                game.warbandIds.includes(
+                    warband.id
+                )
+        );
+
+
+    if (!games.length) {
+
+        return `
+
+            <div class="mm-empty-state mm-empty-small">
+
+                <div class="mm-empty-icon">
+                    🎲
+                </div>
+
+                <h3>
+                    Not in any games
+                </h3>
+
+                <p>
+                    This warband is not currently
+                    part of any game.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <section class="mm-warband-grid">
+
+            ${games
+                .map(
+                    renderWarbandGameCard
+                )
+                .join("")}
+
+        </section>
+
+    `;
+
+}
+
+
+function renderWarbandGameCard(
+    game
+) {
+
+    return `
+
+        <article class="mm-card">
+
+            <span class="mm-badge">
+                ${game.status === "completed" ? "Completed" : "Active"}
+            </span>
+
+            <h2>
+                ${escapeHtml(
+                    game.name
+                )}
+            </h2>
+
+            <p>
+                ${escapeHtml(
+                    game.scenario?.name ||
+                    "No scenario set"
+                )}
+            </p>
+
+
+            <div class="mm-card-actions">
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="openGame('${escapeAttribute(game.id)}')"
+                >
+                    Open Game
+                </button>
+
+            </div>
+
+        </article>
 
     `;
 
@@ -938,6 +1068,25 @@ function renderWarbandRules(
                 </div>
 
             </div>
+
+
+            ${
+                definition.specialRules?.length
+                    ? `
+                        <div class="mm-rule-block">
+
+                            <h3>
+                                Special Rules
+                            </h3>
+
+                            ${renderSpecialRules(
+                                definition.specialRules
+                            )}
+
+                        </div>
+                    `
+                    : ""
+            }
 
 
             ${renderSourceInformation(

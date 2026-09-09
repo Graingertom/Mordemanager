@@ -514,6 +514,68 @@ function renderSourceInformation(sourceObject) {
 
 
 /* ============================================================
+   SPECIAL RULES
+   ============================================================ */
+
+function renderSpecialRules(specialRules) {
+
+    const rules =
+        Array.isArray(specialRules)
+            ? specialRules
+            : [];
+
+
+    if (!rules.length) {
+
+        return "";
+
+    }
+
+
+    return `
+
+        <div class="mm-special-rules">
+
+            ${rules
+                .map(
+                    rule => `
+
+                        <div class="mm-special-rule">
+
+                            <strong>
+                                ${escapeHtml(
+                                    rule.name ||
+                                    rule.id ||
+                                    "Special Rule"
+                                )}
+                            </strong>
+
+                            ${
+                                rule.summary
+                                    ? `
+                                        <p>
+                                            ${escapeHtml(
+                                                rule.summary
+                                            )}
+                                        </p>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
    ACKNOWLEDGEMENT
    ============================================================ */
 
