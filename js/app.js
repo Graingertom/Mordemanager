@@ -258,6 +258,7 @@ async function loadPlayerData() {
                 name,
                 type,
                 treasury,
+                stash,
                 createdAt:created_at,
                 owner:profiles(display_name)
             `),

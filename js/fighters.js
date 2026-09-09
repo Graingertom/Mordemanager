@@ -2174,8 +2174,13 @@ async function commitFighterDeletion(
         await supabaseClient
             .from("warbands")
             .update({
+
                 treasury:
-                    warband.treasury
+                    warband.treasury,
+
+                stash:
+                    warband.stash
+
             })
             .eq(
                 "id",
@@ -2186,7 +2191,7 @@ async function commitFighterDeletion(
     if (treasuryError) {
 
         console.error(
-            "Fighter removed but treasury could not be updated:",
+            "Fighter removed but treasury/stash could not be updated:",
             treasuryError.message
         );
 
@@ -2233,17 +2238,20 @@ async function performDeleteFighter(
 
     /*
      * Refund the fighter's base cost and
-     * remove them from the roster.
-     *
-     * Equipment carried by the fighter is
-     * not currently resold (matches prior
-     * behaviour - selling equipment back
-     * will be handled by the campaign
-     * rules later).
+     * remove them from the roster. Their
+     * equipment isn't resold for gold (money
+     * spent is spent) but moves into the
+     * warband's stash rather than vanishing,
+     * so it can be handed to someone else later.
      */
 
     warband.treasury +=
         Number(fighter.baseCost) || 0;
+
+
+    warband.stash.push(
+        ...fighter.equipment
+    );
 
 
     warband.fighters.splice(
@@ -2292,6 +2300,12 @@ async function performDeleteFighter(
 
         warband.treasury -=
             Number(fighter.baseCost) || 0;
+
+        warband.stash.splice(
+            warband.stash.length -
+                fighter.equipment.length,
+            fighter.equipment.length
+        );
 
         warband.fighters.splice(
             index,
@@ -2406,6 +2420,12 @@ function cancelFighterRemoval() {
                 pendingFighterRemoval.fighter.baseCost
             ) || 0;
 
+        warband.stash.splice(
+            warband.stash.length -
+                pendingFighterRemoval.fighter.equipment.length,
+            pendingFighterRemoval.fighter.equipment.length
+        );
+
         warband.fighters.splice(
             pendingFighterRemoval.index,
             0,
@@ -2461,6 +2481,12 @@ async function confirmFighterRemoval() {
 
         warband.treasury -=
             Number(pending.fighter.baseCost) || 0;
+
+        warband.stash.splice(
+            warband.stash.length -
+                pending.fighter.equipment.length,
+            pending.fighter.equipment.length
+        );
 
         warband.fighters.splice(
             pending.index,

@@ -57,6 +57,13 @@ function normaliseWarbands(warbands) {
                         warband.fighters
                     )
                         ? warband.fighters
+                        : [],
+
+                stash:
+                    Array.isArray(
+                        warband.stash
+                    )
+                        ? warband.stash
                         : []
 
             };
@@ -843,6 +850,34 @@ function renderWarbandPage() {
                         <div>
 
                             <h2>
+                                Stash
+                            </h2>
+
+                            <p>
+                                Equipment recovered from
+                                former fighters, held by
+                                the warband.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    ${renderWarbandStash(
+                        warband
+                    )}
+
+                </section>
+
+
+                <section class="mm-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h2>
                                 Games
                             </h2>
 
@@ -894,6 +929,105 @@ function renderWarbandPage() {
 
 
         <div id="modal-container"></div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   WARBAND STASH
+   ============================================================ */
+
+function renderWarbandStash(
+    warband
+) {
+
+    if (!warband.stash.length) {
+
+        return `
+
+            <div class="mm-empty-state mm-empty-small">
+
+                <div class="mm-empty-icon">
+                    🎒
+                </div>
+
+                <h3>
+                    Stash Is Empty
+                </h3>
+
+                <p>
+                    Equipment from removed fighters
+                    will be stored here.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const counts = {};
+
+    warband.stash.forEach(
+        equipmentId => {
+
+            counts[equipmentId] =
+                (counts[equipmentId] || 0) + 1;
+
+        }
+    );
+
+
+    return `
+
+        <div class="mm-equipment-selection">
+
+            ${Object.entries(counts)
+                .map(
+                    ([equipmentId, count]) => {
+
+                        const item =
+                            findEquipment(
+                                equipmentId,
+                                state.equipment
+                            );
+
+
+                        return `
+
+                            <div class="mm-equipment-option">
+
+                                <span>
+
+                                    <strong>
+                                        ${escapeHtml(
+                                            item?.name ||
+                                            equipmentId
+                                        )}
+                                        ${count > 1
+                                            ? ` ×${count}`
+                                            : ""}
+                                    </strong>
+
+
+                                    <small>
+                                        ${item?.cost ?? 0} gc
+                                    </small>
+
+                                </span>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("")}
+
+        </div>
 
     `;
 
