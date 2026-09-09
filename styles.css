@@ -437,6 +437,51 @@ a {
     font-size: 13px;
 }
 
+.mm-back-button {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 34px;
+
+    padding: 6px 12px;
+    margin-bottom: 10px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background .15s ease,
+        border-color .15s ease,
+        color .15s ease;
+}
+
+.mm-back-button:hover {
+    background: var(--panel-hover);
+
+    border-color: var(--border-light);
+
+    color: var(--text);
+}
+
+.mm-modal-back {
+    min-height: 30px;
+
+    padding: 5px 10px;
+
+    margin-bottom: 8px;
+
+    font-size: 12px;
+}
+
 
 /* ============================================================
    BADGES

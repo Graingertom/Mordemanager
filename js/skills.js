@@ -134,17 +134,37 @@ function showSkill(skillId) {
     const skill =
         getSkill(skillId);
 
+    const canGoBack =
+        modalCanGoBack();
+
     if (!skill) {
 
-        openModal(`
+        pushModal(`
 
             <div class="mm-modal">
 
                 <div class="mm-modal-header">
 
-                    <h2>
-                        ${escapeHtml(skillId)}
-                    </h2>
+                    <div>
+
+                        ${
+                            canGoBack
+                                ? `
+                                    <button
+                                        class="mm-back-button mm-modal-back"
+                                        onclick="goBackModal()"
+                                    >
+                                        ← Back
+                                    </button>
+                                `
+                                : ""
+                        }
+
+                        <h2>
+                            ${escapeHtml(skillId)}
+                        </h2>
+
+                    </div>
 
                     <button
                         class="mm-modal-close"
@@ -178,13 +198,26 @@ function showSkill(skillId) {
         "No description available.";
 
 
-    openModal(`
+    pushModal(`
 
         <div class="mm-modal">
 
             <div class="mm-modal-header">
 
                 <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
 
                     ${
                         skill.category

@@ -189,13 +189,30 @@ function showEquipment(
             : [];
 
 
-    openModal(`
+    const canGoBack =
+        modalCanGoBack();
+
+
+    pushModal(`
 
         <div class="mm-modal">
 
             <div class="mm-modal-header">
 
                 <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
 
                     <span class="mm-badge">
 
@@ -401,19 +418,40 @@ function showTrait(
     }
 
 
-    openModal(`
+    const canGoBack =
+        modalCanGoBack();
+
+
+    pushModal(`
 
         <div class="mm-modal">
 
             <div class="mm-modal-header">
 
-                <h2>
+                <div>
 
-                    ${escapeHtml(
-                        trait.name
-                    )}
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
 
-                </h2>
+                    <h2>
+
+                        ${escapeHtml(
+                            trait.name
+                        )}
+
+                    </h2>
+
+                </div>
 
 
                 <button

@@ -361,7 +361,33 @@ function generateDefaultFighterName(
    MODAL HELPERS
    ============================================================ */
 
-function openModal(content) {
+/*
+ * A stack of previous modals' rendered HTML, so a "drill-down"
+ * modal (equipment -> trait, fighter details -> equipment, etc.)
+ * can offer a way back to what opened it instead of the only
+ * option being to close everything.
+ */
+
+let modalStack = [];
+
+
+function modalCanGoBack() {
+
+    const container =
+        document.getElementById(
+            "modal-container"
+        );
+
+
+    return !!(
+        container &&
+        container.innerHTML.trim()
+    );
+
+}
+
+
+function renderModalContent(content) {
 
     const container =
         document.getElementById(
@@ -408,7 +434,81 @@ function openModal(content) {
 }
 
 
+function openModal(content) {
+
+    modalStack = [];
+
+    renderModalContent(content);
+
+}
+
+
+/*
+ * Like openModal, but keeps whatever modal is currently open
+ * on a stack so goBackModal() can return to it. If nothing is
+ * currently open, this behaves exactly like openModal.
+ */
+
+function pushModal(content) {
+
+    const container =
+        document.getElementById(
+            "modal-container"
+        );
+
+
+    if (
+        container &&
+        container.innerHTML.trim()
+    ) {
+
+        modalStack.push(
+            container.innerHTML
+        );
+
+    }
+
+
+    renderModalContent(content);
+
+}
+
+
+function goBackModal() {
+
+    const previous =
+        modalStack.pop();
+
+
+    if (!previous) {
+
+        closeModal();
+
+        return;
+
+    }
+
+
+    const container =
+        document.getElementById(
+            "modal-container"
+        );
+
+
+    if (container) {
+
+        container.innerHTML =
+            previous;
+
+    }
+
+}
+
+
 function closeModal() {
+
+    modalStack = [];
+
 
     const container =
         document.getElementById(
