@@ -120,54 +120,16 @@ function getCurrentGame() {
 
 
 /* ============================================================
-   CURRENT PLAYER
+   WARBAND OWNERSHIP
    ============================================================ */
 
 /*
- * There is no real account system yet. This is a
- * lightweight, local stand-in so a game with warbands
- * belonging to different people can still tell "yours"
- * apart from everyone else's - it is not authentication,
- * just a name this browser remembers.
+ * Ownership is still just a free-text name on the warband
+ * itself (see warbands.js) rather than a real foreign key -
+ * that part waits for the data layer to move to Supabase. But
+ * "who am I" now comes from the real signed-in identity
+ * (js/auth.js) rather than a separate local name.
  */
-
-function getCurrentPlayerName() {
-
-    try {
-
-        return localStorage.getItem(
-            "mordemanager-player-name"
-        ) || "";
-
-    } catch (error) {
-
-        return "";
-
-    }
-
-}
-
-
-function setCurrentPlayerName(name) {
-
-    try {
-
-        localStorage.setItem(
-            "mordemanager-player-name",
-            name || ""
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "Unable to save player name:",
-            error
-        );
-
-    }
-
-}
-
 
 function ownsWarband(warband) {
 
@@ -179,7 +141,7 @@ function ownsWarband(warband) {
 
 
     return warband.owner ===
-        getCurrentPlayerName();
+        getCurrentDisplayName();
 
 }
 

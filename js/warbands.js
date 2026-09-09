@@ -347,7 +347,7 @@ function showCreateWarband() {
                         placeholder="Whose warband is this?"
                         autocomplete="off"
                         value="${escapeAttribute(
-                            getCurrentPlayerName()
+                            getCurrentDisplayName()
                         )}"
                     >
 
