@@ -996,6 +996,12 @@ function renderWarbandStash(
                             );
 
 
+                        const sellPrice =
+                            Math.floor(
+                                (Number(item?.cost) || 0) / 2
+                            );
+
+
                         return `
 
                             <div class="mm-equipment-option">
@@ -1019,6 +1025,14 @@ function renderWarbandStash(
 
                                 </span>
 
+
+                                <button
+                                    class="mm-button mm-button-small"
+                                    onclick="sellStashItem('${escapeAttribute(equipmentId)}')"
+                                >
+                                    Sell (${sellPrice} gc)
+                                </button>
+
                             </div>
 
                         `;
@@ -1030,6 +1044,106 @@ function renderWarbandStash(
         </div>
 
     `;
+
+}
+
+
+/*
+ * Sells one unit of a stashed item back for half its base
+ * cost (rounded down) - the same "half price at the trading
+ * post" rule used for offloading equipment in Mordheim.
+ */
+
+async function sellStashItem(
+    equipmentId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    const index =
+        warband.stash.indexOf(
+            equipmentId
+        );
+
+
+    if (index === -1) {
+
+        return;
+
+    }
+
+
+    const item =
+        RulesEngine.findEquipment(
+            equipmentId,
+            state.equipment
+        );
+
+
+    const sellPrice =
+        Math.floor(
+            (Number(item?.cost) || 0) / 2
+        );
+
+
+    warband.stash.splice(
+        index,
+        1
+    );
+
+    warband.treasury +=
+        sellPrice;
+
+
+    const { error } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+
+                treasury:
+                    warband.treasury,
+
+                stash:
+                    warband.stash
+
+            })
+            .eq(
+                "id",
+                warband.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to sell item: " +
+            error.message
+        );
+
+        warband.treasury -=
+            sellPrice;
+
+        warband.stash.splice(
+            index,
+            0,
+            equipmentId
+        );
+
+        return;
+
+    }
+
+
+    renderApplication();
 
 }
 
