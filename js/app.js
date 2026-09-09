@@ -18,6 +18,8 @@ const DATA_PATHS = {
 
     skills: "./data/rules/skills.json",
 
+    injuries: "./data/rules/injuries.json",
+
     reikland: "./data/rules/warbands/reikland.json"
 
 };
@@ -34,6 +36,8 @@ const state = {
     equipment: null,
 
     skills: null,
+
+    injuries: null,
 
     warbandDefinitions: {
         reikland: null
@@ -148,6 +152,8 @@ async function loadRules() {
 
         fetch(DATA_PATHS.skills),
 
+        fetch(DATA_PATHS.injuries),
+
         fetch(DATA_PATHS.reikland)
 
     ]);
@@ -160,6 +166,8 @@ async function loadRules() {
         DATA_PATHS.equipment,
 
         DATA_PATHS.skills,
+
+        DATA_PATHS.injuries,
 
         DATA_PATHS.reikland
 
@@ -189,6 +197,8 @@ async function loadRules() {
 
         skills,
 
+        injuries,
+
         reikland
 
     ] = await Promise.all(
@@ -206,6 +216,8 @@ async function loadRules() {
     state.equipment = equipment;
 
     state.skills = skills;
+
+    state.injuries = injuries;
 
     state.warbandDefinitions.reikland =
         reikland;

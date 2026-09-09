@@ -104,7 +104,9 @@ function renderFighterDetailModal(warband, fighter) {
 
                     <div class="mm-profile">
 
-                        ${Object.entries(fighter.profile || {})
+                        ${Object.entries(
+                            RulesEngine.calculateEffectiveProfile(fighter)
+                        )
                             .map(
                                 ([stat, value]) =>
                                     renderStat(stat, value)

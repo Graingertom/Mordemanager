@@ -748,7 +748,9 @@ function renderFighters(warband) {
 function renderFighter(fighter) {
 
     const profile =
-        fighter.profile || {};
+        RulesEngine.calculateEffectiveProfile(
+            fighter
+        );
 
 
     const equipment =
@@ -1083,7 +1085,9 @@ function showEditFighter(
                     <div class="mm-profile-editor">
 
                         ${Object.entries(
-                            fighter.profile
+                            RulesEngine.calculateEffectiveProfile(
+                                fighter
+                            )
                         )
                             .map(
                                 ([stat, value]) =>
@@ -1163,11 +1167,22 @@ function showEditFighter(
 
                     <div class="mm-injury-add">
 
-                        <input
-                            id="new-injury-name"
-                            type="text"
-                            placeholder="e.g. Leg Wound"
+                        <select
+                            id="new-injury-select"
                         >
+
+                            ${(state.injuries?.injuries || [])
+                                .map(
+                                    injury => `
+                                        <option value="${escapeAttribute(injury.id)}">
+                                            ${escapeHtml(injury.name)}
+                                            (${escapeHtml(injury.rollRange)})
+                                        </option>
+                                    `
+                                )
+                                .join("")}
+
+                        </select>
 
                         <button
                             type="button"
@@ -1431,7 +1446,29 @@ function renderInjuriesEditorList() {
                         <li>
 
                             <span>
-                                ${escapeHtml(injury)}
+
+                                <strong>
+                                    ${escapeHtml(
+                                        injury.name
+                                    )}
+                                </strong>
+
+                                ${
+                                    injury.statModifiers &&
+                                    Object.keys(injury.statModifiers).length
+                                        ? `
+                                            <small>
+                                                ${Object.entries(injury.statModifiers)
+                                                    .map(
+                                                        ([stat, value]) =>
+                                                            `${stat} ${value > 0 ? "+" : ""}${value}`
+                                                    )
+                                                    .join(", ")}
+                                            </small>
+                                        `
+                                        : ""
+                                }
+
                             </span>
 
                             <button
@@ -1457,30 +1494,55 @@ function renderInjuriesEditorList() {
 
 function addInjuryToEditor() {
 
-    const input =
+    const select =
         document.getElementById(
-            "new-injury-name"
+            "new-injury-select"
         );
 
 
-    const value =
-        input?.value.trim();
+    const injuryId =
+        select?.value;
 
 
-    if (!value) {
+    if (!injuryId) {
 
         return;
 
     }
 
 
-    editingInjuries.push(
-        value
-    );
+    const injury =
+        RulesEngine.findInjury(
+            injuryId,
+            state.injuries
+        );
 
 
-    input.value =
-        "";
+    if (!injury) {
+
+        return;
+
+    }
+
+
+    editingInjuries.push({
+
+        id:
+            injury.id,
+
+        name:
+            injury.name,
+
+        description:
+            injury.description,
+
+        statModifiers:
+            { ...(injury.statModifiers || {}) },
+
+        date:
+            new Date().toISOString()
+
+    });
 
 
     const list =

@@ -843,6 +843,123 @@ function findEquipment(
 
 
 /* ============================================================
+   FIND INJURY
+   ============================================================ */
+
+function findInjury(
+    injuryId,
+    injuryData
+) {
+
+    if (
+        !injuryId ||
+        !injuryData
+    ) {
+
+        return null;
+
+    }
+
+
+    const list =
+        Array.isArray(
+            injuryData.injuries
+        )
+            ? injuryData.injuries
+            : [];
+
+
+    return list.find(
+        item =>
+            item.id === injuryId
+    ) || null;
+
+}
+
+
+/* ============================================================
+   EFFECTIVE PROFILE
+   ============================================================ */
+//
+// A fighter's printed profile as modified by recorded injuries.
+// Each recorded injury carries its own statModifiers snapshot
+// (taken from the injuries table at the time it was added), so
+// this never needs to look the injury back up - it stays correct
+// even if the injuries table changes later.
+
+function calculateEffectiveProfile(
+    fighter
+) {
+
+    const base =
+        fighter?.profile || {};
+
+    const effective =
+        { ...base };
+
+
+    const injuries =
+        Array.isArray(
+            fighter?.injuries
+        )
+            ? fighter.injuries
+            : [];
+
+
+    injuries.forEach(
+        injury => {
+
+            const modifiers =
+                injury?.statModifiers;
+
+
+            if (
+                !modifiers ||
+                typeof modifiers !== "object"
+            ) {
+
+                return;
+
+            }
+
+
+            Object.keys(modifiers).forEach(
+                stat => {
+
+                    const current =
+                        Number(
+                            effective[stat]
+                        );
+
+
+                    if (
+                        !Number.isFinite(
+                            current
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    effective[stat] =
+                        current +
+                        (Number(modifiers[stat]) || 0);
+
+                }
+            );
+
+        }
+    );
+
+
+    return effective;
+
+}
+
+
+/* ============================================================
    EQUIPMENT COST
    ============================================================ */
 
@@ -1865,7 +1982,11 @@ return {
 
     findEquipment,
 
-    getEquipmentListForFighter
+    getEquipmentListForFighter,
+
+    findInjury,
+
+    calculateEffectiveProfile
 
 };
 
