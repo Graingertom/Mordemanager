@@ -938,21 +938,41 @@ function calculateWarbandValue(
             : [];
 
 
-    return fighters.reduce(
-        (
-            total,
-            fighter
-        ) => {
+    const fighterValue =
+        fighters.reduce(
+            (
+                total,
+                fighter
+            ) => {
 
-            return total +
-                calculateFighterCost(
-                    fighter,
-                    equipmentData
-                );
+                return total +
+                    calculateFighterCost(
+                        fighter,
+                        equipmentData
+                    );
 
-        },
-        0
-    );
+            },
+            0
+        );
+
+
+    const stash =
+        Array.isArray(
+            warband?.stash
+        )
+            ? warband.stash
+            : [];
+
+
+    const stashValue =
+        calculateEquipmentCost(
+            stash,
+            equipmentData
+        );
+
+
+    return fighterValue +
+        stashValue;
 
 }
 
