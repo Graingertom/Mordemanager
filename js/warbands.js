@@ -365,6 +365,143 @@ async function recoverWarband(warbandId) {
 }
 
 
+function deleteWarband(warbandId) {
+
+    const warband =
+        state.warbands.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Delete Warband
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p>
+                    Permanently delete
+                    ${escapeHtml(warband.name)}?
+                    This removes the warband, all
+                    of its fighters and its stash.
+                    This cannot be undone.
+                </p>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-danger"
+                    onclick="performDeleteWarband('${escapeAttribute(warband.id)}')"
+                >
+                    Delete Permanently
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+async function performDeleteWarband(warbandId) {
+
+    const index =
+        state.warbands.findIndex(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (index === -1) {
+
+        closeModal();
+
+        return;
+
+    }
+
+
+    const [removed] =
+        state.warbands.splice(
+            index,
+            1
+        );
+
+
+    const { error } =
+        await supabaseClient
+            .from("warbands")
+            .delete()
+            .eq(
+                "id",
+                warbandId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to delete warband: " +
+            error.message
+        );
+
+        state.warbands.splice(
+            index,
+            0,
+            removed
+        );
+
+        closeModal();
+
+        return;
+
+    }
+
+
+    closeModal();
+
+    renderApplication();
+
+}
+
+
 function renderWarbandCard(warband) {
 
     const definition =
@@ -471,6 +608,13 @@ function renderWarbandCard(warband) {
                             onclick="recoverWarband('${escapeAttribute(warband.id)}')"
                         >
                             Recover Warband
+                        </button>
+
+                        <button
+                            class="mm-button mm-button-danger"
+                            onclick="deleteWarband('${escapeAttribute(warband.id)}')"
+                        >
+                            Delete
                         </button>
 
                     `
