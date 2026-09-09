@@ -989,6 +989,16 @@ a {
         var(--muted);
 }
 
+.mm-equipment-option-stash {
+    border-color:
+        var(--green-light);
+}
+
+.mm-equipment-option-stash small {
+    color:
+        var(--green-light);
+}
+
 
 /* ============================================================
    EMPTY STATES

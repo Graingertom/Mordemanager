@@ -1542,9 +1542,55 @@ function validateEquipmentChange(
         );
 
 
+    /*
+     * Items available in the warband's stash are
+     * already paid for - equipping one is free and
+     * consumes it from the stash, rather than being
+     * bought again at full price.
+     */
+
+    const stash =
+        Array.isArray(
+            warband.stash
+        )
+            ? [...warband.stash]
+            : [];
+
+
+    const addedFromStash = [];
+
+    const addedPurchased = [];
+
+
+    added.forEach(
+        id => {
+
+            const stashIndex =
+                stash.indexOf(id);
+
+
+            if (stashIndex !== -1) {
+
+                stash.splice(
+                    stashIndex,
+                    1
+                );
+
+                addedFromStash.push(id);
+
+            } else {
+
+                addedPurchased.push(id);
+
+            }
+
+        }
+    );
+
+
     const addedCost =
         calculateEquipmentCost(
-            added,
+            addedPurchased,
             equipmentData
         );
 
@@ -1606,6 +1652,10 @@ function validateEquipmentChange(
         added,
 
         removed,
+
+        addedFromStash,
+
+        addedPurchased,
 
         addedCost,
 
@@ -1696,6 +1746,38 @@ function applyEquipmentChange(
     warband.treasury =
         treasury -
         netCost;
+
+
+    /* --------------------------------------------------------
+       CONSUME STASH ITEMS
+       -------------------------------------------------------- */
+
+    if (
+        Array.isArray(
+            warband.stash
+        )
+    ) {
+
+        (change?.addedFromStash || []).forEach(
+            id => {
+
+                const stashIndex =
+                    warband.stash.indexOf(id);
+
+
+                if (stashIndex !== -1) {
+
+                    warband.stash.splice(
+                        stashIndex,
+                        1
+                    );
+
+                }
+
+            }
+        );
+
+    }
 
 
     /* --------------------------------------------------------

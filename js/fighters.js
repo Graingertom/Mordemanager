@@ -1115,7 +1115,10 @@ function showEditFighter(
                                 item =>
                                     renderEquipmentCheckbox(
                                         fighter,
-                                        item
+                                        item,
+                                        warband.stash.includes(
+                                            item.id
+                                        )
                                     )
                             )
                             .join("")}
@@ -1383,7 +1386,8 @@ function renderReadOnlyStat(
 
 function renderEquipmentCheckbox(
     fighter,
-    item
+    item,
+    inStash
 ) {
 
     const selected =
@@ -1403,7 +1407,11 @@ function renderEquipmentCheckbox(
     return `
 
         <label
-            class="mm-equipment-option"
+            class="mm-equipment-option${
+                inStash
+                    ? " mm-equipment-option-stash"
+                    : ""
+            }"
         >
 
             <input
@@ -1427,7 +1435,9 @@ function renderEquipmentCheckbox(
 
 
                 <small>
-                    ${item.cost ?? 0} gc
+                    ${inStash
+                        ? "In stash - free"
+                        : `${item.cost ?? 0} gc`}
                 </small>
 
             </span>
@@ -1547,6 +1557,9 @@ async function saveFighterChanges(
 
     const previousTreasury =
         warband.treasury;
+
+    const previousStash =
+        [...warband.stash];
 
 
     const nameInput =
@@ -1768,6 +1781,9 @@ async function saveFighterChanges(
         warband.treasury =
             previousTreasury;
 
+        warband.stash =
+            previousStash;
+
         return;
 
     }
@@ -1779,8 +1795,13 @@ async function saveFighterChanges(
         await supabaseClient
             .from("warbands")
             .update({
+
                 treasury:
-                    warband.treasury
+                    warband.treasury,
+
+                stash:
+                    warband.stash
+
             })
             .eq(
                 "id",
@@ -1791,7 +1812,7 @@ async function saveFighterChanges(
     if (warbandError) {
 
         console.error(
-            "Fighter saved but treasury could not be updated:",
+            "Fighter saved but treasury/stash could not be updated:",
             warbandError.message
         );
 
