@@ -58,6 +58,14 @@ const state = {
     currentModal: null,
 
     /*
+     * Retired warbands are hidden from the dashboard
+     * by default - this reveals them. UI-only, not
+     * persisted.
+     */
+
+    showRetiredWarbands: false,
+
+    /*
      * Real Supabase auth. Not yet wired into warband
      * ownership - see js/auth.js.
      */
@@ -259,6 +267,7 @@ async function loadPlayerData() {
                 type,
                 treasury,
                 stash,
+                status,
                 createdAt:created_at,
                 owner:profiles(display_name)
             `),

@@ -64,7 +64,12 @@ function normaliseWarbands(warbands) {
                         warband.stash
                     )
                         ? warband.stash
-                        : []
+                        : [],
+
+                status:
+                    warband.status === "retired"
+                        ? "retired"
+                        : "active"
 
             };
 
@@ -153,17 +158,209 @@ function renderWarbandCards() {
     }
 
 
+    const activeWarbands =
+        state.warbands.filter(
+            warband =>
+                warband.status !== "retired"
+        );
+
+
+    const retiredWarbands =
+        state.warbands.filter(
+            warband =>
+                warband.status === "retired"
+        );
+
+
+    const activeSection =
+        activeWarbands.length
+            ? `
+
+                <section class="mm-warband-grid">
+
+                    ${activeWarbands
+                        .map(renderWarbandCard)
+                        .join("")}
+
+                </section>
+
+            `
+            : `
+
+                <p class="mm-muted">
+                    No active warbands.
+                </p>
+
+            `;
+
+
+    const retiredToggle =
+        retiredWarbands.length
+            ? `
+
+                <div class="mm-retired-toggle">
+
+                    <button
+                        class="mm-button mm-button-small"
+                        onclick="toggleRetiredWarbands()"
+                    >
+                        ${state.showRetiredWarbands
+                            ? "Hide"
+                            : "Show"} Retired Warbands
+                        (${retiredWarbands.length})
+                    </button>
+
+                </div>
+
+
+                ${state.showRetiredWarbands
+                    ? `
+
+                        <section class="mm-warband-grid">
+
+                            ${retiredWarbands
+                                .map(renderWarbandCard)
+                                .join("")}
+
+                        </section>
+
+                    `
+                    : ""}
+
+            `
+            : "";
+
+
     return `
 
-        <section class="mm-warband-grid">
+        ${activeSection}
 
-            ${state.warbands
-                .map(renderWarbandCard)
-                .join("")}
-
-        </section>
+        ${retiredToggle}
 
     `;
+
+}
+
+
+function toggleRetiredWarbands() {
+
+    state.showRetiredWarbands =
+        !state.showRetiredWarbands;
+
+
+    renderApplication();
+
+}
+
+
+async function retireWarband(warbandId) {
+
+    const warband =
+        state.warbands.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    const previousStatus =
+        warband.status;
+
+
+    warband.status =
+        "retired";
+
+
+    const { error } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+                status: "retired"
+            })
+            .eq(
+                "id",
+                warband.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to retire warband: " +
+            error.message
+        );
+
+        warband.status =
+            previousStatus;
+
+        return;
+
+    }
+
+
+    renderApplication();
+
+}
+
+
+async function recoverWarband(warbandId) {
+
+    const warband =
+        state.warbands.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    const previousStatus =
+        warband.status;
+
+
+    warband.status =
+        "active";
+
+
+    const { error } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+                status: "active"
+            })
+            .eq(
+                "id",
+                warband.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to recover warband: " +
+            error.message
+        );
+
+        warband.status =
+            previousStatus;
+
+        return;
+
+    }
+
+
+    renderApplication();
 
 }
 
@@ -266,12 +463,34 @@ function renderWarbandCard(warband) {
 
             <div class="mm-card-actions">
 
-                <button
-                    class="mm-button mm-button-primary"
-                    onclick="openWarband('${escapeAttribute(warband.id)}')"
-                >
-                    Manage Warband
-                </button>
+                ${warband.status === "retired"
+                    ? `
+
+                        <button
+                            class="mm-button mm-button-primary"
+                            onclick="recoverWarband('${escapeAttribute(warband.id)}')"
+                        >
+                            Recover Warband
+                        </button>
+
+                    `
+                    : `
+
+                        <button
+                            class="mm-button mm-button-primary"
+                            onclick="openWarband('${escapeAttribute(warband.id)}')"
+                        >
+                            Manage Warband
+                        </button>
+
+                        <button
+                            class="mm-button"
+                            onclick="retireWarband('${escapeAttribute(warband.id)}')"
+                        >
+                            Retire
+                        </button>
+
+                    `}
 
             </div>
 
