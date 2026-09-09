@@ -119,6 +119,38 @@ function normaliseWarbands(warbands) {
 }
 
 
+/*
+ * Looks up a warband for display in a shared-game context,
+ * where it might belong to someone else. Falls back to the
+ * cached stub (name/owner/fighter count only) fetched via
+ * get_warband_stubs when the viewer doesn't own it, so the
+ * roster can still show a card instead of silently dropping it.
+ */
+
+function getWarbandOrStub(warbandId) {
+
+    const owned =
+        state.warbands.find(
+            warband =>
+                warband.id === warbandId
+        );
+
+
+    if (owned) {
+
+        return owned;
+
+    }
+
+
+    return (
+        state.warbandStubs[warbandId] ||
+        null
+    );
+
+}
+
+
 /* ============================================================
    WARBAND CARDS
    ============================================================ */

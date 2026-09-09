@@ -66,6 +66,15 @@ const state = {
     showRetiredWarbands: false,
 
     /*
+     * Minimal {id, name, owner, fighterCount} entries for
+     * warbands in a shared game that the viewer doesn't own
+     * (via search_warbands/get_warband_stubs) - never holds
+     * treasury, equipment or fighters. Keyed by warband id.
+     */
+
+    warbandStubs: {},
+
+    /*
      * Real Supabase auth. Not yet wired into warband
      * ownership - see js/auth.js.
      */

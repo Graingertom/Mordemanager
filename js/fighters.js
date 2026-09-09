@@ -4,6 +4,16 @@
    ============================================================ */
 
 
+/*
+ * Working copy of the fighter currently open in the editor's
+ * injury list - kept separate from fighter.injuries so Cancel
+ * discards unsaved additions/removals, matching how equipment
+ * changes only commit on Save Fighter.
+ */
+
+let editingInjuries = [];
+
+
 /* ============================================================
    DATA NORMALISATION
    ============================================================ */
@@ -993,6 +1003,10 @@ function showEditFighter(
         );
 
 
+    editingInjuries =
+        [...fighter.injuries];
+
+
     openModal(`
 
         <div class="mm-modal mm-modal-large">
@@ -1122,6 +1136,46 @@ function showEditFighter(
                                     )
                             )
                             .join("")}
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-editor-section">
+
+                    <h3>
+                        Injuries
+                    </h3>
+
+                    <p>
+                        Record what happened to this
+                        fighter after a game.
+                    </p>
+
+
+                    <div id="fighter-injuries-list">
+
+                        ${renderInjuriesEditorList()}
+
+                    </div>
+
+
+                    <div class="mm-injury-add">
+
+                        <input
+                            id="new-injury-name"
+                            type="text"
+                            placeholder="e.g. Leg Wound"
+                        >
+
+                        <button
+                            type="button"
+                            class="mm-button"
+                            onclick="addInjuryToEditor()"
+                        >
+                            Add Injury
+                        </button>
 
                     </div>
 
@@ -1348,6 +1402,130 @@ function setupFighterEquipmentValidation(
 
 
 /* ============================================================
+   INJURIES EDITOR
+   ============================================================ */
+
+function renderInjuriesEditorList() {
+
+    if (!editingInjuries.length) {
+
+        return `
+
+            <p class="mm-muted">
+                No injuries recorded.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <ul class="mm-injury-list">
+
+            ${editingInjuries
+                .map(
+                    (injury, index) => `
+
+                        <li>
+
+                            <span>
+                                ${escapeHtml(injury)}
+                            </span>
+
+                            <button
+                                type="button"
+                                class="mm-button mm-button-small mm-button-danger"
+                                onclick="removeInjuryFromEditor(${index})"
+                            >
+                                Remove
+                            </button>
+
+                        </li>
+
+                    `
+                )
+                .join("")}
+
+        </ul>
+
+    `;
+
+}
+
+
+function addInjuryToEditor() {
+
+    const input =
+        document.getElementById(
+            "new-injury-name"
+        );
+
+
+    const value =
+        input?.value.trim();
+
+
+    if (!value) {
+
+        return;
+
+    }
+
+
+    editingInjuries.push(
+        value
+    );
+
+
+    input.value =
+        "";
+
+
+    const list =
+        document.getElementById(
+            "fighter-injuries-list"
+        );
+
+
+    if (list) {
+
+        list.innerHTML =
+            renderInjuriesEditorList();
+
+    }
+
+}
+
+
+function removeInjuryFromEditor(
+    index
+) {
+
+    editingInjuries.splice(
+        index,
+        1
+    );
+
+
+    const list =
+        document.getElementById(
+            "fighter-injuries-list"
+        );
+
+
+    if (list) {
+
+        list.innerHTML =
+            renderInjuriesEditorList();
+
+    }
+
+}
+
+
+/* ============================================================
    PROFILE STAT (READ ONLY)
    ============================================================ */
 
@@ -1561,6 +1739,9 @@ async function saveFighterChanges(
     const previousStash =
         [...warband.stash];
 
+    const previousInjuries =
+        [...fighter.injuries];
+
 
     const nameInput =
         document.getElementById(
@@ -1733,6 +1914,10 @@ async function saveFighterChanges(
     }
 
 
+    fighter.injuries =
+        [...editingInjuries];
+
+
     /*
      * Persist only after ALL validation
      * and rule changes have succeeded.
@@ -1747,6 +1932,9 @@ async function saveFighterChanges(
 
                 name:
                     fighter.name,
+
+                injuries:
+                    fighter.injuries,
 
                 experience:
                     fighter.experience,
@@ -1777,6 +1965,9 @@ async function saveFighterChanges(
 
         fighter.equipment =
             previousEquipment;
+
+        fighter.injuries =
+            previousInjuries;
 
         warband.treasury =
             previousTreasury;

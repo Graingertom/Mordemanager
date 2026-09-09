@@ -999,6 +999,60 @@ a {
         var(--green-light);
 }
 
+.mm-injury-list {
+    list-style: none;
+
+    margin: 0 0 12px;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mm-injury-list li {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    background: rgba(0, 0, 0, .15);
+}
+
+.mm-injury-add {
+    display: flex;
+
+    gap: 10px;
+}
+
+.mm-injury-add input {
+    flex: 1;
+
+    min-height: 44px;
+
+    padding: 9px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: #101216;
+
+    color: var(--text);
+
+    outline: none;
+}
+
+.mm-injury-add input:focus {
+    border-color: var(--gold);
+}
+
 
 /* ============================================================
    EMPTY STATES

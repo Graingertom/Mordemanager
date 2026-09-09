@@ -508,7 +508,7 @@ async function createGame() {
    OPEN / CLOSE GAME
    ============================================================ */
 
-function openGame(id) {
+async function openGame(id) {
 
     const game =
         state.games.find(
@@ -536,7 +536,86 @@ function openGame(id) {
         null;
 
 
+    await fetchMissingWarbandStubs(
+        game
+    );
+
+
     renderApplication();
+
+}
+
+
+/*
+ * Backfills roster cards for warbands in this game that the
+ * viewer doesn't own and hasn't already got a stub for (e.g.
+ * reopening a game in a fresh session after a GM added someone
+ * else's warband) - without this, getWarbandOrStub() would come
+ * up empty and the card would silently disappear from the list.
+ */
+
+async function fetchMissingWarbandStubs(
+    game
+) {
+
+    const missingIds =
+        game.warbandIds.filter(
+            warbandId =>
+                !getWarbandOrStub(warbandId)
+        );
+
+
+    if (!missingIds.length) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_warband_stubs",
+            {
+                warband_ids:
+                    missingIds
+            }
+        );
+
+
+    if (error || !data) {
+
+        return;
+
+    }
+
+
+    data.forEach(
+        row => {
+
+            state.warbandStubs[row.id] = {
+
+                id:
+                    row.id,
+
+                name:
+                    row.name,
+
+                owner:
+                    row.owner_display_name || "",
+
+                fighterCount:
+                    Number(row.fighter_count) || 0,
+
+                isStub:
+                    true
+
+            };
+
+        }
+    );
 
 }
 
@@ -584,10 +663,7 @@ function renderGamePage() {
         game.warbandIds
             .map(
                 warbandId =>
-                    state.warbands.find(
-                        warband =>
-                            warband.id === warbandId
-                    )
+                    getWarbandOrStub(warbandId)
             )
             .filter(Boolean);
 
@@ -1391,7 +1467,9 @@ function renderGameWarbandCard(
 
                 <div>
                     <strong>
-                        ${warband.fighters.length}
+                        ${warband.isStub
+                            ? (warband.fighterCount ?? "—")
+                            : warband.fighters.length}
                     </strong>
 
                     <span>
@@ -1402,9 +1480,11 @@ function renderGameWarbandCard(
 
                 <div>
                     <strong>
-                        ${calculateWarbandRating(
-                            warband
-                        )}
+                        ${warband.isStub
+                            ? "—"
+                            : calculateWarbandRating(
+                                warband
+                            )}
                     </strong>
 
                     <span>
@@ -1415,9 +1495,11 @@ function renderGameWarbandCard(
 
                 <div>
                     <strong>
-                        ${calculateTreasury(
-                            warband
-                        )} gc
+                        ${warband.isStub
+                            ? "—"
+                            : `${calculateTreasury(
+                                warband
+                            )} gc`}
                     </strong>
 
                     <span>
@@ -1427,6 +1509,15 @@ function renderGameWarbandCard(
 
             </div>
 
+
+            ${warband.isStub
+                ? `
+                    <p class="mm-muted">
+                        Full details are only visible
+                        to this warband's owner.
+                    </p>
+                `
+                : `
 
             <div class="mm-game-warband-detail">
 
@@ -1496,6 +1587,8 @@ function renderGameWarbandCard(
 
             </div>
 
+                `}
+
 
             <div class="mm-card-actions">
 
@@ -1542,6 +1635,10 @@ function showAddWarbandToGame(
         );
 
 
+    const gm =
+        isGameMaster(game);
+
+
     openModal(`
 
         <div class="mm-modal">
@@ -1563,6 +1660,46 @@ function showAddWarbandToGame(
 
 
             <div class="mm-modal-body">
+
+                ${
+                    gm
+                        ? `
+                            <label class="mm-field">
+
+                                <span>
+                                    Find A Warband To Add
+                                </span>
+
+                                <div class="mm-injury-add">
+
+                                    <input
+                                        id="warband-search-input"
+                                        type="text"
+                                        placeholder="Search by warband name"
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="mm-button"
+                                        onclick="searchWarbandsForGame('${escapeAttribute(gameId)}')"
+                                    >
+                                        Search
+                                    </button>
+
+                                </div>
+
+                            </label>
+
+
+                            <div id="warband-search-results"></div>
+
+
+                            <h3>
+                                Your Warbands
+                            </h3>
+                        `
+                        : ""
+                }
 
                 ${
                     availableWarbands.length
@@ -1620,9 +1757,184 @@ function showAddWarbandToGame(
 }
 
 
-async function addWarbandToGame(
+async function searchWarbandsForGame(
+    gameId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const input =
+        document.getElementById(
+            "warband-search-input"
+        );
+
+
+    const resultsContainer =
+        document.getElementById(
+            "warband-search-results"
+        );
+
+
+    if (!resultsContainer) {
+
+        return;
+
+    }
+
+
+    resultsContainer.innerHTML =
+        `<p class="mm-muted">Searching...</p>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "search_warbands",
+            {
+                search_term:
+                    input?.value.trim() || ""
+            }
+        );
+
+
+    if (error) {
+
+        resultsContainer.innerHTML =
+            `<p class="mm-muted">Search failed: ${escapeHtml(error.message)}</p>`;
+
+        return;
+
+    }
+
+
+    const results =
+        (data || []).filter(
+            row =>
+                !game.warbandIds.includes(row.id)
+        );
+
+
+    if (!results.length) {
+
+        resultsContainer.innerHTML =
+            `<p class="mm-muted">No matching warbands found.</p>`;
+
+        return;
+
+    }
+
+
+    lastWarbandSearchResults =
+        results;
+
+
+    resultsContainer.innerHTML = `
+
+        <div class="mm-warband-select-list">
+
+            ${results
+                .map(
+                    row => `
+
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="addSearchedWarbandToGame('${escapeAttribute(gameId)}', '${escapeAttribute(row.id)}')"
+                        >
+                            <strong>
+                                ${escapeHtml(row.name)}
+                            </strong>
+
+                            <span>
+                                Owned by ${escapeHtml(row.owner_display_name || "Unknown")}
+                                · ${row.fighter_count} fighters
+                            </span>
+                        </button>
+
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+ * Last set of search_warbands results, kept only so the
+ * onclick handlers above can look a row up by id rather than
+ * encoding warband data (which could contain quote characters)
+ * directly into an HTML attribute.
+ */
+
+let lastWarbandSearchResults = [];
+
+
+function addSearchedWarbandToGame(
     gameId,
     warbandId
+) {
+
+    const row =
+        lastWarbandSearchResults.find(
+            item =>
+                item.id === warbandId
+        );
+
+
+    if (!row) {
+
+        return;
+
+    }
+
+
+    addWarbandToGame(
+        gameId,
+        warbandId,
+        {
+
+            id:
+                row.id,
+
+            name:
+                row.name,
+
+            owner:
+                row.owner_display_name || "",
+
+            fighterCount:
+                Number(row.fighter_count) || 0,
+
+            isStub:
+                true
+
+        }
+    );
+
+}
+
+
+async function addWarbandToGame(
+    gameId,
+    warbandId,
+    stub
 ) {
 
     const game =
@@ -1677,6 +1989,20 @@ async function addWarbandToGame(
     game.warbandIds.push(
         warbandId
     );
+
+
+    if (
+        stub &&
+        !state.warbands.find(
+            warband =>
+                warband.id === warbandId
+        )
+    ) {
+
+        state.warbandStubs[warbandId] =
+            stub;
+
+    }
 
 
     closeModal();
@@ -2043,10 +2369,7 @@ function showAddGameSettlement(
         game.warbandIds
             .map(
                 warbandId =>
-                    state.warbands.find(
-                        warband =>
-                            warband.id === warbandId
-                    )
+                    getWarbandOrStub(warbandId)
             )
             .filter(Boolean);
 
