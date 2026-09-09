@@ -39,6 +39,9 @@ function normaliseWarbands(warbands) {
                     warband.createdAt ||
                     new Date().toISOString(),
 
+                ownerId:
+                    warband.ownerId || null,
+
                 owner:
                     warband.owner || "",
 
@@ -334,25 +337,6 @@ function showCreateWarband() {
 
                 </label>
 
-
-                <label class="mm-field">
-
-                    <span>
-                        Owner
-                    </span>
-
-                    <input
-                        id="new-warband-owner"
-                        type="text"
-                        placeholder="Whose warband is this?"
-                        autocomplete="off"
-                        value="${escapeAttribute(
-                            getCurrentDisplayName()
-                        )}"
-                    >
-
-                </label>
-
             </div>
 
 
@@ -382,7 +366,22 @@ function showCreateWarband() {
 }
 
 
-function createWarband() {
+async function createWarband() {
+
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
+
+        alert(
+            "You need to be signed in to create a warband."
+        );
+
+        return;
+
+    }
+
 
     const nameInput =
         document.getElementById(
@@ -437,43 +436,66 @@ function createWarband() {
     }
 
 
-    const ownerInput =
-        document.getElementById(
-            "new-warband-owner"
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("warbands")
+            .insert({
+
+                owner_id:
+                    user.id,
+
+                name,
+
+                type,
+
+                treasury:
+                    Number(
+                        definition.startingTreasury
+                    ) || 0
+
+            })
+            .select(`
+                id,
+                ownerId:owner_id,
+                name,
+                type,
+                treasury,
+                createdAt:created_at
+            `)
+            .single();
+
+
+    if (error) {
+
+        alert(
+            "Unable to create warband: " +
+            error.message
         );
 
+        return;
 
-    const warband = {
+    }
 
-        id:
-            generateId("warband"),
 
-        name,
+    const warband =
+        normaliseWarbands([{
 
-        type,
+            ...data,
 
-        createdAt:
-            new Date().toISOString(),
+            owner:
+                getCurrentDisplayName(),
 
-        owner:
-            ownerInput?.value.trim() || "",
+            fighters: []
 
-        treasury:
-            Number(
-                definition.startingTreasury
-            ) || 0,
-
-        fighters: []
-
-    };
+        }])[0];
 
 
     state.warbands.push(
         warband
     );
-
-
-    savePlayerData();
 
 
     closeModal();

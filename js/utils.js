@@ -133,15 +133,38 @@ function getCurrentGame() {
 
 function ownsWarband(warband) {
 
-    if (!warband?.owner) {
+    if (!warband?.ownerId) {
 
         return true;
 
     }
 
 
-    return warband.owner ===
-        getCurrentDisplayName();
+    const user =
+        getCurrentUser();
+
+
+    return !!user &&
+        warband.ownerId === user.id;
+
+}
+
+
+function isGameMaster(game) {
+
+    if (!game?.gameMasterId) {
+
+        return false;
+
+    }
+
+
+    const user =
+        getCurrentUser();
+
+
+    return !!user &&
+        game.gameMasterId === user.id;
 
 }
 

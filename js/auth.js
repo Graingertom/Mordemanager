@@ -3,20 +3,39 @@
    Authentication (Supabase)
    ============================================================ */
 
-/*
- * This is real auth, separate from (and not yet wired into) the
- * existing local "Playing As" name stub that warband ownership
- * still runs on. That gets rewired once the data layer itself
- * moves to Supabase - until then this just handles sign-in /
- * sign-out / profile so that migration has something to build on.
- */
-
-
 /* ============================================================
    SESSION BOOTSTRAP
    ============================================================ */
 
+/*
+ * Returns a promise that resolves once the initial signed-in /
+ * signed-out state is known, so initialise() can await it before
+ * loading anything that depends on who's signed in. The same
+ * listener keeps running afterwards for later sign-in/sign-out
+ * events, at which point it reloads warbands/games (via
+ * loadPlayerData) and re-renders - unlike the first firing,
+ * where initialise() itself does that once this promise resolves.
+ */
+
 function initAuth() {
+
+    let resolveReady;
+
+
+    const ready =
+        new Promise(
+            resolve => {
+
+                resolveReady =
+                    resolve;
+
+            }
+        );
+
+
+    let isFirstEvent =
+        true;
+
 
     supabaseClient.auth.onAuthStateChange(
         async (
@@ -40,6 +59,21 @@ function initAuth() {
             }
 
 
+            if (isFirstEvent) {
+
+                isFirstEvent =
+                    false;
+
+                resolveReady();
+
+                return;
+
+            }
+
+
+            await loadPlayerData();
+
+
             if (
                 typeof renderApplication ===
                 "function"
@@ -51,6 +85,9 @@ function initAuth() {
 
         }
     );
+
+
+    return ready;
 
 }
 

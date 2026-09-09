@@ -18,11 +18,7 @@ const DATA_PATHS = {
 
     skills: "./data/rules/skills.json",
 
-    reikland: "./data/rules/warbands/reikland.json",
-
-    playerWarbands: "./data/app/warbands.json",
-
-    games: "./data/app/games.json"
+    reikland: "./data/rules/warbands/reikland.json"
 
 };
 
@@ -90,7 +86,13 @@ async function initialise() {
     );
 
 
-    initAuth();
+    /*
+     * Waits until the initial signed-in/signed-out state is
+     * known before loading anything that depends on it. Also
+     * sets up the listener for later sign-in/sign-out changes.
+     */
+
+    await initAuth();
 
 
     try {
@@ -203,219 +205,162 @@ async function loadRules() {
    PLAYER DATA
    ============================================================ */
 
+/*
+ * Pulled fresh from Supabase every time this runs - called once
+ * at startup and again whenever auth.js's listener sees a
+ * sign-in/sign-out. Row Level Security means a signed-out client
+ * would just get nothing back anyway, but checking locally first
+ * avoids firing queries that can only ever come back empty.
+ */
+
 async function loadPlayerData() {
 
-    let storedData = null;
+    const user =
+        getCurrentUser();
 
 
-    /*
-     * Try localStorage first.
-     */
+    if (!user) {
 
-    try {
+        state.warbands = [];
 
-        storedData =
-            localStorage.getItem(
-                "mordemanager-warbands"
-            );
-
-    } catch (error) {
-
-        console.warn(
-            "localStorage unavailable:",
-            error
-        );
-
-    }
-
-
-    let storedGames = null;
-
-
-    if (storedData) {
-
-        try {
-
-            const parsed =
-                JSON.parse(storedData);
-
-
-            state.warbands =
-                normaliseWarbands(
-                    parsed.warbands || []
-                );
-
-
-            /*
-             * Games were added to the saved payload
-             * after warbands were. Older saved data
-             * may not have a games field at all, in
-             * which case we fall through to the seed
-             * file below.
-             */
-
-            if (
-                Array.isArray(parsed.games)
-            ) {
-
-                storedGames =
-                    parsed.games;
-
-            }
-
-        } catch (error) {
-
-            console.warn(
-                "Saved warband data could not be parsed.",
-                error
-            );
-
-            state.warbands = [];
-
-        }
-
-    } else {
-
-        /*
-         * No saved local data.
-         *
-         * Load initial development data.
-         */
-
-        try {
-
-            const response =
-                await fetch(
-                    DATA_PATHS.playerWarbands
-                );
-
-
-            if (response.ok) {
-
-                const data =
-                    await response.json();
-
-
-                state.warbands =
-                    normaliseWarbands(
-                        data.warbands || []
-                    );
-
-            } else {
-
-                console.warn(
-                    "Initial warbands file returned:",
-                    response.status
-                );
-
-                state.warbands = [];
-
-            }
-
-        } catch (error) {
-
-            console.warn(
-                "No initial player warbands found."
-            );
-
-            state.warbands = [];
-
-        }
-
-    }
-
-
-    if (storedGames) {
-
-        state.games =
-            normaliseGames(
-                storedGames
-            );
+        state.games = [];
 
         return;
 
     }
 
 
-    /*
-     * No saved games locally.
-     *
-     * Load initial development data.
-     */
+    const {
+        data: warbandRows,
+        error: warbandError
+    } =
+        await supabaseClient
+            .from("warbands")
+            .select(`
+                id,
+                ownerId:owner_id,
+                name,
+                type,
+                treasury,
+                createdAt:created_at,
+                owner:profiles(display_name),
+                fighters (
+                    id,
+                    type,
+                    typeName:type_name,
+                    category,
+                    name,
+                    profile,
+                    baseCost:base_cost,
+                    equipment,
+                    skills,
+                    experience,
+                    advances,
+                    injuries
+                )
+            `);
 
-    try {
 
-        const response =
-            await fetch(
-                DATA_PATHS.games
+    if (warbandError) {
+
+        console.error(
+            "Unable to load warbands:",
+            warbandError.message
+        );
+
+        state.warbands = [];
+
+    } else {
+
+        state.warbands =
+            normaliseWarbands(
+                (warbandRows || []).map(
+                    row => ({
+
+                        ...row,
+
+                        owner:
+                            row.owner?.display_name || "",
+
+                        fighters:
+                            row.fighters || []
+
+                    })
+                )
             );
 
-
-        if (response.ok) {
-
-            const data =
-                await response.json();
+    }
 
 
-            state.games =
-                normaliseGames(
-                    data.games || []
-                );
+    const {
+        data: gameRows,
+        error: gameError
+    } =
+        await supabaseClient
+            .from("games")
+            .select(`
+                id,
+                name,
+                gameMasterId:game_master_id,
+                status,
+                createdAt:created_at,
+                scenarioName:scenario_name,
+                scenarioDescription:scenario_description,
+                gameMaster:profiles(display_name),
+                game_warbands ( warbandId:warband_id ),
+                settlements (
+                    id,
+                    name,
+                    note,
+                    warbandId:warband_id
+                )
+            `);
 
-        } else {
 
-            state.games = [];
+    if (gameError) {
 
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Games data could not be loaded."
+        console.error(
+            "Unable to load games:",
+            gameError.message
         );
 
         state.games = [];
 
-    }
+    } else {
 
-}
+        state.games =
+            normaliseGames(
+                (gameRows || []).map(
+                    row => ({
 
+                        ...row,
 
-/* ============================================================
-   PERSISTENCE
-   ============================================================ */
+                        gameMaster:
+                            row.gameMaster?.display_name || "",
 
-function savePlayerData() {
+                        warbandIds:
+                            (row.game_warbands || [])
+                                .map(
+                                    gw =>
+                                        gw.warbandId
+                                ),
 
-    try {
+                        settlements:
+                            row.settlements || [],
 
-        localStorage.setItem(
+                        scenario: {
 
-            "mordemanager-warbands",
+                            name:
+                                row.scenarioName || "",
 
-            JSON.stringify({
+                            description:
+                                row.scenarioDescription || ""
 
-                warbands:
-                    state.warbands,
+                        }
 
-                games:
-                    state.games
-
-            })
-
-        );
-
-
-        console.log(
-            "Warbands saved."
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Unable to save warbands:",
-            error
-        );
+                    })
+                )
+            );
 
     }
 
@@ -468,6 +413,10 @@ function renderDashboard() {
         document.getElementById("app");
 
 
+    const user =
+        getCurrentUser();
+
+
     app.innerHTML = `
 
         <div class="mm-app">
@@ -492,12 +441,18 @@ function renderDashboard() {
                     ${renderAuthControl()}
 
 
-                    <button
-                        class="mm-button mm-button-primary"
-                        onclick="showCreateWarband()"
-                    >
-                        + New Warband
-                    </button>
+                    ${
+                        user
+                            ? `
+                                <button
+                                    class="mm-button mm-button-primary"
+                                    onclick="showCreateWarband()"
+                                >
+                                    + New Warband
+                                </button>
+                            `
+                            : ""
+                    }
 
                 </div>
 
@@ -506,29 +461,63 @@ function renderDashboard() {
 
             <main class="mm-main">
 
-                <section class="mm-page-title">
+                ${
+                    user
+                        ? `
 
-                    <div>
+                            <section class="mm-page-title">
 
-                        <h1>
-                            My Warbands
-                        </h1>
+                                <div>
 
-                        <p>
-                            Manage your warbands,
-                            fighters, equipment
-                            and campaigns.
-                        </p>
+                                    <h1>
+                                        My Warbands
+                                    </h1>
 
-                    </div>
+                                    <p>
+                                        Manage your warbands,
+                                        fighters, equipment
+                                        and campaigns.
+                                    </p>
 
-                </section>
+                                </div>
+
+                            </section>
 
 
-                ${renderWarbandCards()}
+                            ${renderWarbandCards()}
 
 
-                ${renderActiveGames()}
+                            ${renderActiveGames()}
+
+                        `
+                        : `
+
+                            <section class="mm-empty-state">
+
+                                <div class="mm-empty-icon">
+                                    ☠
+                                </div>
+
+                                <h2>
+                                    Sign In To Get Started
+                                </h2>
+
+                                <p>
+                                    Sign in to create and manage
+                                    your warbands and games.
+                                </p>
+
+                                <button
+                                    class="mm-button mm-button-primary"
+                                    onclick="showSignIn()"
+                                >
+                                    Sign In
+                                </button>
+
+                            </section>
+
+                        `
+                }
 
 
                 ${renderAcknowledgement()}
@@ -625,7 +614,7 @@ Object.assign(
 
         state,
 
-        savePlayerData,
+        loadPlayerData,
 
         calculateWarbandRating,
 

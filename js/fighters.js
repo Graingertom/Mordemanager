@@ -342,7 +342,7 @@ function renderFighterTypeOption(type, warband) {
    ADD FIGHTER
    ============================================================ */
 
-function addFighter(typeId) {
+async function addFighter(typeId) {
 
     const currentWarband =
         getCurrentWarband();
@@ -481,47 +481,116 @@ function addFighter(typeId) {
        CREATE FIGHTER
        -------------------------------------------------------- */
 
-    const fighter = {
+    const newTreasury =
+        treasury - recruitCost;
 
-        id:
-            generateId("fighter"),
 
-        type:
-            fighterType.id,
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("fighters")
+            .insert({
 
-        typeName:
-            fighterType.name,
+                warband_id:
+                    currentWarband.id,
 
-        category:
-            fighterType.category || "henchman",
+                type:
+                    fighterType.id,
 
-        name:
-            generateDefaultFighterName(
-                fighterType,
-                currentWarband
-            ),
+                type_name:
+                    fighterType.name,
 
-        profile: {
-            ...(fighterType.profile || {})
-        },
+                category:
+                    fighterType.category || "henchman",
 
-        baseCost:
-            recruitCost,
+                name:
+                    generateDefaultFighterName(
+                        fighterType,
+                        currentWarband
+                    ),
 
-        equipment: [],
+                profile: {
+                    ...(fighterType.profile || {})
+                },
 
-        skills: [],
+                base_cost:
+                    recruitCost,
 
-        experience:
-            Number(
-                fighterType.startingExperience
-            ) || 0,
+                equipment: [],
 
-        advances: [],
+                skills: [],
 
-        injuries: []
+                experience:
+                    Number(
+                        fighterType.startingExperience
+                    ) || 0,
 
-    };
+                advances: [],
+
+                injuries: []
+
+            })
+            .select(`
+                id,
+                type,
+                typeName:type_name,
+                category,
+                name,
+                profile,
+                baseCost:base_cost,
+                equipment,
+                skills,
+                experience,
+                advances,
+                injuries
+            `)
+            .single();
+
+
+    if (error) {
+
+        alert(
+            "Unable to add fighter: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    const {
+        error: treasuryError
+    } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+                treasury:
+                    newTreasury
+            })
+            .eq(
+                "id",
+                currentWarband.id
+            );
+
+
+    if (treasuryError) {
+
+        console.error(
+            "Fighter was added but treasury could not be updated:",
+            treasuryError.message
+        );
+
+    }
+
+
+    const fighter =
+        normaliseFighter(
+            data,
+            currentWarband.fighters.length
+        );
 
 
     currentWarband.fighters.push(
@@ -530,10 +599,7 @@ function addFighter(typeId) {
 
 
     currentWarband.treasury =
-        treasury - recruitCost;
-
-
-    savePlayerData();
+        newTreasury;
 
 
     closeModal();
@@ -1418,7 +1484,7 @@ function renderEquipmentCheckbox(
    SAVE FIGHTER
    ============================================================ */
 
-function saveFighterChanges(
+async function saveFighterChanges(
     fighterId
 ) {
 
@@ -1462,6 +1528,25 @@ function saveFighterChanges(
         return;
 
     }
+
+
+    /*
+     * Snapshot so name/xp/equipment/treasury can be
+     * rolled back if the database write fails after
+     * they have already been mutated in memory below.
+     */
+
+    const previousName =
+        fighter.name;
+
+    const previousExperience =
+        fighter.experience;
+
+    const previousEquipment =
+        [...fighter.equipment];
+
+    const previousTreasury =
+        warband.treasury;
 
 
     const nameInput =
@@ -1540,6 +1625,12 @@ function saveFighterChanges(
             "The rules engine is not available."
         );
 
+        fighter.name =
+            previousName;
+
+        fighter.experience =
+            previousExperience;
+
         return;
 
     }
@@ -1575,6 +1666,12 @@ function saveFighterChanges(
             messages
         );
 
+
+        fighter.name =
+            previousName;
+
+        fighter.experience =
+            previousExperience;
 
         return;
 
@@ -1612,6 +1709,12 @@ function saveFighterChanges(
         );
 
 
+        fighter.name =
+            previousName;
+
+        fighter.experience =
+            previousExperience;
+
         return;
 
     }
@@ -1622,7 +1725,77 @@ function saveFighterChanges(
      * and rule changes have succeeded.
      */
 
-    savePlayerData();
+    const {
+        error: fighterError
+    } =
+        await supabaseClient
+            .from("fighters")
+            .update({
+
+                name:
+                    fighter.name,
+
+                experience:
+                    fighter.experience,
+
+                equipment:
+                    fighter.equipment
+
+            })
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (fighterError) {
+
+        alert(
+            "Unable to save fighter: " +
+            fighterError.message
+        );
+
+
+        fighter.name =
+            previousName;
+
+        fighter.experience =
+            previousExperience;
+
+        fighter.equipment =
+            previousEquipment;
+
+        warband.treasury =
+            previousTreasury;
+
+        return;
+
+    }
+
+
+    const {
+        error: warbandError
+    } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+                treasury:
+                    warband.treasury
+            })
+            .eq(
+                "id",
+                warband.id
+            );
+
+
+    if (warbandError) {
+
+        console.error(
+            "Fighter saved but treasury could not be updated:",
+            warbandError.message
+        );
+
+    }
 
 
     closeModal();
@@ -1957,7 +2130,75 @@ function deleteFighter(
 }
 
 
-function performDeleteFighter(
+/*
+ * Actually removes a fighter from the database and refunds
+ * their base cost against the warband's treasury. Called once
+ * a removal is truly confirmed - either immediately, or after
+ * "Save Anyway" on the rule-violation warning. Returns false
+ * (and leaves the database untouched) if either write fails, so
+ * the caller can roll back its optimistic in-memory change.
+ */
+
+async function commitFighterDeletion(
+    warband,
+    fighter
+) {
+
+    const {
+        error: deleteError
+    } =
+        await supabaseClient
+            .from("fighters")
+            .delete()
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (deleteError) {
+
+        alert(
+            "Unable to remove fighter: " +
+            deleteError.message
+        );
+
+        return false;
+
+    }
+
+
+    const {
+        error: treasuryError
+    } =
+        await supabaseClient
+            .from("warbands")
+            .update({
+                treasury:
+                    warband.treasury
+            })
+            .eq(
+                "id",
+                warband.id
+            );
+
+
+    if (treasuryError) {
+
+        console.error(
+            "Fighter removed but treasury could not be updated:",
+            treasuryError.message
+        );
+
+    }
+
+
+    return true;
+
+}
+
+
+async function performDeleteFighter(
     fighterId
 ) {
 
@@ -2035,7 +2276,32 @@ function performDeleteFighter(
     }
 
 
-    savePlayerData();
+    const committed =
+        await commitFighterDeletion(
+            warband,
+            fighter
+        );
+
+
+    if (!committed) {
+
+        /*
+         * Roll back the optimistic in-memory
+         * change - the database write failed.
+         */
+
+        warband.treasury -=
+            Number(fighter.baseCost) || 0;
+
+        warband.fighters.splice(
+            index,
+            0,
+            fighter
+        );
+
+        return;
+
+    }
 
 
     closeModal();
@@ -2157,12 +2423,58 @@ function cancelFighterRemoval() {
 }
 
 
-function confirmFighterRemoval() {
+async function confirmFighterRemoval() {
+
+    const warband =
+        getCurrentWarband();
+
+
+    const pending =
+        pendingFighterRemoval;
+
 
     pendingFighterRemoval = null;
 
 
-    savePlayerData();
+    if (!warband || !pending) {
+
+        closeModal();
+
+        return;
+
+    }
+
+
+    const committed =
+        await commitFighterDeletion(
+            warband,
+            pending.fighter
+        );
+
+
+    if (!committed) {
+
+        /*
+         * Roll back the optimistic in-memory
+         * change - the database write failed.
+         */
+
+        warband.treasury -=
+            Number(pending.fighter.baseCost) || 0;
+
+        warband.fighters.splice(
+            pending.index,
+            0,
+            pending.fighter
+        );
+
+        closeModal();
+
+        renderApplication();
+
+        return;
+
+    }
 
 
     closeModal();

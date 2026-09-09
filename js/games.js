@@ -30,6 +30,9 @@ function normaliseGames(games) {
                     game.name ||
                     `Game ${index + 1}`,
 
+                gameMasterId:
+                    game.gameMasterId || null,
+
                 gameMaster:
                     game.gameMaster || "",
 
@@ -326,22 +329,6 @@ function showCreateGame() {
                 <label class="mm-field">
 
                     <span>
-                        Game Master
-                    </span>
-
-                    <input
-                        id="new-game-master"
-                        type="text"
-                        placeholder="Your name"
-                        autocomplete="off"
-                    >
-
-                </label>
-
-
-                <label class="mm-field">
-
-                    <span>
                         Current Scenario (optional)
                     </span>
 
@@ -383,17 +370,26 @@ function showCreateGame() {
 }
 
 
-function createGame() {
+async function createGame() {
+
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
+
+        alert(
+            "You need to be signed in to create a game."
+        );
+
+        return;
+
+    }
+
 
     const nameInput =
         document.getElementById(
             "new-game-name"
-        );
-
-
-    const masterInput =
-        document.getElementById(
-            "new-game-master"
         );
 
 
@@ -423,41 +419,79 @@ function createGame() {
     }
 
 
-    const game = {
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("games")
+            .insert({
 
-        id:
-            generateId("game"),
+                name,
 
-        name,
+                game_master_id:
+                    user.id,
 
-        gameMaster:
-            masterInput?.value.trim() || "",
+                status: "active",
 
-        status: "active",
+                scenario_name:
+                    scenarioInput?.value.trim() || "",
 
-        createdAt:
-            new Date().toISOString(),
+                scenario_description: ""
 
-        warbandIds: [],
+            })
+            .select(`
+                id,
+                name,
+                gameMasterId:game_master_id,
+                status,
+                createdAt:created_at,
+                scenarioName:scenario_name,
+                scenarioDescription:scenario_description
+            `)
+            .single();
 
-        scenario: {
 
-            name:
-                scenarioInput?.value.trim() || "",
+    if (error) {
 
-            description: ""
+        alert(
+            "Unable to create game: " +
+            error.message
+        );
 
-        }
+        return;
 
-    };
+    }
+
+
+    const game =
+        normaliseGames([{
+
+            ...data,
+
+            gameMaster:
+                getCurrentDisplayName(),
+
+            warbandIds: [],
+
+            settlements: [],
+
+            scenario: {
+
+                name:
+                    data.scenarioName || "",
+
+                description:
+                    data.scenarioDescription || ""
+
+            }
+
+        }])[0];
 
 
     state.games.push(
         game
     );
-
-
-    savePlayerData();
 
 
     closeModal();
@@ -594,20 +628,26 @@ function renderGamePage() {
 
                 <div class="mm-header-actions">
 
-                    <button
-                        class="mm-button"
-                        onclick="toggleGameStatus('${escapeAttribute(game.id)}')"
-                    >
-                        ${game.status === "completed" ? "Reopen Game" : "Mark Complete"}
-                    </button>
+                    ${
+                        isGameMaster(game)
+                            ? `
+                                <button
+                                    class="mm-button"
+                                    onclick="toggleGameStatus('${escapeAttribute(game.id)}')"
+                                >
+                                    ${game.status === "completed" ? "Reopen Game" : "Mark Complete"}
+                                </button>
 
 
-                    <button
-                        class="mm-button mm-button-danger"
-                        onclick="confirmDeleteGame('${escapeAttribute(game.id)}', '${escapeAttribute(game.name)}')"
-                    >
-                        Delete Game
-                    </button>
+                                <button
+                                    class="mm-button mm-button-danger"
+                                    onclick="confirmDeleteGame('${escapeAttribute(game.id)}', '${escapeAttribute(game.name)}')"
+                                >
+                                    Delete Game
+                                </button>
+                            `
+                            : ""
+                    }
 
                 </div>
 
@@ -685,12 +725,18 @@ function renderGamePage() {
                         </div>
 
 
-                        <button
-                            class="mm-button"
-                            onclick="showEditScenario('${escapeAttribute(game.id)}')"
-                        >
-                            Edit Scenario
-                        </button>
+                        ${
+                            isGameMaster(game)
+                                ? `
+                                    <button
+                                        class="mm-button"
+                                        onclick="showEditScenario('${escapeAttribute(game.id)}')"
+                                    >
+                                        Edit Scenario
+                                    </button>
+                                `
+                                : ""
+                        }
 
                     </div>
 
@@ -783,12 +829,18 @@ function renderGamePage() {
                         </div>
 
 
-                        <button
-                            class="mm-button mm-button-primary"
-                            onclick="showAddGameSettlement('${escapeAttribute(game.id)}')"
-                        >
-                            + Add Settlement
-                        </button>
+                        ${
+                            isGameMaster(game)
+                                ? `
+                                    <button
+                                        class="mm-button mm-button-primary"
+                                        onclick="showAddGameSettlement('${escapeAttribute(game.id)}')"
+                                    >
+                                        + Add Settlement
+                                    </button>
+                                `
+                                : ""
+                        }
 
                     </div>
 
@@ -979,7 +1031,7 @@ function showEditScenario(
 }
 
 
-function saveScenario(
+async function saveScenario(
     gameId
 ) {
 
@@ -995,6 +1047,10 @@ function saveScenario(
         return;
 
     }
+
+
+    const previousScenario =
+        { ...game.scenario };
 
 
     const nameInput =
@@ -1020,7 +1076,39 @@ function saveScenario(
     };
 
 
-    savePlayerData();
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("games")
+            .update({
+
+                scenario_name:
+                    game.scenario.name,
+
+                scenario_description:
+                    game.scenario.description
+
+            })
+            .eq(
+                "id",
+                gameId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to save scenario: " +
+            error.message
+        );
+
+        game.scenario =
+            previousScenario;
+
+        return;
+
+    }
 
 
     closeModal();
@@ -1035,7 +1123,7 @@ function saveScenario(
    GAME STATUS
    ============================================================ */
 
-function toggleGameStatus(
+async function toggleGameStatus(
     gameId
 ) {
 
@@ -1053,13 +1141,44 @@ function toggleGameStatus(
     }
 
 
+    const previousStatus =
+        game.status;
+
+
     game.status =
         game.status === "completed"
             ? "active"
             : "completed";
 
 
-    savePlayerData();
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("games")
+            .update({
+                status:
+                    game.status
+            })
+            .eq(
+                "id",
+                gameId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to update game status: " +
+            error.message
+        );
+
+        game.status =
+            previousStatus;
+
+        return;
+
+    }
 
 
     renderApplication();
@@ -1135,9 +1254,33 @@ function confirmDeleteGame(
 }
 
 
-function deleteGame(
+async function deleteGame(
     gameId
 ) {
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("games")
+            .delete()
+            .eq(
+                "id",
+                gameId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to delete game: " +
+            error.message
+        );
+
+        return;
+
+    }
+
 
     state.games =
         state.games.filter(
@@ -1148,9 +1291,6 @@ function deleteGame(
 
     state.currentGameId =
         null;
-
-
-    savePlayerData();
 
 
     closeModal();
@@ -1480,7 +1620,7 @@ function showAddWarbandToGame(
 }
 
 
-function addWarbandToGame(
+async function addWarbandToGame(
     gameId,
     warbandId
 ) {
@@ -1499,16 +1639,44 @@ function addWarbandToGame(
     }
 
 
-    if (!game.warbandIds.includes(warbandId)) {
+    if (game.warbandIds.includes(warbandId)) {
 
-        game.warbandIds.push(
-            warbandId
-        );
+        return;
 
     }
 
 
-    savePlayerData();
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("game_warbands")
+            .insert({
+
+                game_id:
+                    gameId,
+
+                warband_id:
+                    warbandId
+
+            });
+
+
+    if (error) {
+
+        alert(
+            "Unable to add warband to game: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    game.warbandIds.push(
+        warbandId
+    );
 
 
     closeModal();
@@ -1583,7 +1751,7 @@ function confirmRemoveWarbandFromGame(
 }
 
 
-function removeWarbandFromGame(
+async function removeWarbandFromGame(
     gameId,
     warbandId
 ) {
@@ -1602,17 +1770,73 @@ function removeWarbandFromGame(
     }
 
 
-    game.warbandIds =
-        game.warbandIds.filter(
-            id =>
-                id !== warbandId
+    const {
+        error: removeError
+    } =
+        await supabaseClient
+            .from("game_warbands")
+            .delete()
+            .eq(
+                "game_id",
+                gameId
+            )
+            .eq(
+                "warband_id",
+                warbandId
+            );
+
+
+    if (removeError) {
+
+        alert(
+            "Unable to remove warband from game: " +
+            removeError.message
         );
+
+        return;
+
+    }
 
 
     /*
      * A warband that has left the game can no
      * longer hold any of its settlements.
      */
+
+    const {
+        error: settlementError
+    } =
+        await supabaseClient
+            .from("settlements")
+            .update({
+                warband_id: null
+            })
+            .eq(
+                "game_id",
+                gameId
+            )
+            .eq(
+                "warband_id",
+                warbandId
+            );
+
+
+    if (settlementError) {
+
+        console.error(
+            "Warband removed but its settlements could not be unassigned:",
+            settlementError.message
+        );
+
+    }
+
+
+    game.warbandIds =
+        game.warbandIds.filter(
+            id =>
+                id !== warbandId
+        );
+
 
     (game.settlements || []).forEach(
         settlement => {
@@ -1625,9 +1849,6 @@ function removeWarbandFromGame(
 
         }
     );
-
-
-    savePlayerData();
 
 
     closeModal();
@@ -1736,40 +1957,60 @@ function renderGameSettlement(
 
             <div class="mm-settlement-actions">
 
-                <select
-                    onchange="reassignSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', this.value)"
-                >
+                ${
+                    isGameMaster(game)
+                        ? `
 
-                    <option value="">
-                        Unclaimed
-                    </option>
+                            <select
+                                onchange="reassignSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', this.value)"
+                            >
 
-                    ${warbands
-                        .map(
-                            warband => `
-                                <option
-                                    value="${escapeAttribute(warband.id)}"
-                                    ${
-                                        settlement.warbandId === warband.id
-                                            ? "selected"
-                                            : ""
-                                    }
-                                >
-                                    ${escapeHtml(warband.name)}
+                                <option value="">
+                                    Unclaimed
                                 </option>
-                            `
-                        )
-                        .join("")}
 
-                </select>
+                                ${warbands
+                                    .map(
+                                        warband => `
+                                            <option
+                                                value="${escapeAttribute(warband.id)}"
+                                                ${
+                                                    settlement.warbandId === warband.id
+                                                        ? "selected"
+                                                        : ""
+                                                }
+                                            >
+                                                ${escapeHtml(warband.name)}
+                                            </option>
+                                        `
+                                    )
+                                    .join("")}
+
+                            </select>
 
 
-                <button
-                    class="mm-button mm-button-small mm-button-danger"
-                    onclick="confirmRemoveGameSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', '${escapeAttribute(settlement.name)}')"
-                >
-                    Remove
-                </button>
+                            <button
+                                class="mm-button mm-button-small mm-button-danger"
+                                onclick="confirmRemoveGameSettlement('${escapeAttribute(game.id)}', '${escapeAttribute(settlement.id)}', '${escapeAttribute(settlement.name)}')"
+                            >
+                                Remove
+                            </button>
+
+                        `
+                        : `
+                            <span class="mm-muted">
+                                ${
+                                    settlement.warbandId
+                                        ? escapeHtml(
+                                            warbands.find(
+                                                w => w.id === settlement.warbandId
+                                            )?.name || "Unknown"
+                                        )
+                                        : "Unclaimed"
+                                }
+                            </span>
+                        `
+                }
 
             </div>
 
@@ -1921,7 +2162,7 @@ function showAddGameSettlement(
 }
 
 
-function addGameSettlement(
+async function addGameSettlement(
     gameId
 ) {
 
@@ -1970,6 +2211,47 @@ function addGameSettlement(
     }
 
 
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("settlements")
+            .insert({
+
+                game_id:
+                    gameId,
+
+                name,
+
+                note:
+                    noteInput?.value.trim() || "",
+
+                warband_id:
+                    warbandInput?.value || null
+
+            })
+            .select(`
+                id,
+                name,
+                note,
+                warbandId:warband_id
+            `)
+            .single();
+
+
+    if (error) {
+
+        alert(
+            "Unable to add settlement: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
     if (!Array.isArray(game.settlements)) {
 
         game.settlements = [];
@@ -1977,23 +2259,9 @@ function addGameSettlement(
     }
 
 
-    game.settlements.push({
-
-        id:
-            generateId("settlement"),
-
-        name,
-
-        note:
-            noteInput?.value.trim() || "",
-
-        warbandId:
-            warbandInput?.value || null
-
-    });
-
-
-    savePlayerData();
+    game.settlements.push(
+        normaliseSettlement(data)
+    );
 
 
     closeModal();
@@ -2004,7 +2272,7 @@ function addGameSettlement(
 }
 
 
-function reassignSettlement(
+async function reassignSettlement(
     gameId,
     settlementId,
     warbandId
@@ -2039,11 +2307,42 @@ function reassignSettlement(
     }
 
 
+    const previousWarbandId =
+        settlement.warbandId;
+
+
     settlement.warbandId =
         warbandId || null;
 
 
-    savePlayerData();
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("settlements")
+            .update({
+                warband_id:
+                    settlement.warbandId
+            })
+            .eq(
+                "id",
+                settlementId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to reassign settlement: " +
+            error.message
+        );
+
+        settlement.warbandId =
+            previousWarbandId;
+
+        return;
+
+    }
 
 
     renderApplication();
@@ -2114,7 +2413,7 @@ function confirmRemoveGameSettlement(
 }
 
 
-function removeGameSettlement(
+async function removeGameSettlement(
     gameId,
     settlementId
 ) {
@@ -2133,15 +2432,36 @@ function removeGameSettlement(
     }
 
 
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("settlements")
+            .delete()
+            .eq(
+                "id",
+                settlementId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to remove settlement: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
     game.settlements =
         (game.settlements || [])
             .filter(
                 settlement =>
                     settlement.id !== settlementId
             );
-
-
-    savePlayerData();
 
 
     closeModal();

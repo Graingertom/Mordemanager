@@ -613,7 +613,7 @@ function renderFighterAdvance(advance) {
    SKILLS
    ============================================================ */
 
-function addFighterSkill(fighterId, skillId) {
+async function addFighterSkill(fighterId, skillId) {
 
     const warband = getCurrentWarband();
 
@@ -630,15 +630,32 @@ function addFighterSkill(fighterId, skillId) {
         fighter.skills = [];
     }
 
-    if (!fighter.skills.includes(skillId)) {
-        fighter.skills.push(skillId);
+    if (fighter.skills.includes(skillId)) {
+        return;
     }
 
-    savePlayerData();
+    const previousSkills =
+        [...fighter.skills];
+
+    fighter.skills.push(skillId);
+
+    const { error } =
+        await supabaseClient
+            .from("fighters")
+            .update({ skills: fighter.skills })
+            .eq("id", fighter.id);
+
+    if (error) {
+        alert("Unable to save skill: " + error.message);
+        fighter.skills = previousSkills;
+        return;
+    }
+
+    renderApplication();
 }
 
 
-function removeFighterSkill(fighterId, skillId) {
+async function removeFighterSkill(fighterId, skillId) {
 
     const warband = getCurrentWarband();
 
@@ -651,13 +668,28 @@ function removeFighterSkill(fighterId, skillId) {
         return;
     }
 
+    const previousSkills =
+        [...(fighter.skills || [])];
+
     fighter.skills =
         (fighter.skills || [])
             .filter(
                 id => id !== skillId
             );
 
-    savePlayerData();
+    const { error } =
+        await supabaseClient
+            .from("fighters")
+            .update({ skills: fighter.skills })
+            .eq("id", fighter.id);
+
+    if (error) {
+        alert("Unable to remove skill: " + error.message);
+        fighter.skills = previousSkills;
+        return;
+    }
+
+    renderApplication();
 }
 
 
