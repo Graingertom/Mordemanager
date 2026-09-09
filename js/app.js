@@ -213,6 +213,18 @@ async function loadRules() {
  * avoids firing queries that can only ever come back empty.
  */
 
+/*
+ * Each of these is a flat, single-table query - deliberately NOT
+ * embedding fighters under warbands, or game_warbands/settlements
+ * under games. Postgres's RLS recursion detector flags a cycle
+ * whenever a nested table's policy queries a table that's already
+ * "in flight" in the same combined statement (e.g. fighters'
+ * policy querying warbands, while warbands is the outer table of
+ * the very query being planned) - even though each table's policy
+ * is perfectly fine on its own. Querying them separately and
+ * merging in JS sidesteps that entirely.
+ */
+
 async function loadPlayerData() {
 
     const user =
@@ -230,11 +242,15 @@ async function loadPlayerData() {
     }
 
 
-    const {
-        data: warbandRows,
-        error: warbandError
-    } =
-        await supabaseClient
+    const [
+        { data: warbandRows, error: warbandError },
+        { data: fighterRows, error: fighterError },
+        { data: gameRows, error: gameError },
+        { data: gameWarbandRows, error: gameWarbandError },
+        { data: settlementRows, error: settlementError }
+    ] = await Promise.all([
+
+        supabaseClient
             .from("warbands")
             .select(`
                 id,
@@ -243,34 +259,79 @@ async function loadPlayerData() {
                 type,
                 treasury,
                 createdAt:created_at,
-                owner:profiles(display_name),
-                fighters (
-                    id,
-                    type,
-                    typeName:type_name,
-                    category,
-                    name,
-                    profile,
-                    baseCost:base_cost,
-                    equipment,
-                    skills,
-                    experience,
-                    advances,
-                    injuries
-                )
-            `);
+                owner:profiles(display_name)
+            `),
+
+        supabaseClient
+            .from("fighters")
+            .select(`
+                id,
+                warbandId:warband_id,
+                type,
+                typeName:type_name,
+                category,
+                name,
+                profile,
+                baseCost:base_cost,
+                equipment,
+                skills,
+                experience,
+                advances,
+                injuries
+            `),
+
+        supabaseClient
+            .from("games")
+            .select(`
+                id,
+                name,
+                gameMasterId:game_master_id,
+                status,
+                createdAt:created_at,
+                scenarioName:scenario_name,
+                scenarioDescription:scenario_description,
+                gameMaster:profiles(display_name)
+            `),
+
+        supabaseClient
+            .from("game_warbands")
+            .select(`
+                gameId:game_id,
+                warbandId:warband_id
+            `),
+
+        supabaseClient
+            .from("settlements")
+            .select(`
+                id,
+                gameId:game_id,
+                name,
+                note,
+                warbandId:warband_id
+            `)
+
+    ]);
 
 
-    if (warbandError) {
+    if (warbandError || fighterError) {
 
         console.error(
             "Unable to load warbands:",
-            warbandError.message
+            (warbandError || fighterError).message
         );
 
         state.warbands = [];
 
     } else {
+
+        const fightersByWarband = {};
+
+        for (const fighter of fighterRows || []) {
+
+            (fightersByWarband[fighter.warbandId] ||= [])
+                .push(fighter);
+
+        }
 
         state.warbands =
             normaliseWarbands(
@@ -283,7 +344,7 @@ async function loadPlayerData() {
                             row.owner?.display_name || "",
 
                         fighters:
-                            row.fighters || []
+                            fightersByWarband[row.id] || []
 
                     })
                 )
@@ -292,41 +353,34 @@ async function loadPlayerData() {
     }
 
 
-    const {
-        data: gameRows,
-        error: gameError
-    } =
-        await supabaseClient
-            .from("games")
-            .select(`
-                id,
-                name,
-                gameMasterId:game_master_id,
-                status,
-                createdAt:created_at,
-                scenarioName:scenario_name,
-                scenarioDescription:scenario_description,
-                gameMaster:profiles(display_name),
-                game_warbands ( warbandId:warband_id ),
-                settlements (
-                    id,
-                    name,
-                    note,
-                    warbandId:warband_id
-                )
-            `);
-
-
-    if (gameError) {
+    if (gameError || gameWarbandError || settlementError) {
 
         console.error(
             "Unable to load games:",
-            gameError.message
+            (gameError || gameWarbandError || settlementError).message
         );
 
         state.games = [];
 
     } else {
+
+        const warbandIdsByGame = {};
+
+        for (const link of gameWarbandRows || []) {
+
+            (warbandIdsByGame[link.gameId] ||= [])
+                .push(link.warbandId);
+
+        }
+
+        const settlementsByGame = {};
+
+        for (const settlement of settlementRows || []) {
+
+            (settlementsByGame[settlement.gameId] ||= [])
+                .push(settlement);
+
+        }
 
         state.games =
             normaliseGames(
@@ -339,14 +393,10 @@ async function loadPlayerData() {
                             row.gameMaster?.display_name || "",
 
                         warbandIds:
-                            (row.game_warbands || [])
-                                .map(
-                                    gw =>
-                                        gw.warbandId
-                                ),
+                            warbandIdsByGame[row.id] || [],
 
                         settlements:
-                            row.settlements || [],
+                            settlementsByGame[row.id] || [],
 
                         scenario: {
 
