@@ -990,7 +990,7 @@ function renderWarbandStash(
                     ([equipmentId, count]) => {
 
                         const item =
-                            findEquipment(
+                            RulesEngine.findEquipment(
                                 equipmentId,
                                 state.equipment
                             );
