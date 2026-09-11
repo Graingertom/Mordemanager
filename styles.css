@@ -111,13 +111,13 @@ a {
     display: flex;
     gap: 1rem;
 
-    padding: 1rem 1.25rem;
+    padding: 0.85rem 1rem;
 
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     border: 1px solid;
 
-    border-radius: 10px;
+    border-radius: var(--radius);
 }
 
 .mm-validation-valid {
@@ -131,8 +131,9 @@ a {
 }
 
 .mm-validation-error {
-    border-color: #a84242;
-    background: rgba(168, 66, 66, 0.12);
+    color: #ffd0d0;
+    border-color: #a94444;
+    background: rgba(140, 30, 30, 0.18);
 }
 
 .mm-validation-icon {
@@ -361,6 +362,88 @@ a {
     padding: 30px;
 }
 
+
+/* ============================================================
+   PAGE / SECTION LAYOUT
+
+   .mm-section wraps every named block on a page (Fighters,
+   Stash, Games, Settlements, etc.) - used 30+ times across the
+   app but never actually had a rule, so sections had no space
+   between them at all. .mm-section-header lays out a section's
+   title/description against its optional action button.
+   ============================================================ */
+
+.mm-page-title {
+    margin-bottom: 32px;
+}
+
+.mm-page-title h1 {
+    margin: 0 0 6px;
+}
+
+.mm-page-title p {
+    margin: 0;
+
+    color: var(--muted);
+}
+
+.mm-section {
+    margin-bottom: 40px;
+}
+
+.mm-section:last-child {
+    margin-bottom: 0;
+}
+
+.mm-section-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+.mm-section-header h2 {
+    margin: 0 0 6px;
+}
+
+.mm-section-header p {
+    margin: 0;
+
+    color: var(--muted);
+}
+
+.mm-editor-section {
+    margin-bottom: 28px;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.mm-editor-section:last-of-type {
+    margin-bottom: 0;
+
+    padding-bottom: 0;
+
+    border-bottom: 0;
+}
+
+.mm-editor-section h3 {
+    margin: 0 0 6px;
+}
+
+.mm-editor-section > p {
+    margin: 0 0 14px;
+
+    color: var(--muted);
+}
+
+
 .mm-button {
     min-height: 42px;
 
@@ -370,7 +453,7 @@ a {
     border:
         1px solid var(--border);
 
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background: var(--panel);
 
@@ -447,7 +530,7 @@ a {
     margin-bottom: 10px;
 
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background: transparent;
 
@@ -633,7 +716,7 @@ a {
     border:
         1px solid var(--border);
 
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     overflow: hidden;
 }
@@ -787,7 +870,7 @@ a {
     border:
         1px solid transparent;
 
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background:
         transparent;
@@ -852,7 +935,7 @@ a {
     border:
         1px solid var(--border);
 
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background:
         #101216;
@@ -952,7 +1035,7 @@ a {
     border:
         1px solid var(--border);
 
-    border-radius: 7px;
+    border-radius: var(--radius);
 
     background:
         rgba(0, 0, 0, .15);
@@ -1051,7 +1134,7 @@ a {
     padding: 10px 12px;
 
     border: 1px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius);
 
     background: rgba(0, 0, 0, .15);
 }
@@ -1070,7 +1153,7 @@ a {
     padding: 9px 12px;
 
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background: #101216;
 
@@ -1240,23 +1323,10 @@ a {
 }
 
 
-.mm-validation {
-    margin-bottom: 1rem;
-    padding: 0.85rem 1rem;
-    border-radius: 6px;
-    border: 1px solid;
-}
-
 .mm-validation-success {
     color: #b8e6b8;
     background: rgba(40, 120, 40, 0.15);
     border-color: #4d914d;
-}
-
-.mm-validation-error {
-    color: #ffd0d0;
-    background: rgba(140, 30, 30, 0.18);
-    border-color: #a94444;
 }
 
 .mm-validation-error strong {
@@ -1394,7 +1464,7 @@ a {
     padding: 6px 10px;
 
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     background: #101216;
 
@@ -1426,7 +1496,7 @@ a {
     background: var(--panel);
 
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
 }
 
 .mm-special-rule strong {
@@ -1527,7 +1597,7 @@ a {
     background: var(--panel);
 
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: var(--radius);
 
     color: var(--text);
 
