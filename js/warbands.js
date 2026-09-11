@@ -1501,7 +1501,12 @@ function renderWarbandInGamePage() {
                                 <div class="mm-fighter-list">
 
                                     ${warband.fighters
-                                        .map(renderFighterGameCard)
+                                        .map(
+                                            fighter =>
+                                                renderFighterGameCard(
+                                                    fighter
+                                                )
+                                        )
                                         .join("")}
 
                                 </div>

@@ -93,6 +93,32 @@ textarea:focus-visible {
     outline-offset: 2px;
 }
 
+/*
+ * Baseline so a <select> dropped somewhere without a wrapping
+ * .mm-field/.mm-injury-add (or similar) still matches the theme
+ * instead of falling back to the browser default - a more
+ * specific rule elsewhere still wins where one exists.
+ */
+
+select {
+    min-height: 44px;
+
+    padding: 9px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: #101216;
+
+    color: var(--text);
+
+    outline: none;
+}
+
+select:hover {
+    border-color: var(--border-light);
+}
+
 a {
     color: var(--gold-light);
 }
@@ -1649,7 +1675,8 @@ a {
     gap: 10px;
 }
 
-.mm-injury-add input {
+.mm-injury-add input,
+.mm-injury-add select {
     flex: 1;
 
     min-height: 44px;
@@ -1666,7 +1693,13 @@ a {
     outline: none;
 }
 
-.mm-injury-add input:focus {
+.mm-injury-add input:hover,
+.mm-injury-add select:hover {
+    border-color: var(--border-light);
+}
+
+.mm-injury-add input:focus,
+.mm-injury-add select:focus {
     border-color: var(--gold);
 }
 
