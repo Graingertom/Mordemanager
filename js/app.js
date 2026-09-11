@@ -85,7 +85,30 @@ const state = {
 
     session: null,
 
-    profile: null
+    profile: null,
+
+    /*
+     * Friends system - see js/friends.js. friends/incoming/
+     * outgoing are loaded from the friendships table; viewing
+     * a friend's warbands/games goes through read-only RPCs
+     * and is cached here rather than mixed into state.warbands.
+     */
+
+    showFriendsPage: false,
+
+    friends: [],
+
+    incomingRequests: [],
+
+    outgoingRequests: [],
+
+    viewingFriendId: null,
+
+    viewingFriendName: null,
+
+    friendWarbands: [],
+
+    friendGames: []
 
 };
 
@@ -266,6 +289,12 @@ async function loadPlayerData() {
 
         state.games = [];
 
+        state.friends = [];
+
+        state.incomingRequests = [];
+
+        state.outgoingRequests = [];
+
         return;
 
     }
@@ -445,6 +474,9 @@ async function loadPlayerData() {
 
     }
 
+
+    await loadFriendData();
+
 }
 
 
@@ -474,6 +506,14 @@ function renderApplication() {
     } else if (state.currentWarbandId) {
 
         renderWarbandPage();
+
+    } else if (state.viewingFriendId) {
+
+        renderFriendDetailPage();
+
+    } else if (state.showFriendsPage) {
+
+        renderFriendsPage();
 
     } else {
 
@@ -525,6 +565,20 @@ function renderDashboard() {
                     ${
                         user
                             ? `
+                                <button
+                                    class="mm-button"
+                                    onclick="showFriendsPage()"
+                                >
+                                    Friends
+                                    ${state.incomingRequests.length
+                                        ? `
+                                            <span class="mm-badge-count">
+                                                ${state.incomingRequests.length}
+                                            </span>
+                                        `
+                                        : ""}
+                                </button>
+
                                 <button
                                     class="mm-button mm-button-primary"
                                     onclick="showCreateWarband()"
