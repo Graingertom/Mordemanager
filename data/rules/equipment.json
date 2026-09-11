@@ -182,6 +182,7 @@
             "cost": 25,
             "firstFree": false,
             "availability": "common",
+            "moveOrFire": true,
             "weaponProfile": {
                 "range": "30\"",
                 "strength": "4",

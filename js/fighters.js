@@ -81,6 +81,25 @@ let combatCalculatorOpponentFighter = null;
 
 let combatCalculatorOpponentWeaponId = null;
 
+/*
+ * Only meaningful once "my weapon" turns out to be ranged - all
+ * four are manual toggles since none of them are anything the app
+ * tracks (line of sight, measured table distance, whether the
+ * model moved, target size).
+ */
+
+let combatCalculatorShootingModifiers = {
+
+    cover: false,
+
+    longRange: false,
+
+    movingAndShooting: false,
+
+    largeTarget: false
+
+};
+
 
 /* ============================================================
    DATA NORMALISATION
@@ -3143,6 +3162,13 @@ function closeCombatCalculator() {
 
     combatCalculatorOpponentWeaponId = null;
 
+    combatCalculatorShootingModifiers = {
+        cover: false,
+        longRange: false,
+        movingAndShooting: false,
+        largeTarget: false
+    };
+
 
     closeModal();
 
@@ -3180,6 +3206,13 @@ function showCombatCalculator(
     combatCalculatorOpponentFighter = null;
 
     combatCalculatorOpponentWeaponId = null;
+
+    combatCalculatorShootingModifiers = {
+        cover: false,
+        longRange: false,
+        movingAndShooting: false,
+        largeTarget: false
+    };
 
 
     openModal(`
@@ -3244,6 +3277,33 @@ function isMeleeWeapon(
 }
 
 
+/*
+ * The weapon pickers show any weapon, melee or ranged - which one
+ * gets picked as "my weapon" is what decides whether the results
+ * screen shows the two-way melee exchange or the one-way shooting
+ * calculation (see renderCombatCalculatorResults).
+ */
+
+function isCombatWeapon(
+    item
+) {
+
+    return !!item?.weaponProfile;
+
+}
+
+
+function renderWeaponRangeLabel(
+    item
+) {
+
+    return isMeleeWeapon(item)
+        ? "Close Combat"
+        : item.weaponProfile.range;
+
+}
+
+
 function renderCombatCalculatorMyWeaponStep(
     fighter
 ) {
@@ -3254,7 +3314,7 @@ function renderCombatCalculatorMyWeaponStep(
                 id =>
                     getEquipment(id)
             )
-            .filter(isMeleeWeapon);
+            .filter(isCombatWeapon);
 
 
     if (!weapons.length) {
@@ -3263,8 +3323,8 @@ function renderCombatCalculatorMyWeaponStep(
 
             <p class="mm-muted">
                 ${escapeHtml(fighter.name)} has no
-                hand-to-hand weapon equipped, so
-                there's nothing to calculate.
+                weapon equipped, so there's nothing
+                to calculate.
             </p>
 
         `;
@@ -3294,6 +3354,10 @@ function renderCombatCalculatorMyWeaponStep(
                             <strong>
                                 ${escapeHtml(item.name)}
                             </strong>
+
+                            <span>
+                                ${escapeHtml(renderWeaponRangeLabel(item))}
+                            </span>
                         </button>
                     `
                 )
@@ -3654,8 +3718,24 @@ async function selectCombatCalculatorOpponentFighter(
     combatCalculatorOpponentWeaponId = null;
 
 
+    /*
+     * Shooting isn't a mutual exchange the way melee is - it
+     * happens in its own phase, one shooter at a time - so a
+     * ranged "my weapon" skips straight to the (one-way) results
+     * instead of asking which weapon the opponent is fighting
+     * with, which is only relevant for melee's two-way exchange.
+     */
+
+    const myWeapon =
+        getEquipment(
+            combatCalculatorMyWeaponId
+        );
+
+
     refreshCombatCalculatorBody(
-        renderCombatCalculatorOpponentWeaponStep()
+        isMeleeWeapon(myWeapon)
+            ? renderCombatCalculatorOpponentWeaponStep()
+            : renderCombatCalculatorResults()
     );
 
 }
@@ -3746,6 +3826,41 @@ function selectCombatCalculatorOpponentWeapon(
  * directions in renderCombatCalculatorResults() below.
  */
 
+/*
+ * Turns a raw target number into what's actually shown - a
+ * shooting result can fall to 1 or below (chart + modifiers
+ * making the shot unmissable) or climb past 6 (impossible), which
+ * "N+" can't express on its own.
+ */
+
+function formatCombatTarget(
+    value,
+    impossibleLabel
+) {
+
+    if (value === null) {
+
+        return impossibleLabel;
+
+    }
+
+    if (value <= 1) {
+
+        return "Always hits";
+
+    }
+
+    if (value > 6) {
+
+        return impossibleLabel;
+
+    }
+
+    return value + "+";
+
+}
+
+
 function renderCombatExchange(
     options
 ) {
@@ -3758,16 +3873,44 @@ function renderCombatExchange(
         defenderToughness,
         defenderEquipment,
         weapon,
-        defenderOwnStrength
+        defenderOwnStrength,
+        isRanged,
+        ballisticSkill,
+        shootingModifiers
     } = options;
 
 
+    if (
+        isRanged &&
+        weapon.moveOrFire &&
+        shootingModifiers?.movingAndShooting
+    ) {
+
+        return `
+
+            <p class="mm-muted">
+                Cannot fire this turn - ${escapeHtml(weapon.name)}
+                is Move or Fire, and Moving &amp; Shooting is
+                checked below.
+            </p>
+
+        `;
+
+    }
+
+
     const toHit =
-        RulesEngine.getToHitTarget(
-            attackerWS,
-            defenderWS,
-            state.combat
-        );
+        isRanged
+            ? RulesEngine.getShootingToHitTarget(
+                ballisticSkill,
+                shootingModifiers,
+                state.combat
+            )
+            : RulesEngine.getToHitTarget(
+                attackerWS,
+                defenderWS,
+                state.combat
+            );
 
     const toWound =
         RulesEngine.getToWoundTarget(
@@ -3797,10 +3940,14 @@ function renderCombatExchange(
 
         <div class="mm-rule-stat">
             <span>
-                To Hit
+                ${
+                    isRanged
+                        ? `To Hit (Ballistic Skill ${ballisticSkill})`
+                        : "To Hit"
+                }
             </span>
             <strong>
-                ${toHit !== null ? toHit + "+" : "-"}
+                ${formatCombatTarget(toHit, "-")}
             </strong>
         </div>
 
@@ -3836,7 +3983,7 @@ function renderCombatExchange(
 
 
         ${
-            parry.hasParryItem
+            !isRanged && parry.hasParryItem
                 ? `
                     <p class="mm-muted">
                         ${
@@ -3850,59 +3997,40 @@ function renderCombatExchange(
         }
 
 
-        <p class="mm-muted">
-            If ${escapeHtml(defenderName)} is already
-            Knocked Down, this attack hits automatically
-            (no To Hit roll) and they cannot Parry. If
-            Stunned, a hit here automatically takes them
-            Out of Action - no To Wound or save roll
-            needed.
-        </p>
+        ${
+            !isRanged
+                ? `
+                    <p class="mm-muted">
+                        If ${escapeHtml(defenderName)} is already
+                        Knocked Down, this attack hits automatically
+                        (no To Hit roll) and they cannot Parry. If
+                        Stunned, a hit here automatically takes them
+                        Out of Action - no To Wound or save roll
+                        needed.
+                    </p>
+                `
+                : ""
+        }
 
     `;
 
 }
 
 
-function renderCombatCalculatorResults() {
+/*
+ * The existing two-way "you attack them / they attack you" screen
+ * - unchanged behaviour, just pulled out of
+ * renderCombatCalculatorResults so it can sit alongside the new
+ * one-way shooting section below.
+ */
 
-    const myFighter =
-        getCombatCalculatorFighter();
-
-    const opponent =
-        combatCalculatorOpponentFighter;
-
-
-    if (
-        !myFighter ||
-        !opponent
-    ) {
-
-        return `
-
-            <p class="mm-muted">
-                Something went wrong setting up
-                this fight.
-            </p>
-
-        `;
-
-    }
-
-
-    const myProfile =
-        RulesEngine.calculateEffectiveProfile(
-            myFighter
-        );
-
-    const opponentProfile =
-        opponent.profile || {};
-
-
-    const myWeapon =
-        getEquipment(
-            combatCalculatorMyWeaponId
-        );
+function renderMeleeExchangeSections(
+    myFighter,
+    myProfile,
+    opponent,
+    opponentProfile,
+    myWeapon
+) {
 
     const opponentWeapon =
         combatCalculatorOpponentWeaponId
@@ -4013,6 +4141,205 @@ function renderCombatCalculatorResults() {
             ${theirAttack}
 
         </section>
+
+    `;
+
+}
+
+
+/*
+ * Shooting is one-directional (see the Context in the plan this
+ * was built from) - just this fighter's shot at the chosen
+ * opponent, with the four real situational modifiers as live
+ * checkboxes above the numbers.
+ */
+
+function renderShootingModifierToggle(
+    key,
+    label
+) {
+
+    return `
+
+        <label class="mm-equipment-option">
+
+            <input
+                type="checkbox"
+                ${combatCalculatorShootingModifiers[key] ? "checked" : ""}
+                onchange="toggleCombatCalculatorShootingModifier('${key}')"
+            >
+
+            <span>
+                <strong>
+                    ${escapeHtml(label)}
+                </strong>
+            </span>
+
+        </label>
+
+    `;
+
+}
+
+
+function toggleCombatCalculatorShootingModifier(
+    key
+) {
+
+    combatCalculatorShootingModifiers[key] =
+        !combatCalculatorShootingModifiers[key];
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorResults()
+    );
+
+}
+
+
+function renderShootingExchangeSection(
+    myFighter,
+    myProfile,
+    opponent,
+    opponentProfile,
+    myWeapon
+) {
+
+    const exchange =
+        myWeapon
+            ? renderCombatExchange({
+
+                defenderName:
+                    opponent.name,
+
+                attackerStrength:
+                    RulesEngine.resolveWeaponStrength(
+                        myWeapon.weaponProfile,
+                        myProfile.S
+                    ),
+
+                defenderToughness:
+                    opponentProfile.T,
+
+                defenderEquipment:
+                    opponent.equipment,
+
+                weapon:
+                    myWeapon,
+
+                defenderOwnStrength:
+                    opponentProfile.S,
+
+                isRanged:
+                    true,
+
+                ballisticSkill:
+                    myProfile.BS,
+
+                shootingModifiers:
+                    combatCalculatorShootingModifiers
+
+            })
+            : `
+                <p class="mm-muted">
+                    You have no weapon selected.
+                </p>
+            `;
+
+
+    return `
+
+        <section class="mm-editor-section">
+
+            <h3>
+                ${escapeHtml(myFighter.name)} shoots
+                ${escapeHtml(opponent.name)}
+            </h3>
+
+            <p class="mm-muted">
+                No generic "Aim" action exists in Mordheim -
+                these are the real situational modifiers
+                (rulebook p15).
+            </p>
+
+            <div class="mm-warband-select-list">
+                ${renderShootingModifierToggle("cover", "Cover (-1)")}
+                ${renderShootingModifierToggle("longRange", "Long Range - beyond half the weapon's max range (-1)")}
+                ${renderShootingModifierToggle("movingAndShooting", "Moving & Shooting - this fighter moved this turn (-1)")}
+                ${renderShootingModifierToggle("largeTarget", `${escapeHtml(opponent.name)} is a Large Target (+1)`)}
+            </div>
+
+            ${exchange}
+
+        </section>
+
+    `;
+
+}
+
+
+function renderCombatCalculatorResults() {
+
+    const myFighter =
+        getCombatCalculatorFighter();
+
+    const opponent =
+        combatCalculatorOpponentFighter;
+
+
+    if (
+        !myFighter ||
+        !opponent
+    ) {
+
+        return `
+
+            <p class="mm-muted">
+                Something went wrong setting up
+                this fight.
+            </p>
+
+        `;
+
+    }
+
+
+    const myProfile =
+        RulesEngine.calculateEffectiveProfile(
+            myFighter
+        );
+
+    const opponentProfile =
+        opponent.profile || {};
+
+
+    const myWeapon =
+        getEquipment(
+            combatCalculatorMyWeaponId
+        );
+
+
+    const combatSections =
+        isMeleeWeapon(myWeapon)
+            ? renderMeleeExchangeSections(
+                myFighter,
+                myProfile,
+                opponent,
+                opponentProfile,
+                myWeapon
+            )
+            : renderShootingExchangeSection(
+                myFighter,
+                myProfile,
+                opponent,
+                opponentProfile,
+                myWeapon
+            );
+
+
+    return `
+
+        ${combatSections}
 
 
         <section class="mm-editor-section">

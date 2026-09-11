@@ -1134,6 +1134,54 @@ function getToWoundTarget(
 
 
 /*
+ * Shooting's To Hit is unopposed - keyed only on the shooter's own
+ * Ballistic Skill, not a WS-vs-WS chart like melee. Modifiers
+ * (Cover, Long Range, Moving & Shooting, Large Target) apply to
+ * the dice ROLL per the rulebook's convention, which is
+ * equivalent to subtracting their sum from the base target here -
+ * a Cover -1 modifier makes the effective target one HIGHER
+ * (harder), a Large Target +1 modifier makes it one LOWER
+ * (easier). Not clamped - a result of 1 or less means "always
+ * hits" and above 6 means "impossible"; that's a display decision
+ * for the caller, same as getArmourSaveTarget's >6 case.
+ */
+
+function getShootingToHitTarget(
+    ballisticSkill,
+    modifiers,
+    combatData
+) {
+
+    const base =
+        combatData?.shootingToHitChart?.[
+            String(clampChartStat(ballisticSkill))
+        ];
+
+
+    if (typeof base !== "number") {
+
+        return null;
+
+    }
+
+
+    const table =
+        combatData?.shootingHitModifiers || {};
+
+
+    const modifierTotal =
+        (modifiers?.cover ? table.cover || 0 : 0) +
+        (modifiers?.longRange ? table.longRange || 0 : 0) +
+        (modifiers?.movingAndShooting ? table.movingAndShooting || 0 : 0) +
+        (modifiers?.largeTarget ? table.largeTarget || 0 : 0);
+
+
+    return base - modifierTotal;
+
+}
+
+
+/*
  * Melee weapons store their Strength as "As User" or "As User +N"
  * (a bonus on the wielder's own Strength); ranged weapons store a
  * flat number instead - both as strings in equipment.json, since
@@ -2376,6 +2424,8 @@ return {
     getToHitTarget,
 
     getToWoundTarget,
+
+    getShootingToHitTarget,
 
     resolveWeaponStrength,
 
