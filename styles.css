@@ -777,6 +777,16 @@ a {
     padding: 20px;
 }
 
+.mm-card-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    gap: 16px;
+}
+
 .mm-card-header h2 {
     margin:
         10px 0 4px;
