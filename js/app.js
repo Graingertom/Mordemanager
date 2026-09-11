@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
 
 const DATA_PATHS = {
 

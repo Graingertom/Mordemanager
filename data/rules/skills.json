@@ -4,9 +4,10 @@
 
     "source": {
         "organisation": "Broheim",
-        "document": "Master Skill List",
+        "document": "Mordheim Core Rules Printable",
         "website": "https://broheim.net",
-        "url": "https://broheim.net/downloads/resources/Master%20Skill%20List.pdf"
+        "url": "https://broheim.net/downloads/rules/Mordheim%20Core%20Rules%20Printable.pdf",
+        "note": "Verified directly against the PDF text (pages 84-85), not a secondary extract."
     },
 
     "skillCategories": [
@@ -37,7 +38,246 @@
         }
     ],
 
-    "skills": [],
+    "skills": [
+        {
+            "id": "strike-to-injure",
+            "name": "Strike to Injure",
+            "category": "combat",
+            "description": "Add +1 to all injury rolls caused by the model in hand-to-hand combat.",
+            "sourcePage": 84
+        },
+        {
+            "id": "combat-master",
+            "name": "Combat Master",
+            "category": "combat",
+            "description": "If fighting against two or more enemies at once, gains an extra Attack in each hand-to-hand combat phase and is immune to 'All Alone' tests.",
+            "sourcePage": 84
+        },
+        {
+            "id": "weapons-training",
+            "name": "Weapons Training",
+            "category": "combat",
+            "description": "May use any hand-to-hand combat weapon encountered, not just those in his equipment options.",
+            "sourcePage": 84
+        },
+        {
+            "id": "web-of-steel",
+            "name": "Web of Steel",
+            "category": "combat",
+            "description": "Gains +1 to all his rolls on Critical Hit tables in hand-to-hand combat.",
+            "sourcePage": 84
+        },
+        {
+            "id": "expert-swordsman",
+            "name": "Expert Swordsman",
+            "category": "combat",
+            "description": "May re-roll all missed attacks when using a sword in the hand-to-hand phase of the turn he charges. Only applies to normal swords, not double-handed swords or other weapons.",
+            "sourcePage": 84
+        },
+        {
+            "id": "step-aside",
+            "name": "Step Aside",
+            "category": "combat",
+            "description": "Each time he suffers a wound in close combat, may make an additional 5+ saving throw. This save is never modified and is taken after all other armour saves.",
+            "sourcePage": 84
+        },
+        {
+            "id": "quick-shot",
+            "name": "Quick Shot",
+            "category": "shooting",
+            "description": "May shoot twice per turn with a bow or crossbow (but not a crossbow pistol).",
+            "sourcePage": 84
+        },
+        {
+            "id": "pistolier",
+            "name": "Pistolier",
+            "category": "shooting",
+            "description": "If equipped with a brace of pistols of any type (including crossbow pistols), may fire twice in the Shooting phase (normal reloading rules still apply). With a single pistol, may fire it the same turn it was reloaded.",
+            "sourcePage": 84
+        },
+        {
+            "id": "eagle-eyes",
+            "name": "Eagle Eyes",
+            "category": "shooting",
+            "description": "Adds +6\" to the range of any missile weapon he is using.",
+            "sourcePage": 84
+        },
+        {
+            "id": "weapons-expert",
+            "name": "Weapons Expert",
+            "category": "shooting",
+            "description": "May use any missile weapon encountered, not just those available from his warband's list.",
+            "sourcePage": 84
+        },
+        {
+            "id": "nimble",
+            "name": "Nimble",
+            "category": "shooting",
+            "description": "May move and fire weapons that are normally only usable if the firer hasn't moved. Cannot be combined with Quick Shot.",
+            "sourcePage": 84
+        },
+        {
+            "id": "trick-shooter",
+            "name": "Trick Shooter",
+            "category": "shooting",
+            "description": "Ignores all modifiers for cover when using missile weapons.",
+            "sourcePage": 84
+        },
+        {
+            "id": "hunter",
+            "name": "Hunter",
+            "category": "shooting",
+            "description": "May fire every turn with a handgun or Hochland long rifle, ignoring their usual reload restriction.",
+            "sourcePage": 84
+        },
+        {
+            "id": "knife-fighter",
+            "name": "Knife-Fighter",
+            "category": "shooting",
+            "description": "May throw up to three throwing knives/stars per shooting phase, dividing shots between any targets in range as he wishes. Cannot be combined with Quick Shot.",
+            "sourcePage": 84
+        },
+        {
+            "id": "unstoppable-charge",
+            "name": "Unstoppable Charge",
+            "category": "shooting",
+            "description": "Adds +1 to his Weapon Skill when charging.",
+            "sourcePage": 85
+        },
+        {
+            "id": "battle-tongue",
+            "name": "Battle Tongue",
+            "category": "academic",
+            "description": "Leaders only. Increases the range of his Leader ability by 6\". Undead leaders may not use this skill.",
+            "sourcePage": 85
+        },
+        {
+            "id": "sorcery",
+            "name": "Sorcery",
+            "category": "academic",
+            "description": "Spellcasters only. Gains +1 to his rolls to successfully cast spells. Sisters of Sigmar and Warrior-Priests may not use this skill.",
+            "sourcePage": 85
+        },
+        {
+            "id": "streetwise",
+            "name": "Streetwise",
+            "category": "academic",
+            "description": "Adds +2 to the roll that determines his chances of finding rare items when trading.",
+            "sourcePage": 85
+        },
+        {
+            "id": "haggle",
+            "name": "Haggle",
+            "category": "academic",
+            "description": "May deduct 2D6 gold crowns from the price of any single item (minimum cost 1gc), once per post-battle sequence.",
+            "sourcePage": 85
+        },
+        {
+            "id": "arcane-lore",
+            "name": "Arcane Lore",
+            "category": "academic",
+            "description": "Witch Hunters, Sisters of Sigmar and Warrior-Priests may not have this skill. Lets a warrior learn Lesser Magic if he owns a Tome of Magic.",
+            "sourcePage": 85
+        },
+        {
+            "id": "wyrdstone-hunter",
+            "name": "Wyrdstone Hunter",
+            "category": "academic",
+            "description": "When searching the ruins in the exploration phase, may re-roll one dice on the Exploration chart - the second result stands.",
+            "sourcePage": 85
+        },
+        {
+            "id": "warrior-wizard",
+            "name": "Warrior Wizard",
+            "category": "academic",
+            "description": "Spellcasters only. Allows the wizard to wear armour and still cast spells.",
+            "sourcePage": 85
+        },
+        {
+            "id": "mighty-blow",
+            "name": "Mighty Blow",
+            "category": "strength",
+            "description": "Gains a +1 Strength bonus in close combat (excluding pistols), applying to all close combat weapons he uses.",
+            "sourcePage": 85
+        },
+        {
+            "id": "pit-fighter",
+            "name": "Pit Fighter",
+            "category": "strength",
+            "description": "Adds +1 to his Weapon Skill and +1 Attack when fighting inside buildings or ruins.",
+            "sourcePage": 85
+        },
+        {
+            "id": "resilient",
+            "name": "Resilient",
+            "category": "strength",
+            "description": "Deducts -1 Strength from all hits against him in close combat. Does not affect armour save modifiers.",
+            "sourcePage": 85
+        },
+        {
+            "id": "fearsome",
+            "name": "Fearsome",
+            "category": "strength",
+            "description": "Causes fear in opposing models.",
+            "sourcePage": 85
+        },
+        {
+            "id": "strongman",
+            "name": "Strongman",
+            "category": "strength",
+            "description": "May use a double-handed weapon without the usual penalty of always striking last.",
+            "sourcePage": 85
+        },
+        {
+            "id": "leap",
+            "name": "Leap",
+            "category": "speed",
+            "description": "May leap D6\" in the movement phase in addition to normal movement (can move and leap, run and leap, or charge and leap, once per turn). May jump over man-sized models and obstacles up to 1\" high without penalty; may also leap over gaps, committing to the leap before rolling.",
+            "sourcePage": 85
+        },
+        {
+            "id": "sprint",
+            "name": "Sprint",
+            "category": "speed",
+            "description": "Triples his Movement rate when running or charging, instead of doubling it.",
+            "sourcePage": 85
+        },
+        {
+            "id": "acrobat",
+            "name": "Acrobat",
+            "category": "speed",
+            "description": "May fall or jump up to 12\" without damage if he passes a single Initiative test, and may re-roll failed Diving Charge rolls (up to a maximum diving charge height of 6\").",
+            "sourcePage": 85
+        },
+        {
+            "id": "lightning-reflexes",
+            "name": "Lightning Reflexes",
+            "category": "speed",
+            "description": "Strikes first against models that charge him that turn, resolved by comparing Initiative against the charger(s) (who also strike first for charging).",
+            "sourcePage": 85
+        },
+        {
+            "id": "jump-up",
+            "name": "Jump Up",
+            "category": "speed",
+            "description": "Springs back to his feet immediately if knocked down, and ignores Knocked Down results when rolling for injuries - unless the knock down came from a successful helmet save or the No Pain special rule.",
+            "sourcePage": 85
+        },
+        {
+            "id": "dodge",
+            "name": "Dodge",
+            "category": "speed",
+            "description": "May avoid a missile hit entirely on a D6 roll of 5+, rolled as soon as the hit is scored - before rolling to wound and before any other skill or equipment effects.",
+            "sourcePage": 85
+        },
+        {
+            "id": "scale-sheer-surfaces",
+            "name": "Scale Sheer Surfaces",
+            "category": "speed",
+            "description": "May climb up or down a height equal to twice his normal Movement, without needing an Initiative test.",
+            "sourcePage": 85
+        }
+    ],
 
     "warbandAccess": {
         "reikland": {

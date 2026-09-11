@@ -295,7 +295,10 @@ function showSkill(skillId) {
                 }
 
 
-                ${renderSourceInformation(skill)}
+                ${renderSourceInformation(
+                    state.skills,
+                    skill.sourcePage
+                )}
 
             </div>
 
