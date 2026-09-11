@@ -1563,28 +1563,12 @@ function showFighterGameUpdate(
      * Which skills this fighter is even eligible to learn -
      * henchmen never get skills (see the verified rulebook
      * text), and a Hero is restricted to the skill lists his
-     * warband entry grants him. A promoted former-Henchman has
-     * no entry under their fighterType.id, so fall back to the
-     * skill lists they chose at promotion time instead.
+     * warband entry grants him. Shared with the "New Skill"
+     * advance picker below, since a promotion can change this
+     * mid-modal without a fresh call to showFighterGameUpdate.
      */
 
-    const accessibleCategories =
-        state.skills?.warbandAccess?.[warband.type]?.[fighterType.id] ||
-        editingAdvances.find(
-            advance =>
-                advance.type === "promote-to-hero"
-        )?.skillCategories ||
-        [];
-
-    editingSkillOptions =
-        isHero
-            ? (state.skills?.skills || []).filter(
-                skill =>
-                    accessibleCategories.includes(
-                        skill.category
-                    )
-            )
-            : [];
+    refreshEditingSkillOptions();
 
 
     openModal(`
@@ -1721,36 +1705,16 @@ function showFighterGameUpdate(
                                 </h3>
 
                                 <p>
-                                    Skills earned from an Advance
-                                    roll, picked from the lists
-                                    this fighter type can access.
+                                    Skills are picked as part of
+                                    recording a "New Skill" Advance
+                                    result below - remove one here
+                                    to undo a mistaken pick.
                                 </p>
 
 
                                 <div id="fighter-skills-list">
 
                                     ${renderSkillsEditorList()}
-
-                                </div>
-
-
-                                <div class="mm-injury-add">
-
-                                    <select
-                                        id="new-skill-select"
-                                    >
-
-                                        ${renderSkillSelectOptions()}
-
-                                    </select>
-
-                                    <button
-                                        type="button"
-                                        class="mm-button"
-                                        onclick="addSkillToEditor()"
-                                    >
-                                        Add Skill
-                                    </button>
 
                                 </div>
 
@@ -1837,6 +1801,67 @@ function getGameUpdateFighter() {
                 item.id === gameUpdateFighterId
         ) || null
     );
+
+}
+
+
+/*
+ * Recomputes editingSkillOptions from the CURRENT editingCategory/
+ * editingAdvances, rather than what they were when the modal last
+ * opened - a promotion changes both mid-modal (see
+ * confirmPromoteToHero -> the immediate bonus Hero-table roll),
+ * so the "New Skill" picker below always calls this itself right
+ * before rendering.
+ */
+
+function refreshEditingSkillOptions() {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!warband || !fighter) {
+
+        editingSkillOptions = [];
+
+        return;
+
+    }
+
+
+    const definition =
+        state.warbandDefinitions[
+            warband.type
+        ];
+
+    const fighterType =
+        definition?.fighterTypes?.find(
+            type =>
+                type.id === fighter.type
+        );
+
+
+    const accessibleCategories =
+        state.skills?.warbandAccess?.[warband.type]?.[fighterType?.id] ||
+        editingAdvances.find(
+            advance =>
+                advance.type === "promote-to-hero"
+        )?.skillCategories ||
+        [];
+
+
+    editingSkillOptions =
+        editingCategory === "hero"
+            ? (state.skills?.skills || []).filter(
+                skill =>
+                    accessibleCategories.includes(
+                        skill.category
+                    )
+            )
+            : [];
 
 }
 
@@ -2014,6 +2039,49 @@ function refreshAdvanceSection() {
    shown once.
    ============================================================ */
 
+/*
+ * Rows sharing an identical outcome (both "New Skill" results on
+ * the Hero table) are only shown once.
+ */
+
+function buildDedupedAdvanceTable(
+    category
+) {
+
+    const fullTable =
+        RulesEngine.getAdvanceTable(
+            { category },
+            state.advances
+        );
+
+
+    const seen =
+        new Set();
+
+    return fullTable.filter(
+        row => {
+
+            const key =
+                row.result + "|" + row.label;
+
+
+            if (seen.has(key)) {
+
+                return false;
+
+            }
+
+
+            seen.add(key);
+
+            return true;
+
+        }
+    );
+
+}
+
+
 function showRecordAdvance(
     fighterId
 ) {
@@ -2029,36 +2097,9 @@ function showRecordAdvance(
     }
 
 
-    const fullTable =
-        RulesEngine.getAdvanceTable(
-            { category: editingCategory },
-            state.advances
-        );
-
-
-    const seen =
-        new Set();
-
     pendingAdvanceTable =
-        fullTable.filter(
-            row => {
-
-                const key =
-                    row.result + "|" + row.label;
-
-
-                if (seen.has(key)) {
-
-                    return false;
-
-                }
-
-
-                seen.add(key);
-
-                return true;
-
-            }
+        buildDedupedAdvanceTable(
+            editingCategory
         );
 
 
@@ -2125,6 +2166,27 @@ function renderAdvanceOutcomeList(
     fighter
 ) {
 
+    /*
+     * A Henchman can never add more than +1 to the same
+     * characteristic (rulebook p83) - a single-stat row (not a
+     * choice between two) is disabled outright once used, rather
+     * than letting the click through only to dead-end.
+     */
+
+    const usedStats =
+        editingCategory === "henchman"
+            ? editingAdvances
+                .filter(
+                    advance =>
+                        advance.type === "characteristic"
+                )
+                .map(
+                    advance =>
+                        advance.stat
+                )
+            : [];
+
+
     return `
 
         <p class="mm-muted">
@@ -2137,21 +2199,35 @@ function renderAdvanceOutcomeList(
 
             ${pendingAdvanceTable
                 .map(
-                    (row, index) => `
-                        <button
-                            type="button"
-                            class="mm-warband-select-option"
-                            onclick="selectAdvanceOutcome(${index})"
-                        >
-                            <strong>
-                                ${escapeHtml(row.label)}
-                            </strong>
+                    (row, index) => {
 
-                            <span>
-                                Roll ${escapeHtml(row.roll)}
-                            </span>
-                        </button>
-                    `
+                        const alreadyUsed =
+                            row.result === "characteristic" &&
+                            usedStats.includes(row.stat);
+
+
+                        return `
+                            <button
+                                type="button"
+                                class="mm-warband-select-option"
+                                onclick="selectAdvanceOutcome(${index})"
+                                ${alreadyUsed ? "disabled" : ""}
+                            >
+                                <strong>
+                                    ${escapeHtml(row.label)}
+                                </strong>
+
+                                <span>
+                                    ${
+                                        alreadyUsed
+                                            ? "Already increased"
+                                            : `Roll ${escapeHtml(row.roll)}`
+                                    }
+                                </span>
+                            </button>
+                        `;
+
+                    }
                 )
                 .join("")}
 
@@ -2259,6 +2335,27 @@ function renderCharacteristicChoicePicker(
     };
 
 
+    /*
+     * "Henchmen never add more than +1 point to any of their
+     * initial characteristics" (rulebook p83) - a Hero has no
+     * such restriction (only racial maximums, which this app
+     * doesn't model), so this guard only applies pre-promotion.
+     */
+
+    const usedStats =
+        editingCategory === "henchman"
+            ? editingAdvances
+                .filter(
+                    advance =>
+                        advance.type === "characteristic"
+                )
+                .map(
+                    advance =>
+                        advance.stat
+                )
+            : [];
+
+
     body.innerHTML = `
 
         <p class="mm-muted">
@@ -2271,20 +2368,39 @@ function renderCharacteristicChoicePicker(
 
             ${row.options
                 .map(
-                    stat => `
-                        <button
-                            type="button"
-                            class="mm-warband-select-option"
-                            onclick="applyCharacteristicAdvance('${escapeAttribute(stat)}')"
-                        >
-                            <strong>
-                                +1 ${escapeHtml(
-                                    statNames[stat] ||
-                                    stat
-                                )}
-                            </strong>
-                        </button>
-                    `
+                    stat => {
+
+                        const alreadyUsed =
+                            usedStats.includes(stat);
+
+
+                        return `
+                            <button
+                                type="button"
+                                class="mm-warband-select-option"
+                                onclick="applyCharacteristicAdvance('${escapeAttribute(stat)}')"
+                                ${alreadyUsed ? "disabled" : ""}
+                            >
+                                <strong>
+                                    +1 ${escapeHtml(
+                                        statNames[stat] ||
+                                        stat
+                                    )}
+                                </strong>
+
+                                ${
+                                    alreadyUsed
+                                        ? `
+                                            <span>
+                                                Already increased
+                                            </span>
+                                        `
+                                        : ""
+                                }
+                            </button>
+                        `;
+
+                    }
                 )
                 .join("")}
 
@@ -2339,6 +2455,96 @@ function applyCharacteristicAdvance(
 
 function applyNewSkillAdvance() {
 
+    renderNewSkillPicker();
+
+}
+
+
+function renderNewSkillPicker() {
+
+    const body =
+        document.getElementById(
+            "advance-picker-body"
+        );
+
+
+    if (!body) {
+
+        return;
+
+    }
+
+
+    /*
+     * Recompute rather than trust the module-level value - a
+     * promotion earlier in THIS same drill-down (the immediate
+     * bonus Hero-table roll) can change which categories this
+     * fighter can pick from without a fresh showFighterGameUpdate
+     * call in between.
+     */
+
+    refreshEditingSkillOptions();
+
+
+    const available =
+        editingSkillOptions.filter(
+            skill =>
+                !editingSkills.some(
+                    existing =>
+                        existing.id === skill.id
+                )
+        );
+
+
+    body.innerHTML = `
+
+        <p class="mm-muted">
+            New Skill - which one was learned?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${
+                available.length
+                    ? available
+                        .map(
+                            skill => `
+                                <button
+                                    type="button"
+                                    class="mm-warband-select-option"
+                                    onclick="selectNewSkillAdvance('${escapeAttribute(skill.id)}')"
+                                >
+                                    <strong>
+                                        ${escapeHtml(skill.name)}
+                                    </strong>
+
+                                    <span>
+                                        ${escapeHtml(skill.category)}
+                                    </span>
+                                </button>
+                            `
+                        )
+                        .join("")
+                    : `
+                        <p class="mm-muted">
+                            No further skills are available from
+                            this fighter's accessible skill lists.
+                        </p>
+                    `
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+function selectNewSkillAdvance(
+    skillId
+) {
+
     const fighter =
         getGameUpdateFighter();
 
@@ -2350,10 +2556,47 @@ function applyNewSkillAdvance() {
     }
 
 
+    const skill =
+        getSkill(skillId);
+
+
+    if (!skill) {
+
+        return;
+
+    }
+
+
+    editingSkills.push({
+
+        id:
+            skill.id,
+
+        name:
+            skill.name,
+
+        category:
+            skill.category,
+
+        description:
+            skill.description,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
     editingAdvances.push({
 
         type:
             "new-skill",
+
+        skillId:
+            skill.id,
+
+        skillName:
+            skill.name,
 
         xpAtAdvance:
             fighter.experience || 0,
@@ -2583,9 +2826,85 @@ function confirmPromoteToHero() {
     });
 
 
-    showFighterGameUpdate(
-        fighter.id
-    );
+    /*
+     * "He can immediately make one roll on the Heroes Advance
+     * table" (rulebook p83) - a bonus roll, separate from and not
+     * gated by the normal XP threshold, so it's chained straight
+     * in rather than returning to the parent modal first.
+     */
+
+    renderPromotionBonusRoll();
+
+}
+
+
+function renderPromotionBonusRoll() {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const body =
+        document.getElementById(
+            "advance-picker-body"
+        );
+
+
+    if (!body) {
+
+        return;
+
+    }
+
+
+    pendingAdvanceTable =
+        buildDedupedAdvanceTable(
+            editingCategory
+        );
+
+
+    body.innerHTML = `
+
+        <p class="mm-muted">
+            "The lad's got talent" - as a new Hero,
+            ${escapeHtml(fighter.name)} immediately
+            makes one roll on the Heroes Advance
+            table. What did they roll?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${pendingAdvanceTable
+                .map(
+                    (row, index) => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="selectAdvanceOutcome(${index})"
+                        >
+                            <strong>
+                                ${escapeHtml(row.label)}
+                            </strong>
+
+                            <span>
+                                Roll ${escapeHtml(row.roll)}
+                            </span>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
 
 }
 
@@ -2975,125 +3294,44 @@ function renderSkillsEditorList() {
 }
 
 
-function renderSkillSelectOptions() {
-
-    const available =
-        editingSkillOptions.filter(
-            skill =>
-                !editingSkills.some(
-                    existing =>
-                        existing.id === skill.id
-                )
-        );
-
-
-    if (!available.length) {
-
-        return `
-            <option value="">
-                No skills available
-            </option>
-        `;
-
-    }
-
-
-    return available
-        .map(
-            skill => `
-                <option value="${escapeAttribute(skill.id)}">
-                    ${escapeHtml(skill.name)}
-                    (${escapeHtml(skill.category)})
-                </option>
-            `
-        )
-        .join("");
-
-}
-
-
-function addSkillToEditor() {
-
-    const select =
-        document.getElementById(
-            "new-skill-select"
-        );
-
-
-    const skillId =
-        select?.value;
-
-
-    if (!skillId) {
-
-        return;
-
-    }
-
-
-    const skill =
-        getSkill(skillId);
-
-
-    if (!skill) {
-
-        return;
-
-    }
-
-
-    editingSkills.push({
-
-        id:
-            skill.id,
-
-        name:
-            skill.name,
-
-        category:
-            skill.category,
-
-        description:
-            skill.description,
-
-        date:
-            new Date().toISOString()
-
-    });
-
-
-    const list =
-        document.getElementById(
-            "fighter-skills-list"
-        );
-
-
-    if (list) {
-
-        list.innerHTML =
-            renderSkillsEditorList();
-
-    }
-
-
-    if (select) {
-
-        select.innerHTML =
-            renderSkillSelectOptions();
-
-    }
-
-}
-
+/*
+ * Removing a skill also removes the "new-skill" advance log entry
+ * that earned it (matched by skillId) - otherwise the fighter
+ * would keep the XP-threshold slot "used up" with nothing to show
+ * for it, and the player could never re-record the correct skill.
+ */
 
 function removeSkillFromEditor(
     index
 ) {
 
-    editingSkills.splice(
-        index,
-        1
-    );
+    const [removed] =
+        editingSkills.splice(
+            index,
+            1
+        );
+
+
+    if (removed) {
+
+        const advanceIndex =
+            editingAdvances.findIndex(
+                advance =>
+                    advance.type === "new-skill" &&
+                    advance.skillId === removed.id
+            );
+
+
+        if (advanceIndex !== -1) {
+
+            editingAdvances.splice(
+                advanceIndex,
+                1
+            );
+
+        }
+
+    }
 
 
     const list =
@@ -3110,18 +3348,7 @@ function removeSkillFromEditor(
     }
 
 
-    const select =
-        document.getElementById(
-            "new-skill-select"
-        );
-
-
-    if (select) {
-
-        select.innerHTML =
-            renderSkillSelectOptions();
-
-    }
+    refreshAdvanceSection();
 
 }
 

@@ -119,6 +119,29 @@ select:hover {
     border-color: var(--border-light);
 }
 
+/*
+ * Chrome/Edge/Safari render the number spin buttons as a plain
+ * white/grey OS-native widget that clashes hard with the dark
+ * theme - tint them to match instead of hiding them. Firefox's
+ * spinner isn't stylable this way (-moz-appearance: textfield
+ * would remove it entirely, which isn't what was asked for), so
+ * it keeps its own native look there.
+ */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+
+    filter:
+        invert(72%)
+        sepia(11%)
+        saturate(573%)
+        hue-rotate(358deg)
+        brightness(92%);
+
+    cursor: pointer;
+}
+
 a {
     color: var(--gold-light);
 }
