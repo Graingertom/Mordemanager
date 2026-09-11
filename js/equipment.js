@@ -347,6 +347,62 @@ function showEquipment(
 
 
                 ${
+                    item.armourProfile
+
+                    ?
+
+                    `
+                        <div class="mm-rule-stat">
+
+                            <span>
+                                Armour Save
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    item.armourProfile.save || "-"
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        ${
+                            item.armourProfile.special
+
+                            ?
+
+                            `
+                                <div class="mm-rule-block">
+
+                                    <h3>
+                                        Special Rules
+                                    </h3>
+
+                                    <p class="mm-rule-description">
+
+                                        ${escapeHtml(
+                                            item.armourProfile.special
+                                        )}
+
+                                    </p>
+
+                                </div>
+                            `
+
+                            :
+
+                            ""
+                        }
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
                     item.description
 
                     ?

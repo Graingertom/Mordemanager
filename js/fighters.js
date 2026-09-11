@@ -1698,6 +1698,21 @@ function renderEquipmentCheckbox(
                         : ""
                 }
 
+                ${
+                    item.armourProfile
+                        ? `
+                            <small class="mm-weapon-profile">
+                                Save: ${escapeHtml(item.armourProfile.save || "-")}
+                                ${
+                                    item.armourProfile.special
+                                        ? ` &middot; ${escapeHtml(item.armourProfile.special)}`
+                                        : ""
+                                }
+                            </small>
+                        `
+                        : ""
+                }
+
             </span>
 
 

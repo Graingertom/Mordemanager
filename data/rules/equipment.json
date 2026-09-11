@@ -291,6 +291,10 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "armourProfile": {
+                "save": "6+",
+                "special": ""
+            },
             "source": "mordheim-core"
         },
 
@@ -302,6 +306,10 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "armourProfile": {
+                "save": "5+",
+                "special": "May not be worn together with light armour."
+            },
             "source": "mordheim-core"
         },
 
@@ -313,6 +321,10 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "armourProfile": {
+                "save": "+1",
+                "special": "Grants a 6+ Armour Save on its own, or +1 to an existing save. Only usable with a one-handed weapon."
+            },
             "source": "mordheim-core"
         },
 
@@ -324,6 +336,10 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "armourProfile": {
+                "save": "+1",
+                "special": "+1 Armour Save against one close-combat attacker per turn only; no effect against shooting. Only usable with a one-handed weapon."
+            },
             "source": "mordheim-core"
         },
 
@@ -335,6 +351,10 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "armourProfile": {
+                "save": "-",
+                "special": "On a D6 roll of 4+, a 'Stunned' result on the Injury chart is treated as 'Knocked Down' instead."
+            },
             "source": "mordheim-core"
         }
 
