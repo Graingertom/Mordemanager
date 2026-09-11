@@ -1755,10 +1755,23 @@ function showFighterGameUpdate(
                     </h3>
 
 
+                    <div class="mm-rule-stat">
+
+                        <span>
+                            Current Experience
+                        </span>
+
+                        <strong>
+                            ${fighter.experience || 0} XP
+                        </strong>
+
+                    </div>
+
+
                     <label class="mm-field">
 
                         <span>
-                            Experience
+                            New Experience Total
                         </span>
 
 
@@ -1767,9 +1780,17 @@ function showFighterGameUpdate(
                             type="number"
                             min="0"
                             value="${fighter.experience || 0}"
+                            data-original-xp="${fighter.experience || 0}"
+                            oninput="updateFighterGameXpDelta()"
                         >
 
                     </label>
+
+
+                    <p
+                        class="mm-muted"
+                        id="fighter-game-xp-delta"
+                    ></p>
 
                 </section>
 
@@ -1825,6 +1846,55 @@ function getGameUpdateFighter() {
                 item.id === gameUpdateFighterId
         ) || null
     );
+
+}
+
+
+/*
+ * Keeps the XP delta note in sync with whatever's typed into the
+ * field (or pre-filled by the Combat Calculator's "Caused a
+ * casualty" shortcut) - compares against the real saved value
+ * (data-original-xp) rather than trusting anything already staged
+ * in JS, since XP itself isn't tracked in an editingXxx array.
+ */
+
+function updateFighterGameXpDelta() {
+
+    const input =
+        document.getElementById(
+            "fighter-game-xp"
+        );
+
+    const display =
+        document.getElementById(
+            "fighter-game-xp-delta"
+        );
+
+
+    if (
+        !input ||
+        !display
+    ) {
+
+        return;
+
+    }
+
+
+    const original =
+        Number(input.dataset.originalXp) || 0;
+
+    const current =
+        Number(input.value) || 0;
+
+    const delta =
+        current - original;
+
+
+    display.textContent =
+        delta === 0
+            ? ""
+            : `${delta > 0 ? "+" : ""}${delta} XP proposed (from ${original})`;
 
 }
 
@@ -3977,7 +4047,15 @@ function renderCombatCalculatorResults() {
             <button
                 type="button"
                 class="mm-button"
-                onclick="recordCombatWound()"
+                onclick="closeCombatCalculator()"
+            >
+                No Effect - Conclude Fight
+            </button>
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="confirmCombatWound()"
             >
                 Record a wound on
                 ${escapeHtml(myFighter.name)}
@@ -3989,7 +4067,7 @@ function renderCombatCalculatorResults() {
                         <button
                             type="button"
                             class="mm-button mm-button-primary"
-                            onclick="recordCombatCasualtyXP()"
+                            onclick="confirmCombatCasualtyXP()"
                         >
                             Caused a casualty (+1 XP)
                         </button>
@@ -4000,6 +4078,131 @@ function renderCombatCalculatorResults() {
         </div>
 
     `;
+
+}
+
+
+/*
+ * Both "conclude" actions leave the calculator's own results
+ * screen in place until Continue is actually clicked - nothing is
+ * touched (no navigation, no pre-filled value) until then, so
+ * "Back" is simply re-rendering results with no state to undo.
+ */
+
+function confirmCombatWound() {
+
+    const myFighter =
+        getCombatCalculatorFighter();
+
+
+    if (!myFighter) {
+
+        return;
+
+    }
+
+
+    refreshCombatCalculatorBody(`
+
+        <p class="mm-muted">
+            Record a wound on
+            ${escapeHtml(myFighter.name)}?
+            This opens their Injuries section
+            so you can pick what actually
+            happened.
+        </p>
+
+
+        <div class="mm-picker-actions">
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="refreshCombatCalculatorBody(renderCombatCalculatorResults())"
+            >
+                ← Back
+            </button>
+
+            <button
+                type="button"
+                class="mm-button mm-button-primary"
+                onclick="recordCombatWound()"
+            >
+                Continue
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function confirmCombatCasualtyXP() {
+
+    const myFighter =
+        getCombatCalculatorFighter();
+
+
+    if (!myFighter) {
+
+        return;
+
+    }
+
+
+    const currentXp =
+        Number(myFighter.experience) || 0;
+
+
+    refreshCombatCalculatorBody(`
+
+        <p class="mm-muted">
+            Credit ${escapeHtml(myFighter.name)}
+            with +1 Experience for causing a
+            casualty?
+        </p>
+
+        <div class="mm-rule-stat">
+            <span>
+                Current Experience
+            </span>
+            <strong>
+                ${currentXp} XP
+            </strong>
+        </div>
+
+        <div class="mm-rule-stat">
+            <span>
+                Proposed New Total
+            </span>
+            <strong>
+                ${currentXp + 1} XP
+            </strong>
+        </div>
+
+
+        <div class="mm-picker-actions">
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="refreshCombatCalculatorBody(renderCombatCalculatorResults())"
+            >
+                ← Back
+            </button>
+
+            <button
+                type="button"
+                class="mm-button mm-button-primary"
+                onclick="recordCombatCasualtyXP()"
+            >
+                Continue
+            </button>
+
+        </div>
+
+    `);
 
 }
 
@@ -4042,6 +4245,8 @@ function recordCombatCasualtyXP() {
 
         xpInput.value =
             (Number(xpInput.value) || 0) + 1;
+
+        updateFighterGameXpDelta();
 
     }
 
