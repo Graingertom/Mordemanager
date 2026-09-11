@@ -101,6 +101,7 @@
             "cost": 10,
             "firstFree": false,
             "availability": "common",
+            "parry": true,
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User",
@@ -290,6 +291,7 @@
             "cost": 5,
             "firstFree": false,
             "availability": "common",
+            "parry": true,
             "armourProfile": {
                 "save": "-",
                 "special": "Parry - may parry the first blow of each round of hand-to-hand combat: roll a D6, and a score higher than the opponent's to-hit roll discards that attack. Cannot parry attacks made at double or more the buckler-user's Strength. Only usable with a one-handed weapon."

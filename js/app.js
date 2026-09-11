@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 
 const DATA_PATHS = {
 
@@ -31,6 +31,8 @@ const DATA_PATHS = {
     injuries: `./data/rules/injuries.json?v=${DATA_VERSION}`,
 
     advances: `./data/rules/advances.json?v=${DATA_VERSION}`,
+
+    combat: `./data/rules/combat.json?v=${DATA_VERSION}`,
 
     reikland: `./data/rules/warbands/reikland.json?v=${DATA_VERSION}`
 
@@ -52,6 +54,8 @@ const state = {
     injuries: null,
 
     advances: null,
+
+    combat: null,
 
     warbandDefinitions: {
         reikland: null
@@ -193,6 +197,8 @@ async function loadRules() {
 
         fetch(DATA_PATHS.advances),
 
+        fetch(DATA_PATHS.combat),
+
         fetch(DATA_PATHS.reikland)
 
     ]);
@@ -209,6 +215,8 @@ async function loadRules() {
         DATA_PATHS.injuries,
 
         DATA_PATHS.advances,
+
+        DATA_PATHS.combat,
 
         DATA_PATHS.reikland
 
@@ -242,6 +250,8 @@ async function loadRules() {
 
         advances,
 
+        combat,
+
         reikland
 
     ] = await Promise.all(
@@ -263,6 +273,8 @@ async function loadRules() {
     state.injuries = injuries;
 
     state.advances = advances;
+
+    state.combat = combat;
 
     state.warbandDefinitions.reikland =
         reikland;

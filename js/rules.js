@@ -1058,6 +1058,285 @@ function getAdvanceTable(
 
 
 /* ============================================================
+   COMBAT (TO HIT / TO WOUND / ARMOUR SAVE / PARRY)
+
+   Pure chart look-ups and the one non-trivial bit of arithmetic
+   (combining body armour + shield + the attacker's Strength into
+   a single save target) - the app never rolls anything itself,
+   this just does the table-reading a player would otherwise do
+   by hand against the printed charts.
+   ============================================================ */
+
+function clampChartStat(
+    value
+) {
+
+    const number =
+        Number(value) || 1;
+
+
+    return Math.max(
+        1,
+        Math.min(10, number)
+    );
+
+}
+
+
+function getToHitTarget(
+    attackerWS,
+    defenderWS,
+    combatData
+) {
+
+    const row =
+        combatData?.toHitChart?.[
+            String(clampChartStat(attackerWS))
+        ];
+
+
+    const value =
+        row?.[
+            String(clampChartStat(defenderWS))
+        ];
+
+
+    return typeof value === "number"
+        ? value
+        : null;
+
+}
+
+
+function getToWoundTarget(
+    strength,
+    toughness,
+    combatData
+) {
+
+    const row =
+        combatData?.toWoundChart?.[
+            String(clampChartStat(strength))
+        ];
+
+
+    const value =
+        row?.[
+            String(clampChartStat(toughness))
+        ];
+
+
+    return typeof value === "number"
+        ? value
+        : null;
+
+}
+
+
+/*
+ * Melee weapons store their Strength as "As User" or "As User +N"
+ * (a bonus on the wielder's own Strength); ranged weapons store a
+ * flat number instead - both as strings in equipment.json, since
+ * that's how the rulebook itself expresses them.
+ */
+
+function resolveWeaponStrength(
+    weaponProfile,
+    fighterStrength
+) {
+
+    const raw =
+        weaponProfile?.strength;
+
+
+    if (typeof raw !== "string") {
+
+        return Number(fighterStrength) || 0;
+
+    }
+
+
+    const asUserMatch =
+        raw.match(
+            /^As User(?:\s*\+\s*(\d+))?$/i
+        );
+
+
+    if (asUserMatch) {
+
+        const bonus =
+            Number(asUserMatch[1]) || 0;
+
+
+        return (
+            Number(fighterStrength) || 0
+        ) + bonus;
+
+    }
+
+
+    const flat =
+        Number(raw);
+
+
+    return Number.isFinite(flat)
+        ? flat
+        : (Number(fighterStrength) || 0);
+
+}
+
+
+/*
+ * Combines whatever's actually equipped into one save target:
+ * the best (lowest) body-armour save, improved by 1 if a shield
+ * is also carried (or a standalone 6+ if it's the only thing
+ * worn), then worsened by the attacker's Strength via the
+ * verified modifier table. Returns null if no save is possible
+ * at all (nothing worn, or the final number is beyond 6+).
+ */
+
+function getArmourSaveTarget(
+    equipmentIds,
+    equipmentData,
+    attackerStrength,
+    combatData
+) {
+
+    if (
+        !Array.isArray(equipmentIds) ||
+        !equipmentIds.length
+    ) {
+
+        return null;
+
+    }
+
+
+    const items =
+        equipmentIds
+            .map(
+                id =>
+                    findEquipment(id, equipmentData)
+            )
+            .filter(Boolean);
+
+
+    const bodyArmourSaves =
+        items
+            .filter(
+                item =>
+                    item.id !== "shield" &&
+                    /^\d\+$/.test(item.armourProfile?.save || "")
+            )
+            .map(
+                item =>
+                    parseInt(item.armourProfile.save, 10)
+            );
+
+
+    const hasShield =
+        items.some(
+            item =>
+                item.id === "shield"
+        );
+
+
+    let baseSave =
+        bodyArmourSaves.length
+            ? Math.min(...bodyArmourSaves)
+            : null;
+
+
+    if (hasShield) {
+
+        baseSave =
+            baseSave === null
+                ? 6
+                : baseSave - 1;
+
+    }
+
+
+    if (baseSave === null) {
+
+        return null;
+
+    }
+
+
+    const strengthModifier =
+        combatData?.armourSaveModifiers?.[
+            String(
+                Math.min(9, Math.max(1, Number(attackerStrength) || 1))
+            )
+        ] || 0;
+
+
+    const finalSave =
+        baseSave + strengthModifier;
+
+
+    return finalSave <= 6
+        ? finalSave
+        : null;
+
+}
+
+
+/*
+ * A sword or buckler (equipment.json's "parry" flag) lets the
+ * defender try to cancel a hit outright - unless the attacker's
+ * Strength is double the defender's own Strength or more, in
+ * which case it's explicitly disqualified rather than just
+ * unavailable, so the UI can say so instead of staying silent.
+ */
+
+function getParryAvailability(
+    defenderEquipmentIds,
+    equipmentData,
+    attackerStrength,
+    defenderStrength
+) {
+
+    const hasParryItem =
+        Array.isArray(defenderEquipmentIds) &&
+        defenderEquipmentIds
+            .map(
+                id =>
+                    findEquipment(id, equipmentData)
+            )
+            .some(
+                item =>
+                    item?.parry === true
+            );
+
+
+    if (!hasParryItem) {
+
+        return {
+            hasParryItem: false,
+            eligible: false,
+            disqualified: false
+        };
+
+    }
+
+
+    const disqualified =
+        (Number(attackerStrength) || 0) >=
+        (Number(defenderStrength) || 0) * 2;
+
+
+    return {
+        hasParryItem: true,
+        eligible: !disqualified,
+        disqualified
+    };
+
+}
+
+
+/* ============================================================
    EQUIPMENT COST
    ============================================================ */
 
@@ -2092,7 +2371,17 @@ return {
 
     isEligibleForAdvance,
 
-    getAdvanceTable
+    getAdvanceTable,
+
+    getToHitTarget,
+
+    getToWoundTarget,
+
+    resolveWeaponStrength,
+
+    getArmourSaveTarget,
+
+    getParryAvailability
 
 };
 

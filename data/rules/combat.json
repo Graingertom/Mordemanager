@@ -1,0 +1,97 @@
+{
+    "source": {
+        "organisation": "Mordheim Core Rules",
+        "document": "Mordheim Core Rules Printable, Shooting (p15-16) and Close Combat (p18-21) sections",
+        "website": "https://broheim.net",
+        "url": "https://broheim.net/downloads/resources/Mordheim%20Rulebook.pdf"
+    },
+
+    "toHitChart": {
+        "1": { "1": 4, "2": 4, "3": 5, "4": 5, "5": 5, "6": 5, "7": 5, "8": 5, "9": 5, "10": 5 },
+        "2": { "1": 3, "2": 4, "3": 4, "4": 4, "5": 5, "6": 5, "7": 5, "8": 5, "9": 5, "10": 5 },
+        "3": { "1": 3, "2": 3, "3": 4, "4": 4, "5": 4, "6": 4, "7": 5, "8": 5, "9": 5, "10": 5 },
+        "4": { "1": 3, "2": 3, "3": 3, "4": 4, "5": 4, "6": 4, "7": 4, "8": 4, "9": 5, "10": 5 },
+        "5": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 4, "6": 4, "7": 4, "8": 4, "9": 4, "10": 4 },
+        "6": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 4, "7": 4, "8": 4, "9": 4, "10": 4 },
+        "7": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3, "7": 4, "8": 4, "9": 4, "10": 4 },
+        "8": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3, "7": 3, "8": 4, "9": 4, "10": 4 },
+        "9": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3, "7": 3, "8": 3, "9": 4, "10": 4 },
+        "10": { "1": 3, "2": 3, "3": 3, "4": 3, "5": 3, "6": 3, "7": 3, "8": 3, "9": 3, "10": 4 }
+    },
+
+    "toWoundChart": {
+        "1": { "1": 4, "2": 5, "3": 6, "4": 6, "5": null, "6": null, "7": null, "8": null, "9": null, "10": null },
+        "2": { "1": 3, "2": 4, "3": 5, "4": 6, "5": 6, "6": null, "7": null, "8": null, "9": null, "10": null },
+        "3": { "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 6, "7": null, "8": null, "9": null, "10": null },
+        "4": { "1": 2, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 6, "8": null, "9": null, "10": null },
+        "5": { "1": 2, "2": 2, "3": 2, "4": 3, "5": 4, "6": 5, "7": 6, "8": 6, "9": null, "10": null },
+        "6": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 3, "6": 4, "7": 5, "8": 6, "9": 6, "10": null },
+        "7": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 3, "7": 4, "8": 5, "9": 6, "10": 6 },
+        "8": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2, "7": 3, "8": 4, "9": 5, "10": 6 },
+        "9": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2, "7": 2, "8": 3, "9": 4, "10": 5 },
+        "10": { "1": 2, "2": 2, "3": 2, "4": 2, "5": 2, "6": 2, "7": 2, "8": 2, "9": 3, "10": 4 }
+    },
+
+    "armourSaveModifiers": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 2,
+        "6": 3,
+        "7": 4,
+        "8": 5,
+        "9": 6
+    },
+
+    "criticalHitChart": [
+        {
+            "roll": "1-2",
+            "label": "Hits a vital part",
+            "description": "The wound is doubled to 2 wounds. Roll any armour saves before doubling."
+        },
+        {
+            "roll": "3-4",
+            "label": "Hits an exposed spot",
+            "description": "The wound is doubled to 2 wounds. The attack ignores all armour saves."
+        },
+        {
+            "roll": "5-6",
+            "label": "Master strike!",
+            "description": "The wound is doubled to 2 wounds. The attack ignores all armour saves. Gain +2 to any Injury rolls."
+        }
+    ],
+
+    "criticalHitNote": "If the attacker normally needs a 6 to wound, he cannot cause a critical hit. Each warrior may only cause one critical hit per hand-to-hand combat phase.",
+
+    "outOfActionChart": [
+        {
+            "roll": "1-2",
+            "label": "Knocked Down",
+            "description": "The warrior falls to the ground. Turn the model face up."
+        },
+        {
+            "roll": "3-4",
+            "label": "Stunned",
+            "description": "The warrior falls to the ground wounded and barely conscious. Turn the model face down."
+        },
+        {
+            "roll": "5-6",
+            "label": "Out of Action",
+            "description": "The warrior is badly hurt and takes no further part in the game. Remove the model."
+        }
+    ],
+
+    "parryRule": "A defender carrying a sword or buckler may, when hit, roll a D6 - a score higher than the attacker's to-hit roll discards that attack entirely. It is impossible to parry a blow that scored a natural 6 to hit. A parry cannot be attempted against an attacker whose Strength is double the defender's own Strength or more. Only one blow per hand-to-hand combat phase may be parried.",
+
+    "knockedDownStunnedRule": "Attacks against an already Knocked Down or Stunned model hit automatically - no To Hit roll is made. A Knocked Down model may not parry. If a Stunned model is hit, it is automatically taken Out of Action with no To Wound or armour save roll.",
+
+    "experienceRules": {
+        "perEnemyOutOfAction": 1,
+        "heroOnly": true,
+        "sourcePage": 88,
+        "note": "Any Hero earns +1 Experience for each enemy he puts out of action - a standard rule repeated across every scenario, not scenario-specific. Henchmen gain experience as a pooled group instead, under separate rules."
+    },
+
+    "sourcePage": 19
+}

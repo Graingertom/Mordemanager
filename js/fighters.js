@@ -60,6 +60,27 @@ let gameUpdateFighterId = null;
 
 let pendingAdvanceTable = [];
 
+/*
+ * Staging for the Combat Calculator - a linear step-through
+ * (your weapon -> opponent warband -> opponent fighter ->
+ * opponent weapon -> results) rendered into one modal's body via
+ * innerHTML swaps, same lightweight pattern as the Advance
+ * picker's #advance-picker-body. combatCalculatorOpponentFighter
+ * holds the profile/equipment fetched via the new
+ * get_game_fighter_combat_profile RPC - never written anywhere,
+ * just read for the duration of the calculator.
+ */
+
+let combatCalculatorFighterId = null;
+
+let combatCalculatorMyWeaponId = null;
+
+let combatCalculatorOpponentWarbandId = null;
+
+let combatCalculatorOpponentFighter = null;
+
+let combatCalculatorOpponentWeaponId = null;
+
 
 /* ============================================================
    DATA NORMALISATION
@@ -1117,6 +1138,13 @@ function renderFighterGameCard(
                         ? ""
                         : `
                             <div>
+
+                                <button
+                                    class="mm-button mm-button-small"
+                                    onclick="showCombatCalculator('${escapeAttribute(fighter.id)}')"
+                                >
+                                    Combat Calculator
+                                </button>
 
                                 <button
                                     class="mm-button mm-button-small mm-button-primary"
@@ -2969,6 +2997,1053 @@ function renderPromotionBonusRoll() {
         </div>
 
     `;
+
+}
+
+
+/* ============================================================
+   COMBAT CALCULATOR
+
+   A reference tool, not a simulator - works out the To Hit / To
+   Wound / Armour Save numbers a physical dice roll would need,
+   for a fighter against a real opponent in the same game. Nothing
+   about the calculator itself is ever saved; only the eventual
+   "record a wound" / "caused a casualty" shortcuts at the end
+   write anything, and they do it through showFighterGameUpdate's
+   own existing Save flow, never directly.
+   ============================================================ */
+
+function getCombatCalculatorFighter() {
+
+    const warband =
+        getCurrentWarband();
+
+
+    return (
+        warband?.fighters.find(
+            item =>
+                item.id === combatCalculatorFighterId
+        ) || null
+    );
+
+}
+
+
+function getCombatCalculatorGame() {
+
+    return (
+        state.games.find(
+            game =>
+                game.id === state.returnToGameId
+        ) || null
+    );
+
+}
+
+
+function refreshCombatCalculatorBody(
+    html
+) {
+
+    const body =
+        document.getElementById(
+            "combat-calc-body"
+        );
+
+
+    if (body) {
+
+        body.innerHTML =
+            html;
+
+    }
+
+}
+
+
+function closeCombatCalculator() {
+
+    combatCalculatorFighterId = null;
+
+    combatCalculatorMyWeaponId = null;
+
+    combatCalculatorOpponentWarbandId = null;
+
+    combatCalculatorOpponentFighter = null;
+
+    combatCalculatorOpponentWeaponId = null;
+
+
+    closeModal();
+
+}
+
+
+function showCombatCalculator(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    combatCalculatorFighterId =
+        fighterId;
+
+    combatCalculatorMyWeaponId = null;
+
+    combatCalculatorOpponentWarbandId = null;
+
+    combatCalculatorOpponentFighter = null;
+
+    combatCalculatorOpponentWeaponId = null;
+
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    <h2>
+                        Combat Calculator
+                    </h2>
+
+                </div>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeCombatCalculator()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="mm-modal-body"
+                id="combat-calc-body"
+            >
+
+                ${renderCombatCalculatorMyWeaponStep(
+                    fighter
+                )}
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+/*
+ * Only hand-to-hand weapons are supported right now - shooting
+ * uses a different, unopposed To Hit chart based on the shooter's
+ * own Ballistic Skill plus situational modifiers (cover, range,
+ * movement), not the WS-vs-WS chart this calculator is built
+ * around. Ranged weapons are left out of the picker rather than
+ * silently given the wrong numbers.
+ */
+
+function isMeleeWeapon(
+    item
+) {
+
+    return (
+        item?.weaponProfile?.range === "Close Combat"
+    );
+
+}
+
+
+function renderCombatCalculatorMyWeaponStep(
+    fighter
+) {
+
+    const weapons =
+        (fighter.equipment || [])
+            .map(
+                id =>
+                    getEquipment(id)
+            )
+            .filter(isMeleeWeapon);
+
+
+    if (!weapons.length) {
+
+        return `
+
+            <p class="mm-muted">
+                ${escapeHtml(fighter.name)} has no
+                hand-to-hand weapon equipped, so
+                there's nothing to calculate.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <p class="mm-muted">
+            Which weapon is
+            ${escapeHtml(fighter.name)}
+            fighting with?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${weapons
+                .map(
+                    item => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="selectCombatCalculatorMyWeapon('${escapeAttribute(item.id)}')"
+                        >
+                            <strong>
+                                ${escapeHtml(item.name)}
+                            </strong>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function selectCombatCalculatorMyWeapon(
+    itemId
+) {
+
+    combatCalculatorMyWeaponId =
+        itemId;
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorOpponentWarbandStep()
+    );
+
+}
+
+
+function renderCombatCalculatorOpponentWarbandStep() {
+
+    const warband =
+        getCurrentWarband();
+
+    const game =
+        getCombatCalculatorGame();
+
+
+    if (!game) {
+
+        return `
+
+            <p class="mm-muted">
+                This warband isn't currently in a
+                game.
+            </p>
+
+        `;
+
+    }
+
+
+    const opponentIds =
+        (game.warbandIds || []).filter(
+            id =>
+                id !== warband.id
+        );
+
+
+    if (!opponentIds.length) {
+
+        return `
+
+            <p class="mm-muted">
+                No other warbands are in this
+                game yet.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <p class="mm-muted">
+            Which warband is the opponent in?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${opponentIds
+                .map(
+                    id => {
+
+                        const stub =
+                            getWarbandOrStub(id);
+
+
+                        return `
+                            <button
+                                type="button"
+                                class="mm-warband-select-option"
+                                onclick="selectCombatCalculatorOpponentWarband('${escapeAttribute(id)}')"
+                            >
+                                <strong>
+                                    ${escapeHtml(
+                                        stub?.name ||
+                                        "Unknown Warband"
+                                    )}
+                                </strong>
+
+                                ${
+                                    stub?.owner
+                                        ? `
+                                            <span>
+                                                ${escapeHtml(stub.owner)}
+                                            </span>
+                                        `
+                                        : ""
+                                }
+                            </button>
+                        `;
+
+                    }
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+async function selectCombatCalculatorOpponentWarband(
+    warbandId
+) {
+
+    combatCalculatorOpponentWarbandId =
+        warbandId;
+
+
+    refreshCombatCalculatorBody(`
+        <p class="mm-muted">
+            Loading fighters...
+        </p>
+    `);
+
+
+    const game =
+        getCombatCalculatorGame();
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_game_warband_fighters",
+            {
+
+                target_warband_id:
+                    warbandId,
+
+                target_game_id:
+                    game.id
+
+            }
+        );
+
+
+    if (error) {
+
+        refreshCombatCalculatorBody(`
+            <p class="mm-muted">
+                Unable to load that warband's
+                fighters: ${escapeHtml(error.message)}
+            </p>
+        `);
+
+        return;
+
+    }
+
+
+    const fighters =
+        (data || []).map(
+            row => ({
+
+                id:
+                    row.id,
+
+                name:
+                    row.name,
+
+                category:
+                    row.category,
+
+                typeName:
+                    row.type_name
+
+            })
+        );
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorOpponentFighterStep(
+            fighters
+        )
+    );
+
+}
+
+
+function renderCombatCalculatorOpponentFighterStep(
+    fighters
+) {
+
+    if (!fighters.length) {
+
+        return `
+
+            <p class="mm-muted">
+                That warband has no fighters
+                recorded.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <p class="mm-muted">
+            Which fighter?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${fighters
+                .map(
+                    fighter => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="selectCombatCalculatorOpponentFighter('${escapeAttribute(fighter.id)}')"
+                        >
+                            <strong>
+                                ${escapeHtml(fighter.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    fighter.typeName ||
+                                    fighter.category
+                                )}
+                            </span>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+async function selectCombatCalculatorOpponentFighter(
+    fighterId
+) {
+
+    refreshCombatCalculatorBody(`
+        <p class="mm-muted">
+            Loading fighter...
+        </p>
+    `);
+
+
+    const game =
+        getCombatCalculatorGame();
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_game_fighter_combat_profile",
+            {
+
+                target_fighter_id:
+                    fighterId,
+
+                target_game_id:
+                    game.id
+
+            }
+        );
+
+
+    if (
+        error ||
+        !data ||
+        !data.length
+    ) {
+
+        refreshCombatCalculatorBody(`
+            <p class="mm-muted">
+                Unable to load that fighter's
+                stats: ${escapeHtml(
+                    error?.message ||
+                    "not found"
+                )}
+            </p>
+        `);
+
+        return;
+
+    }
+
+
+    const row =
+        data[0];
+
+
+    combatCalculatorOpponentFighter = {
+
+        id:
+            row.id,
+
+        name:
+            row.name,
+
+        category:
+            row.category,
+
+        typeName:
+            row.type_name,
+
+        profile:
+            row.profile || {},
+
+        equipment:
+            Array.isArray(row.equipment)
+                ? row.equipment
+                : []
+
+    };
+
+    combatCalculatorOpponentWeaponId = null;
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorOpponentWeaponStep()
+    );
+
+}
+
+
+function renderCombatCalculatorOpponentWeaponStep() {
+
+    const opponent =
+        combatCalculatorOpponentFighter;
+
+
+    const weapons =
+        (opponent.equipment || [])
+            .map(
+                id =>
+                    getEquipment(id)
+            )
+            .filter(isMeleeWeapon);
+
+
+    return `
+
+        <p class="mm-muted">
+            Which weapon is
+            ${escapeHtml(opponent.name)}
+            fighting with?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${weapons
+                .map(
+                    item => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="selectCombatCalculatorOpponentWeapon('${escapeAttribute(item.id)}')"
+                        >
+                            <strong>
+                                ${escapeHtml(item.name)}
+                            </strong>
+                        </button>
+                    `
+                )
+                .join("")}
+
+            <button
+                type="button"
+                class="mm-warband-select-option"
+                onclick="selectCombatCalculatorOpponentWeapon('')"
+            >
+                <strong>
+                    No weapon / skip
+                </strong>
+
+                <span>
+                    Only show your attack
+                </span>
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+function selectCombatCalculatorOpponentWeapon(
+    itemId
+) {
+
+    combatCalculatorOpponentWeaponId =
+        itemId || null;
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorResults()
+    );
+
+}
+
+
+/*
+ * One side of a fight - the numbers an attacker with `weapon`
+ * needs against a defender with `defenderEquipment`, plus the
+ * Parry/Knocked-Down/Stunned reference notes. Shared by both
+ * directions in renderCombatCalculatorResults() below.
+ */
+
+function renderCombatExchange(
+    options
+) {
+
+    const {
+        defenderName,
+        attackerWS,
+        defenderWS,
+        attackerStrength,
+        defenderToughness,
+        defenderEquipment,
+        weapon,
+        defenderOwnStrength
+    } = options;
+
+
+    const toHit =
+        RulesEngine.getToHitTarget(
+            attackerWS,
+            defenderWS,
+            state.combat
+        );
+
+    const toWound =
+        RulesEngine.getToWoundTarget(
+            attackerStrength,
+            defenderToughness,
+            state.combat
+        );
+
+    const save =
+        RulesEngine.getArmourSaveTarget(
+            defenderEquipment,
+            state.equipment,
+            attackerStrength,
+            state.combat
+        );
+
+    const parry =
+        RulesEngine.getParryAvailability(
+            defenderEquipment,
+            state.equipment,
+            attackerStrength,
+            defenderOwnStrength
+        );
+
+
+    return `
+
+        <div class="mm-rule-stat">
+            <span>
+                To Hit
+            </span>
+            <strong>
+                ${toHit !== null ? toHit + "+" : "-"}
+            </strong>
+        </div>
+
+        <div class="mm-rule-stat">
+            <span>
+                To Wound (Strength ${attackerStrength})
+            </span>
+            <strong>
+                ${toWound !== null ? toWound + "+" : "No chance"}
+            </strong>
+        </div>
+
+        <div class="mm-rule-stat">
+            <span>
+                ${escapeHtml(defenderName)}'s Armour Save
+            </span>
+            <strong>
+                ${save !== null ? save + "+" : "No save"}
+            </strong>
+        </div>
+
+
+        ${
+            weapon.weaponProfile?.special
+                ? `
+                    <p class="mm-muted">
+                        ${escapeHtml(weapon.name)}:
+                        ${escapeHtml(weapon.weaponProfile.special)}
+                    </p>
+                `
+                : ""
+        }
+
+
+        ${
+            parry.hasParryItem
+                ? `
+                    <p class="mm-muted">
+                        ${
+                            parry.eligible
+                                ? `${escapeHtml(defenderName)} may Parry: roll higher than the to-hit roll on a D6 to cancel this hit (impossible against a natural 6).`
+                                : `${escapeHtml(defenderName)} carries a Parry item, but can't use it here - the attacker's Strength (${attackerStrength}) is double their own Strength (${defenderOwnStrength}) or more.`
+                        }
+                    </p>
+                `
+                : ""
+        }
+
+
+        <p class="mm-muted">
+            If ${escapeHtml(defenderName)} is already
+            Knocked Down, this attack hits automatically
+            (no To Hit roll) and they cannot Parry. If
+            Stunned, a hit here automatically takes them
+            Out of Action - no To Wound or save roll
+            needed.
+        </p>
+
+    `;
+
+}
+
+
+function renderCombatCalculatorResults() {
+
+    const myFighter =
+        getCombatCalculatorFighter();
+
+    const opponent =
+        combatCalculatorOpponentFighter;
+
+
+    if (
+        !myFighter ||
+        !opponent
+    ) {
+
+        return `
+
+            <p class="mm-muted">
+                Something went wrong setting up
+                this fight.
+            </p>
+
+        `;
+
+    }
+
+
+    const myProfile =
+        RulesEngine.calculateEffectiveProfile(
+            myFighter
+        );
+
+    const opponentProfile =
+        opponent.profile || {};
+
+
+    const myWeapon =
+        getEquipment(
+            combatCalculatorMyWeaponId
+        );
+
+    const opponentWeapon =
+        combatCalculatorOpponentWeaponId
+            ? getEquipment(combatCalculatorOpponentWeaponId)
+            : null;
+
+
+    const myAttack =
+        myWeapon
+            ? renderCombatExchange({
+
+                defenderName:
+                    opponent.name,
+
+                attackerWS:
+                    myProfile.WS,
+
+                defenderWS:
+                    opponentProfile.WS,
+
+                attackerStrength:
+                    RulesEngine.resolveWeaponStrength(
+                        myWeapon.weaponProfile,
+                        myProfile.S
+                    ),
+
+                defenderToughness:
+                    opponentProfile.T,
+
+                defenderEquipment:
+                    opponent.equipment,
+
+                weapon:
+                    myWeapon,
+
+                defenderOwnStrength:
+                    opponentProfile.S
+
+            })
+            : `
+                <p class="mm-muted">
+                    You have no weapon selected.
+                </p>
+            `;
+
+
+    const theirAttack =
+        opponentWeapon
+            ? renderCombatExchange({
+
+                defenderName:
+                    myFighter.name,
+
+                attackerWS:
+                    opponentProfile.WS,
+
+                defenderWS:
+                    myProfile.WS,
+
+                attackerStrength:
+                    RulesEngine.resolveWeaponStrength(
+                        opponentWeapon.weaponProfile,
+                        opponentProfile.S
+                    ),
+
+                defenderToughness:
+                    myProfile.T,
+
+                defenderEquipment:
+                    myFighter.equipment,
+
+                weapon:
+                    opponentWeapon,
+
+                defenderOwnStrength:
+                    myProfile.S
+
+            })
+            : `
+                <p class="mm-muted">
+                    ${escapeHtml(opponent.name)} has no
+                    weapon selected.
+                </p>
+            `;
+
+
+    return `
+
+        <section class="mm-editor-section">
+
+            <h3>
+                ${escapeHtml(myFighter.name)} attacks
+                ${escapeHtml(opponent.name)}
+            </h3>
+
+            ${myAttack}
+
+        </section>
+
+
+        <section class="mm-editor-section">
+
+            <h3>
+                ${escapeHtml(opponent.name)} attacks
+                ${escapeHtml(myFighter.name)}
+            </h3>
+
+            ${theirAttack}
+
+        </section>
+
+
+        <section class="mm-editor-section">
+
+            <h3>
+                Critical Hits
+            </h3>
+
+            <p class="mm-muted">
+                On an unmodified roll of 6 to wound
+                (reference only - not applied above):
+            </p>
+
+            ${(state.combat?.criticalHitChart || [])
+                .map(
+                    row => `
+                        <div class="mm-rule-stat">
+                            <span>
+                                ${escapeHtml(row.roll)} -
+                                ${escapeHtml(row.label)}
+                            </span>
+                        </div>
+                    `
+                )
+                .join("")}
+
+        </section>
+
+
+        <div class="mm-picker-actions">
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="recordCombatWound()"
+            >
+                Record a wound on
+                ${escapeHtml(myFighter.name)}
+            </button>
+
+            ${
+                myFighter.category === "hero"
+                    ? `
+                        <button
+                            type="button"
+                            class="mm-button mm-button-primary"
+                            onclick="recordCombatCasualtyXP()"
+                        >
+                            Caused a casualty (+1 XP)
+                        </button>
+                    `
+                    : ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+function recordCombatWound() {
+
+    const fighterId =
+        combatCalculatorFighterId;
+
+
+    closeCombatCalculator();
+
+    showFighterGameUpdate(
+        fighterId
+    );
+
+}
+
+
+function recordCombatCasualtyXP() {
+
+    const fighterId =
+        combatCalculatorFighterId;
+
+
+    closeCombatCalculator();
+
+    showFighterGameUpdate(
+        fighterId
+    );
+
+
+    const xpInput =
+        document.getElementById(
+            "fighter-game-xp"
+        );
+
+
+    if (xpInput) {
+
+        xpInput.value =
+            (Number(xpInput.value) || 0) + 1;
+
+    }
 
 }
 
