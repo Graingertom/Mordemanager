@@ -4,9 +4,9 @@
 
     "source": {
         "organisation": "Broheim",
-        "document": "Master Equipment List / Mordheim Core Rules",
+        "document": "Mordheim Core Rules Printable",
         "website": "https://broheim.net",
-        "url": "https://broheim.net/downloads/resources/Master%20Equipment%20List.pdf"
+        "url": "https://broheim.net/downloads/rules/Mordheim%20Core%20Rules%20Printable.pdf"
     },
 
     "categories": [
@@ -42,6 +42,7 @@
                 "strength": "As User",
                 "special": "An enemy wounded by a dagger gets a +1 bonus to his Armour Save (or a 6+ save if he has none)."
             },
+            "sourcePage": 24,
             "source": "mordheim-core"
         },
 
@@ -57,6 +58,7 @@
                 "strength": "As User",
                 "special": "Concussion - a Stunned result on the Injury chart of 2-4 (not just 2) knocks the target out."
             },
+            "sourcePage": 24,
             "source": "mordheim-core"
         },
 
@@ -72,6 +74,7 @@
                 "strength": "As User",
                 "special": "Concussion - a Stunned result on the Injury chart of 2-4 (not just 2) knocks the target out."
             },
+            "sourcePage": 24,
             "source": "mordheim-core"
         },
 
@@ -85,8 +88,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User",
-                "special": "Cutting Edge - the target's Armour Save is reduced by 1."
+                "special": "Cutting Edge - the target's Armour Save is reduced by a further 1 on top of the attacker's Strength."
             },
+            "sourcePage": 25,
             "source": "mordheim-core"
         },
 
@@ -100,8 +104,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User",
-                "special": "Parry - may attempt to parry an incoming hit, discarding it on a successful roll."
+                "special": "Parry - when hit, may roll a D6; a score higher than the opponent's to-hit roll discards that attack. Cannot parry attacks made at double or more the sword's Strength."
             },
+            "sourcePage": 25,
             "source": "mordheim-core"
         },
 
@@ -115,8 +120,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User +1",
-                "special": "Unwieldy - the Strength bonus only applies in the first round of a combat."
+                "special": "Heavy - the +1 Strength bonus only applies in the first turn of each combat. Difficult to use - may not carry a second weapon or buckler (a shield is fine)."
             },
+            "sourcePage": 26,
             "source": "mordheim-core"
         },
 
@@ -130,8 +136,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User +2",
-                "special": "Two-handed - always strikes last, even when charging."
+                "special": "Two-handed - may not use a shield, buckler or additional weapon (a shield still gives +1 Armour Save vs shooting). Strike last - always strikes last, even when charging."
             },
+            "sourcePage": 27,
             "source": "mordheim-core"
         },
 
@@ -145,8 +152,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User",
-                "special": "Strike First on the charge; can also be used by a model in the second rank."
+                "special": "Strike First - strikes first in the first turn of a combat. Unwieldy - may only carry a shield or buckler in the other hand, not a second weapon. Cavalry bonus - a mounted warrior gets +1 Strength for the turn he charges (with the mounted-combat optional rules)."
             },
+            "sourcePage": 26,
             "source": "mordheim-core"
         },
 
@@ -160,8 +168,9 @@
             "weaponProfile": {
                 "range": "Close Combat",
                 "strength": "As User +1",
-                "special": "Two-handed - may not be used with a shield, buckler or additional weapon."
+                "special": "Two-handed - may not use a shield, buckler or additional weapon (a shield still gives +1 Armour Save vs shooting)."
             },
+            "sourcePage": 26,
             "source": "mordheim-core"
         },
 
@@ -175,8 +184,9 @@
             "weaponProfile": {
                 "range": "30\"",
                 "strength": "4",
-                "special": "Move or Fire - may move and shoot, but suffers the usual move-and-fire penalty."
+                "special": "Move or Fire - may not move and fire in the same turn (pivoting on the spot or standing up doesn't count as moving)."
             },
+            "sourcePage": 29,
             "source": "mordheim-core"
         },
 
@@ -190,8 +200,9 @@
             "weaponProfile": {
                 "range": "6\"",
                 "strength": "4",
-                "special": "-2 Armour Save modifier. May be used in hand-to-hand combat as a close combat weapon."
+                "special": "Prepare shot - takes a full turn to reload, so fires every other turn (a brace of two pistols fires every turn). Save modifier - a further -2 to the target's Armour Save. Hand-to-hand - can be used alongside a close combat weapon for +1 Attack at Strength 4/-2 save, once per combat."
             },
+            "sourcePage": 31,
             "source": "mordheim-core"
         },
 
@@ -205,8 +216,9 @@
             "weaponProfile": {
                 "range": "10\"",
                 "strength": "4",
-                "special": "+1 to Hit, -2 Armour Save modifier. May be used in hand-to-hand combat as a close combat weapon."
+                "special": "Accuracy - +1 to hit with shots and hand-to-hand attacks. Prepare shot - takes a full turn to reload, so fires every other turn (a brace fires every turn). Save modifier - a further -2 to the target's Armour Save. Hand-to-hand - can be used alongside a close combat weapon for +1 Attack at Strength 4/-2 save, once per combat."
             },
+            "sourcePage": 31,
             "source": "mordheim-core"
         },
 
@@ -222,6 +234,7 @@
                 "strength": "3",
                 "special": ""
             },
+            "sourcePage": 28,
             "source": "mordheim-core"
         },
 
@@ -236,6 +249,7 @@
                 "save": "6+",
                 "special": ""
             },
+            "sourcePage": 34,
             "source": "mordheim-core"
         },
 
@@ -248,8 +262,9 @@
             "availability": "common",
             "armourProfile": {
                 "save": "5+",
-                "special": "May not be worn together with light armour."
+                "special": "A warrior wearing both heavy armour and a shield suffers a -1 Movement penalty."
             },
+            "sourcePage": 34,
             "source": "mordheim-core"
         },
 
@@ -261,9 +276,10 @@
             "firstFree": false,
             "availability": "common",
             "armourProfile": {
-                "save": "+1",
-                "special": "Grants a 6+ Armour Save on its own, or +1 to an existing save. Only usable with a one-handed weapon."
+                "save": "6+",
+                "special": "Only usable with a one-handed weapon."
             },
+            "sourcePage": 35,
             "source": "mordheim-core"
         },
 
@@ -275,9 +291,10 @@
             "firstFree": false,
             "availability": "common",
             "armourProfile": {
-                "save": "+1",
-                "special": "+1 Armour Save against one close-combat attacker per turn only; no effect against shooting. Only usable with a one-handed weapon."
+                "save": "-",
+                "special": "Parry - may parry the first blow of each round of hand-to-hand combat: roll a D6, and a score higher than the opponent's to-hit roll discards that attack. Cannot parry attacks made at double or more the buckler-user's Strength. Only usable with a one-handed weapon."
             },
+            "sourcePage": 35,
             "source": "mordheim-core"
         },
 
@@ -290,8 +307,9 @@
             "availability": "common",
             "armourProfile": {
                 "save": "-",
-                "special": "On a D6 roll of 4+, a 'Stunned' result on the Injury chart is treated as 'Knocked Down' instead."
+                "special": "Avoid Stun - on a D6 roll of 4+, a 'Stunned' result is treated as 'Knocked Down' instead. Not modified by the opponent's Strength."
             },
+            "sourcePage": 35,
             "source": "mordheim-core"
         }
 

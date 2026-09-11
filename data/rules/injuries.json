@@ -2,9 +2,9 @@
     "source": {
         "organisation": "Broheim",
         "website": "https://broheim.net",
-        "document": "Mordheim - Part 3 - Campaigns & Optional Rules",
-        "url": "https://www.broheim.net/downloads/rules/Mordheim%20-%20Part%203%20-%20Campaigns%20&%20Optional%20Rules.pdf",
-        "note": "The Heroes' Serious Injuries (D66) table. Roll ranges are transcribed from a secondary extract, not a direct read of the source PDF - double check against your own rulebook if a specific range looks off."
+        "document": "Mordheim Core Rules Printable",
+        "url": "https://broheim.net/downloads/rules/Mordheim%20Core%20Rules%20Printable.pdf",
+        "note": "The Heroes' Serious Injuries (D66) table, verified against the actual PDF text (pages 80-81) rather than a secondary extract - see sourcePage on each entry."
     },
 
     "injuries": [
@@ -12,141 +12,161 @@
             "id": "dead",
             "name": "Dead",
             "rollRange": "11-15",
-            "description": "The warrior is dead and his body is abandoned in the dark alleys of Mordheim, never to be found again.",
-            "statModifiers": {}
+            "description": "The warrior is dead and his body is abandoned in the dark alleys of Mordheim, never to be found again. All his weapons and equipment are lost, and he is removed from the warband's roster.",
+            "statModifiers": {},
+            "sourcePage": 80
         },
         {
             "id": "multiple-injuries",
             "name": "Multiple Injuries",
-            "rollRange": "16",
+            "rollRange": "16-21",
             "description": "The warrior is not dead but has suffered a lot of wounds. Roll D6 times on this table, re-rolling any further 'Dead', 'Captured' or 'Multiple Injuries' results.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 80
         },
         {
             "id": "leg-wound",
             "name": "Leg Wound",
             "rollRange": "22",
             "description": "The warrior's leg is broken. He suffers a -1 Movement characteristic penalty from now on.",
-            "statModifiers": { "M": -1 }
+            "statModifiers": { "M": -1 },
+            "sourcePage": 80
         },
         {
             "id": "arm-wound",
             "name": "Arm Wound",
             "rollRange": "23",
             "description": "On a D6 roll of 1 the arm must be amputated and the warrior may only use a single one-handed weapon from now on. On a 2-6 it's a light wound - he simply misses the next game.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "madness",
             "name": "Madness",
             "rollRange": "24",
             "description": "On a D6 roll of 1-3 the warrior suffers from Stupidity; on a 4-6 he suffers from Frenzy, both from now on.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "smashed-leg",
             "name": "Smashed Leg",
             "rollRange": "25",
-            "description": "On a D6 roll of 1 the warrior may never run (though he may still charge) from now on. On a 2-6 it's a light wound - he simply misses the next game.",
-            "statModifiers": {}
+            "description": "On a D6 roll of 1 the warrior may never run again (though he may still charge). On a 2-6 it's a light wound - he simply misses the next game.",
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "chest-wound",
             "name": "Chest Wound",
             "rollRange": "26",
             "description": "The warrior's Toughness is permanently reduced by 1.",
-            "statModifiers": { "T": -1 }
+            "statModifiers": { "T": -1 },
+            "sourcePage": 81
         },
         {
             "id": "blinded-in-one-eye",
             "name": "Blinded in One Eye",
             "rollRange": "31",
             "description": "The warrior's Ballistic Skill is permanently reduced by 1. If blinded in his remaining eye by a future injury he must retire from the warband.",
-            "statModifiers": { "BS": -1 }
+            "statModifiers": { "BS": -1 },
+            "sourcePage": 81
         },
         {
             "id": "old-battle-wound",
             "name": "Old Battle Wound",
             "rollRange": "32",
             "description": "At the start of each battle from now on, roll a D6 - on a 1 the old wound plays up and the warrior cannot take part in that battle.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "nervous-condition",
             "name": "Nervous Condition",
             "rollRange": "33",
             "description": "The warrior's Initiative is permanently reduced by 1.",
-            "statModifiers": { "I": -1 }
+            "statModifiers": { "I": -1 },
+            "sourcePage": 81
         },
         {
             "id": "hand-injury",
             "name": "Hand Injury",
             "rollRange": "34",
             "description": "The warrior's Weapon Skill is permanently reduced by 1.",
-            "statModifiers": { "WS": -1 }
+            "statModifiers": { "WS": -1 },
+            "sourcePage": 81
         },
         {
             "id": "deep-wound",
             "name": "Deep Wound",
             "rollRange": "35",
-            "description": "The warrior must miss the next D3 games while he recovers.",
-            "statModifiers": {}
+            "description": "The warrior must miss the next D3 games while he recovers, and may do nothing at all in the meantime.",
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "robbed",
             "name": "Robbed",
             "rollRange": "36",
-            "description": "The warrior wakes up naked in a gutter - all of his weapons, armour and equipment are lost.",
-            "statModifiers": {}
+            "description": "The warrior manages to escape, but all his weapons, armour and equipment are lost.",
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "full-recovery",
             "name": "Full Recovery",
             "rollRange": "41-55",
             "description": "The warrior was knocked unconscious, or suffers only a light wound, and makes a full recovery with no lasting effect.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 80
         },
         {
             "id": "bitter-enmity",
             "name": "Bitter Enmity",
             "rollRange": "56",
-            "description": "The warrior makes a full recovery, but harbours a bitter hatred of whoever injured him from now on.",
-            "statModifiers": {}
+            "description": "The warrior makes a full physical recovery, but is psychologically scarred and now hates whoever (or whichever warband) was responsible for the injury.",
+            "statModifiers": {},
+            "sourcePage": 80
         },
         {
             "id": "captured",
             "name": "Captured",
             "rollRange": "61",
-            "description": "The warrior is captured, and may be held for ransom, exchanged, or sold, depending on who captured him.",
-            "statModifiers": {}
+            "description": "The warrior is held captive by the other warband - he may be ransomed, exchanged, or sold to slavers for D6x5 gc. Captives who are exchanged or ransomed keep their gear; if sold, killed, or turned into a Zombie, their captors keep it instead.",
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "hardened",
             "name": "Hardened",
             "rollRange": "62-63",
             "description": "The warrior survives and becomes inured to the horrors of Mordheim - he is now immune to fear.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "horrible-scars",
             "name": "Horrible Scars",
             "rollRange": "64",
             "description": "The warrior causes fear from now on.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "sold-to-the-pits",
             "name": "Sold to the Pits",
             "rollRange": "65",
-            "description": "The warrior wakes up in the fighting pits of Cutthroat's Haven and must fight a Pit Fighter. If he wins he gains 50gc and +2 Experience and rejoins the warband with all his gear; if he loses, roll again on this table (re-rolling 36-66) - if he survives, he rejoins the warband but without his weapons or armour.",
-            "statModifiers": {}
+            "description": "The warrior wakes up in the fighting pits of Cutthroat's Haven and must fight a Pit Fighter. If he wins, he gains 50gc and +2 Experience and rejoins the warband with all his gear. If he loses, roll on this table again (an 11-35 result means he's dead or injured); if he survives, he rejoins the warband but without his weapons or armour.",
+            "statModifiers": {},
+            "sourcePage": 81
         },
         {
             "id": "survives-against-the-odds",
             "name": "Survives Against The Odds",
             "rollRange": "66",
             "description": "The warrior survives against all odds and rejoins the warband, gaining +1 Experience.",
-            "statModifiers": {}
+            "statModifiers": {},
+            "sourcePage": 81
         }
     ]
 }

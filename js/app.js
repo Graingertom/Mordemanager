@@ -10,17 +10,27 @@ const APP_VERSION = "0.2.1";
    DATA PATHS
    ============================================================ */
 
+/*
+ * Cache-busted the same way as the script tags in index.html -
+ * these are plain fetch()es with no version param, so a browser
+ * (or GitHub Pages' CDN) could just as easily serve a stale copy
+ * of the rules data as it could stale JS. Bump DATA_VERSION
+ * whenever any data/rules/*.json file changes.
+ */
+
+const DATA_VERSION = 2;
+
 const DATA_PATHS = {
 
-    core: "./data/rules/core.json",
+    core: `./data/rules/core.json?v=${DATA_VERSION}`,
 
-    equipment: "./data/rules/equipment.json",
+    equipment: `./data/rules/equipment.json?v=${DATA_VERSION}`,
 
-    skills: "./data/rules/skills.json",
+    skills: `./data/rules/skills.json?v=${DATA_VERSION}`,
 
-    injuries: "./data/rules/injuries.json",
+    injuries: `./data/rules/injuries.json?v=${DATA_VERSION}`,
 
-    reikland: "./data/rules/warbands/reikland.json"
+    reikland: `./data/rules/warbands/reikland.json?v=${DATA_VERSION}`
 
 };
 
