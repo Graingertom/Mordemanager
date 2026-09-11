@@ -1450,7 +1450,7 @@ function renderGameWarbandCard(
                                 class="mm-button mm-button-small"
                                 onclick="openWarband('${escapeAttribute(warband.id)}')"
                             >
-                                Open Warband
+                                Record Game Outcome
                             </button>
                         `
                         : `

@@ -513,6 +513,20 @@ function renderApplication() {
 
         renderGamePage();
 
+    } else if (
+        state.currentWarbandId &&
+        state.returnToGameId
+    ) {
+
+        /*
+         * Opened from a game - injuries/experience/skills are
+         * post-battle mechanics, so this warband is shown through
+         * a different, game-scoped view rather than the general
+         * roster/equip page.
+         */
+
+        renderWarbandInGamePage();
+
     } else if (state.currentWarbandId) {
 
         renderWarbandPage();

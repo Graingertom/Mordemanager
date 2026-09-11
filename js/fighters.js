@@ -14,6 +14,21 @@
 let editingInjuries = [];
 
 
+/*
+ * Same pattern as editingInjuries, for the fighter game-update
+ * modal's skill picker. editingSkillOptions is the fixed list of
+ * skills this fighter is eligible for (by category access),
+ * computed once when the modal opens; editingSkills starts as a
+ * copy of the fighter's existing skills and grows as new ones are
+ * added, so the "already known" exclusion and the "no duplicates"
+ * rule both fall out of the same check.
+ */
+
+let editingSkills = [];
+
+let editingSkillOptions = [];
+
+
 /* ============================================================
    DATA NORMALISATION
    ============================================================ */
@@ -880,6 +895,21 @@ function renderFighter(fighter) {
             </div>
 
 
+            <p class="mm-muted mm-fighter-game-summary">
+                ${fighter.injuries.length}
+                injur${fighter.injuries.length === 1 ? "y" : "ies"}
+                &middot;
+                ${fighter.experience || 0} XP
+                ${
+                    fighter.category === "hero" &&
+                    fighter.skills.length
+                        ? ` &middot; ${fighter.skills.length} skill${fighter.skills.length === 1 ? "" : "s"}`
+                        : ""
+                }
+                - recorded from the games this warband plays in.
+            </p>
+
+
             <div class="mm-fighter-footer">
 
                 <span>
@@ -910,6 +940,142 @@ function renderFighter(fighter) {
                         onclick="deleteFighter('${escapeAttribute(fighter.id)}')"
                     >
                         Remove
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* ============================================================
+   FIGHTER CARD - VIEWED FROM A GAME
+   ============================================================ */
+
+function renderFighterGameCard(
+    fighter
+) {
+
+    const isHero =
+        fighter.category === "hero";
+
+
+    return `
+
+        <article class="mm-fighter-card">
+
+            <div class="mm-fighter-main">
+
+                <div class="mm-fighter-name">
+
+                    <span class="mm-badge">
+                        ${escapeHtml(
+                            fighter.category
+                        )}
+                    </span>
+
+
+                    <h3>
+                        ${escapeHtml(fighter.name)}
+                    </h3>
+
+
+                    <span class="mm-fighter-type">
+                        ${escapeHtml(
+                            fighter.typeName
+                        )}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="mm-fighter-equipment">
+
+                <strong>
+                    Injuries
+                </strong>
+
+                <div class="mm-equipment-tags">
+
+                    ${
+                        fighter.injuries.length
+                            ? fighter.injuries
+                                .map(
+                                    injury => `
+                                        <span class="mm-equipment-tag">
+                                            ${escapeHtml(
+                                                injury.name ||
+                                                injury
+                                            )}
+                                        </span>
+                                    `
+                                )
+                                .join("")
+                            : `<span class="mm-muted">None recorded</span>`
+                    }
+
+                </div>
+
+            </div>
+
+
+            ${
+                isHero
+                    ? `
+                        <div class="mm-fighter-equipment">
+
+                            <strong>
+                                Skills
+                            </strong>
+
+                            <div class="mm-equipment-tags">
+
+                                ${
+                                    fighter.skills.length
+                                        ? fighter.skills
+                                            .map(
+                                                skill => `
+                                                    <span class="mm-equipment-tag">
+                                                        ${escapeHtml(
+                                                            skill.name ||
+                                                            skill
+                                                        )}
+                                                    </span>
+                                                `
+                                            )
+                                            .join("")
+                                        : `<span class="mm-muted">None recorded</span>`
+                                }
+
+                            </div>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+
+            <div class="mm-fighter-footer">
+
+                <span>
+                    ${fighter.experience || 0} XP
+                </span>
+
+
+                <div>
+
+                    <button
+                        class="mm-button mm-button-small mm-button-primary"
+                        onclick="showFighterGameUpdate('${escapeAttribute(fighter.id)}')"
+                    >
+                        Record Game Outcome
                     </button>
 
                 </div>
@@ -1003,10 +1169,6 @@ function showEditFighter(
         getAvailableEquipment(
             fighterType
         );
-
-
-    editingInjuries =
-        [...fighter.injuries];
 
 
     openModal(`
@@ -1149,76 +1311,52 @@ function showEditFighter(
                 <section class="mm-editor-section">
 
                     <h3>
-                        Injuries
+                        Injuries, Experience &amp; Skills
                     </h3>
 
                     <p>
-                        Record what happened to this
-                        fighter after a game.
+                        These are recorded from the games
+                        this warband plays in - open this
+                        warband from a game to update them.
                     </p>
 
 
-                    <div id="fighter-injuries-list">
+                    <div class="mm-detail-grid">
 
-                        ${renderInjuriesEditorList()}
+                        <div class="mm-rule-stat">
+                            <span>
+                                Injuries
+                            </span>
+                            <strong>
+                                ${fighter.injuries.length}
+                            </strong>
+                        </div>
+
+                        <div class="mm-rule-stat">
+                            <span>
+                                Experience
+                            </span>
+                            <strong>
+                                ${fighter.experience || 0}
+                            </strong>
+                        </div>
+
+                        ${
+                            fighter.category === "hero"
+                                ? `
+                                    <div class="mm-rule-stat">
+                                        <span>
+                                            Skills
+                                        </span>
+                                        <strong>
+                                            ${fighter.skills.length}
+                                        </strong>
+                                    </div>
+                                `
+                                : ""
+                        }
 
                     </div>
-
-
-                    <div class="mm-injury-add">
-
-                        <select
-                            id="new-injury-select"
-                        >
-
-                            ${(state.injuries?.injuries || [])
-                                .map(
-                                    injury => `
-                                        <option value="${escapeAttribute(injury.id)}">
-                                            ${escapeHtml(injury.name)}
-                                            (${escapeHtml(injury.rollRange)})
-                                        </option>
-                                    `
-                                )
-                                .join("")}
-
-                        </select>
-
-                        <button
-                            type="button"
-                            class="mm-button"
-                            onclick="addInjuryToEditor()"
-                        >
-                            Add Injury
-                        </button>
-
-                    </div>
-
-                </section>
-
-
-                <section class="mm-editor-section">
-
-                    <h3>
-                        Experience
-                    </h3>
-
-
-                    <label class="mm-field">
-
-                        <span>
-                            Experience
-                        </span>
-
-
-                        <input
-                            id="edit-fighter-xp"
-                            type="number"
-                            min="0"
-                            value="${fighter.experience || 0}"
-                        >
-
-                    </label>
 
                 </section>
 
@@ -1273,6 +1411,309 @@ function showEditFighter(
         fighter,
         definition
     );
+
+}
+
+
+/* ============================================================
+   FIGHTER GAME UPDATE (INJURIES / EXPERIENCE / SKILLS)
+
+   Reached only from a game this warband is playing in - see
+   renderWarbandInGamePage(). Roster/equipment stays in
+   showEditFighter above; this is strictly post-battle bookkeeping.
+   ============================================================ */
+
+function showFighterGameUpdate(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id ===
+                fighterId
+        );
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const definition =
+        state.warbandDefinitions[
+            warband.type
+        ];
+
+
+    const fighterType =
+        definition?.fighterTypes?.find(
+            type =>
+                type.id ===
+                fighter.type
+        );
+
+
+    if (!fighterType) {
+
+        return;
+
+    }
+
+
+    const isHero =
+        fighter.category === "hero";
+
+
+    editingInjuries =
+        [...fighter.injuries];
+
+    editingSkills =
+        [...fighter.skills];
+
+
+    /*
+     * Which skills this fighter is even eligible to learn -
+     * henchmen never get skills (see the verified rulebook
+     * text), and a Hero is restricted to the skill lists his
+     * warband entry grants him.
+     */
+
+    const accessibleCategories =
+        state.skills?.warbandAccess?.[warband.type]?.[fighterType.id] ||
+        [];
+
+    editingSkillOptions =
+        isHero
+            ? (state.skills?.skills || []).filter(
+                skill =>
+                    accessibleCategories.includes(
+                        skill.category
+                    )
+            )
+            : [];
+
+
+    openModal(`
+
+        <div class="mm-modal mm-modal-large">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    <span class="mm-badge">
+                        ${escapeHtml(
+                            fighter.category
+                        )}
+                    </span>
+
+
+                    <h2>
+                        ${escapeHtml(
+                            fighter.name
+                        )}
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <section class="mm-editor-section">
+
+                    <h3>
+                        Profile
+                    </h3>
+
+
+                    <div class="mm-profile-editor">
+
+                        ${Object.entries(
+                            RulesEngine.calculateEffectiveProfile(
+                                fighter
+                            )
+                        )
+                            .map(
+                                ([stat, value]) =>
+                                    renderReadOnlyStat(
+                                        stat,
+                                        value
+                                    )
+                            )
+                            .join("")}
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-editor-section">
+
+                    <h3>
+                        Injuries
+                    </h3>
+
+                    <p>
+                        Record what happened to this
+                        fighter after this game.
+                    </p>
+
+
+                    <div id="fighter-injuries-list">
+
+                        ${renderInjuriesEditorList()}
+
+                    </div>
+
+
+                    <div class="mm-injury-add">
+
+                        <select
+                            id="new-injury-select"
+                        >
+
+                            ${(state.injuries?.injuries || [])
+                                .map(
+                                    injury => `
+                                        <option value="${escapeAttribute(injury.id)}">
+                                            ${escapeHtml(injury.name)}
+                                            (${escapeHtml(injury.rollRange)})
+                                        </option>
+                                    `
+                                )
+                                .join("")}
+
+                        </select>
+
+                        <button
+                            type="button"
+                            class="mm-button"
+                            onclick="addInjuryToEditor()"
+                        >
+                            Add Injury
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                ${
+                    isHero
+                        ? `
+                            <section class="mm-editor-section">
+
+                                <h3>
+                                    Skills
+                                </h3>
+
+                                <p>
+                                    Skills earned from an Advance
+                                    roll, picked from the lists
+                                    this fighter type can access.
+                                </p>
+
+
+                                <div id="fighter-skills-list">
+
+                                    ${renderSkillsEditorList()}
+
+                                </div>
+
+
+                                <div class="mm-injury-add">
+
+                                    <select
+                                        id="new-skill-select"
+                                    >
+
+                                        ${renderSkillSelectOptions()}
+
+                                    </select>
+
+                                    <button
+                                        type="button"
+                                        class="mm-button"
+                                        onclick="addSkillToEditor()"
+                                    >
+                                        Add Skill
+                                    </button>
+
+                                </div>
+
+                            </section>
+                        `
+                        : ""
+                }
+
+
+                <section class="mm-editor-section">
+
+                    <h3>
+                        Experience
+                    </h3>
+
+
+                    <label class="mm-field">
+
+                        <span>
+                            Experience
+                        </span>
+
+
+                        <input
+                            id="fighter-game-xp"
+                            type="number"
+                            min="0"
+                            value="${fighter.experience || 0}"
+                        >
+
+                    </label>
+
+                </section>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="saveFighterGameUpdate('${escapeAttribute(fighter.id)}')"
+                >
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
 
 }
 
@@ -1588,6 +2029,232 @@ function removeInjuryFromEditor(
 
 
 /* ============================================================
+   SKILLS EDITOR
+
+   Direct copy of the injuries editor pattern above, against
+   editingSkills/editingSkillOptions instead.
+   ============================================================ */
+
+function renderSkillsEditorList() {
+
+    if (!editingSkills.length) {
+
+        return `
+
+            <p class="mm-muted">
+                No skills recorded.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <ul class="mm-injury-list">
+
+            ${editingSkills
+                .map(
+                    (skill, index) => `
+
+                        <li>
+
+                            <span>
+
+                                <strong>
+                                    ${escapeHtml(
+                                        skill.name
+                                    )}
+                                </strong>
+
+                                ${
+                                    skill.category
+                                        ? `
+                                            <small>
+                                                ${escapeHtml(
+                                                    skill.category
+                                                )}
+                                            </small>
+                                        `
+                                        : ""
+                                }
+
+                            </span>
+
+                            <button
+                                type="button"
+                                class="mm-button mm-button-small mm-button-danger"
+                                onclick="removeSkillFromEditor(${index})"
+                            >
+                                Remove
+                            </button>
+
+                        </li>
+
+                    `
+                )
+                .join("")}
+
+        </ul>
+
+    `;
+
+}
+
+
+function renderSkillSelectOptions() {
+
+    const available =
+        editingSkillOptions.filter(
+            skill =>
+                !editingSkills.some(
+                    existing =>
+                        existing.id === skill.id
+                )
+        );
+
+
+    if (!available.length) {
+
+        return `
+            <option value="">
+                No skills available
+            </option>
+        `;
+
+    }
+
+
+    return available
+        .map(
+            skill => `
+                <option value="${escapeAttribute(skill.id)}">
+                    ${escapeHtml(skill.name)}
+                    (${escapeHtml(skill.category)})
+                </option>
+            `
+        )
+        .join("");
+
+}
+
+
+function addSkillToEditor() {
+
+    const select =
+        document.getElementById(
+            "new-skill-select"
+        );
+
+
+    const skillId =
+        select?.value;
+
+
+    if (!skillId) {
+
+        return;
+
+    }
+
+
+    const skill =
+        getSkill(skillId);
+
+
+    if (!skill) {
+
+        return;
+
+    }
+
+
+    editingSkills.push({
+
+        id:
+            skill.id,
+
+        name:
+            skill.name,
+
+        category:
+            skill.category,
+
+        description:
+            skill.description,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
+    const list =
+        document.getElementById(
+            "fighter-skills-list"
+        );
+
+
+    if (list) {
+
+        list.innerHTML =
+            renderSkillsEditorList();
+
+    }
+
+
+    if (select) {
+
+        select.innerHTML =
+            renderSkillSelectOptions();
+
+    }
+
+}
+
+
+function removeSkillFromEditor(
+    index
+) {
+
+    editingSkills.splice(
+        index,
+        1
+    );
+
+
+    const list =
+        document.getElementById(
+            "fighter-skills-list"
+        );
+
+
+    if (list) {
+
+        list.innerHTML =
+            renderSkillsEditorList();
+
+    }
+
+
+    const select =
+        document.getElementById(
+            "new-skill-select"
+        );
+
+
+    if (select) {
+
+        select.innerHTML =
+            renderSkillSelectOptions();
+
+    }
+
+}
+
+
+/* ============================================================
    PROFILE STAT (READ ONLY)
    ============================================================ */
 
@@ -1765,16 +2432,15 @@ async function saveFighterChanges(
 
 
     /*
-     * Snapshot so name/xp/equipment/treasury can be
-     * rolled back if the database write fails after
-     * they have already been mutated in memory below.
+     * Snapshot so name/equipment/treasury can be rolled
+     * back if the database write fails after they have
+     * already been mutated in memory below. Injuries/
+     * experience/skills are edited from the in-game view
+     * (saveFighterGameUpdate) instead, not here.
      */
 
     const previousName =
         fighter.name;
-
-    const previousExperience =
-        fighter.experience;
 
     const previousEquipment =
         [...fighter.equipment];
@@ -1785,19 +2451,10 @@ async function saveFighterChanges(
     const previousStash =
         [...warband.stash];
 
-    const previousInjuries =
-        [...fighter.injuries];
-
 
     const nameInput =
         document.getElementById(
             "edit-fighter-name"
-        );
-
-
-    const xpInput =
-        document.getElementById(
-            "edit-fighter-xp"
         );
 
 
@@ -1808,19 +2465,6 @@ async function saveFighterChanges(
 
         fighter.name =
             nameInput.value.trim();
-
-    }
-
-
-    if (xpInput) {
-
-        fighter.experience =
-            Math.max(
-                0,
-                Number(
-                    xpInput.value
-                ) || 0
-            );
 
     }
 
@@ -1868,9 +2512,6 @@ async function saveFighterChanges(
         fighter.name =
             previousName;
 
-        fighter.experience =
-            previousExperience;
-
         return;
 
     }
@@ -1909,9 +2550,6 @@ async function saveFighterChanges(
 
         fighter.name =
             previousName;
-
-        fighter.experience =
-            previousExperience;
 
         return;
 
@@ -1952,16 +2590,9 @@ async function saveFighterChanges(
         fighter.name =
             previousName;
 
-        fighter.experience =
-            previousExperience;
-
         return;
 
     }
-
-
-    fighter.injuries =
-        [...editingInjuries];
 
 
     /*
@@ -1978,12 +2609,6 @@ async function saveFighterChanges(
 
                 name:
                     fighter.name,
-
-                injuries:
-                    fighter.injuries,
-
-                experience:
-                    fighter.experience,
 
                 equipment:
                     fighter.equipment
@@ -2006,14 +2631,8 @@ async function saveFighterChanges(
         fighter.name =
             previousName;
 
-        fighter.experience =
-            previousExperience;
-
         fighter.equipment =
             previousEquipment;
-
-        fighter.injuries =
-            previousInjuries;
 
         warband.treasury =
             previousTreasury;
@@ -2052,6 +2671,134 @@ async function saveFighterChanges(
             "Fighter saved but treasury/stash could not be updated:",
             warbandError.message
         );
+
+    }
+
+
+    closeModal();
+
+
+    renderApplication();
+
+}
+
+
+/* ============================================================
+   SAVE FIGHTER GAME UPDATE (INJURIES / EXPERIENCE / SKILLS)
+
+   Much simpler than saveFighterChanges - no equipment, no
+   treasury, no stash, no RulesEngine validation, just the three
+   post-battle fields on the fighters row.
+   ============================================================ */
+
+async function saveFighterGameUpdate(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+
+    if (!warband) {
+
+        return;
+
+    }
+
+
+    const fighter =
+        warband.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const previousInjuries =
+        [...fighter.injuries];
+
+    const previousSkills =
+        [...fighter.skills];
+
+    const previousExperience =
+        fighter.experience;
+
+
+    fighter.injuries =
+        [...editingInjuries];
+
+    fighter.skills =
+        fighter.category === "hero"
+            ? [...editingSkills]
+            : fighter.skills;
+
+
+    const xpInput =
+        document.getElementById(
+            "fighter-game-xp"
+        );
+
+
+    if (xpInput) {
+
+        fighter.experience =
+            Math.max(
+                0,
+                Number(
+                    xpInput.value
+                ) || 0
+            );
+
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("fighters")
+            .update({
+
+                injuries:
+                    fighter.injuries,
+
+                skills:
+                    fighter.skills,
+
+                experience:
+                    fighter.experience
+
+            })
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to save: " +
+            error.message
+        );
+
+
+        fighter.injuries =
+            previousInjuries;
+
+        fighter.skills =
+            previousSkills;
+
+        fighter.experience =
+            previousExperience;
+
+        return;
 
     }
 

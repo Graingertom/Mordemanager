@@ -1050,15 +1050,6 @@ function renderWarbandPage() {
         );
 
 
-    const returnGame =
-        state.returnToGameId
-            ? state.games.find(
-                game =>
-                    game.id === state.returnToGameId
-            )
-            : null;
-
-
     app.innerHTML = `
 
         <div class="mm-app">
@@ -1067,25 +1058,12 @@ function renderWarbandPage() {
 
                 <div>
 
-                    ${
-                        returnGame
-                            ? `
-                                <button
-                                    class="mm-back-button"
-                                    onclick="returnToGame()"
-                                >
-                                    ← Back to ${escapeHtml(returnGame.name)}
-                                </button>
-                            `
-                            : `
-                                <button
-                                    class="mm-back-button"
-                                    onclick="closeWarband()"
-                                >
-                                    ← My Warbands
-                                </button>
-                            `
-                    }
+                    <button
+                        class="mm-back-button"
+                        onclick="closeWarband()"
+                    >
+                        ← My Warbands
+                    </button>
 
 
                     <div class="mm-logo">
@@ -1313,6 +1291,239 @@ function renderWarbandPage() {
 
 
         <div id="modal-container"></div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   WARBAND PAGE - VIEWED FROM A GAME
+
+   Injuries, experience and skills are post-battle mechanics
+   (see the Campaigns chapter's Post Battle Sequence) - they only
+   make sense in the context of a game just played, so this is a
+   separate, read-only-except-for-that view rather than the
+   general roster/equip page. No Add/Remove Fighter, no Stash, no
+   equipment editing here at all.
+   ============================================================ */
+
+function renderWarbandInGamePage() {
+
+    const warband =
+        getCurrentWarband();
+
+
+    if (!warband) {
+
+        state.currentWarbandId =
+            null;
+
+        state.returnToGameId =
+            null;
+
+        renderDashboard();
+
+        return;
+
+    }
+
+
+    const definition =
+        state.warbandDefinitions[
+            warband.type
+        ];
+
+
+    if (!definition) {
+
+        renderFatalError(
+            new Error(
+                `Warband definition '${warband.type}' could not be loaded.`
+            )
+        );
+
+        return;
+
+    }
+
+
+    const app =
+        document.getElementById(
+            "app"
+        );
+
+
+    const returnGame =
+        state.games.find(
+            game =>
+                game.id === state.returnToGameId
+        );
+
+
+    const rating =
+        calculateWarbandRating(
+            warband
+        );
+
+
+    app.innerHTML = `
+
+        <div class="mm-app">
+
+            <header class="mm-header">
+
+                <div>
+
+                    <button
+                        class="mm-back-button"
+                        onclick="returnToGame()"
+                    >
+                        ← Back to
+                        ${escapeHtml(
+                            returnGame?.name ||
+                            "Game"
+                        )}
+                    </button>
+
+
+                    <div class="mm-logo">
+                        ☠
+                        ${escapeHtml(
+                            warband.name
+                        )}
+                    </div>
+
+
+                    <div class="mm-subtitle">
+                        Record what happened in this game -
+                        for roster and equipment changes, manage
+                        this warband from My Warbands instead.
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <main class="mm-main">
+
+                <section class="mm-warband-overview">
+
+                    <div>
+
+                        <span class="mm-badge">
+                            ${escapeHtml(
+                                definition.faction
+                            )}
+                        </span>
+
+
+                        <h1>
+                            ${escapeHtml(
+                                warband.name
+                            )}
+                        </h1>
+
+                    </div>
+
+
+                    <div class="mm-overview-stats">
+
+                        <div>
+
+                            <span>
+                                Fighters
+                            </span>
+
+                            <strong>
+                                ${warband.fighters.length}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Warband Rating
+                            </span>
+
+                            <strong>
+                                ${rating}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Treasury
+                            </span>
+
+                            <strong>
+                                ${calculateTreasury(
+                                    warband
+                                )} gc
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-section">
+
+                    <div class="mm-section-header">
+
+                        <div>
+
+                            <h2>
+                                Fighters
+                            </h2>
+
+                            <p>
+                                Record injuries, experience and
+                                skills gained in this game.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    ${
+                        warband.fighters.length
+                            ? warband.fighters
+                                .map(renderFighterGameCard)
+                                .join("")
+                            : `
+                                <div class="mm-empty-state mm-empty-small">
+
+                                    <div class="mm-empty-icon">
+                                        ⚔
+                                    </div>
+
+                                    <p>
+                                        This warband has no
+                                        fighters yet.
+                                    </p>
+
+                                </div>
+                            `
+                    }
+
+                </section>
+
+            </main>
+
+
+            <div id="modal-container"></div>
+
+        </div>
 
     `;
 

@@ -806,6 +806,14 @@ a {
     gap: 8px;
 }
 
+.mm-fighter-game-summary {
+    margin: 0;
+
+    padding: 0 18px 14px;
+
+    font-size: 12px;
+}
+
 .mm-fighter-footer {
     display: flex;
 
