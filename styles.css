@@ -1128,6 +1128,45 @@ a {
         rgba(0, 0, 0, .7);
 }
 
+
+/*
+ * Custom scrollbar for anything that scrolls inside a modal
+ * (the modal body itself, and the equipment picker's own
+ * scroll area) - the default browser scrollbar looks out of
+ * place against the dark theme otherwise.
+ */
+
+.mm-modal,
+.mm-equipment-selection {
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        var(--border-light)
+        transparent;
+}
+
+.mm-modal::-webkit-scrollbar,
+.mm-equipment-selection::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mm-modal::-webkit-scrollbar-track,
+.mm-equipment-selection::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mm-modal::-webkit-scrollbar-thumb,
+.mm-equipment-selection::-webkit-scrollbar-thumb {
+    background: var(--border-light);
+
+    border-radius: 4px;
+}
+
+.mm-modal::-webkit-scrollbar-thumb:hover,
+.mm-equipment-selection::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-dark);
+}
+
 .mm-modal-large {
     width:
         min(850px, 95vw);

@@ -133,9 +133,15 @@ function getCurrentGame() {
 
 function ownsWarband(warband) {
 
+    /*
+     * A missing ownerId means this is a stub (search_warbands,
+     * get_warband_stubs, a friend's warband, etc.) - never assume
+     * ownership just because we don't know who owns it.
+     */
+
     if (!warband?.ownerId) {
 
-        return true;
+        return false;
 
     }
 

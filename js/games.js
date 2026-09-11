@@ -1454,9 +1454,12 @@ function renderGameWarbandCard(
                             </button>
                         `
                         : `
-                            <span class="mm-muted">
-                                Not your warband
-                            </span>
+                            <button
+                                class="mm-button mm-button-small"
+                                onclick="showWarbandGameOutcomeReadOnly('${escapeAttribute(warband.id)}', '${escapeAttribute(game.id)}')"
+                            >
+                                View Game Outcome
+                            </button>
                         `
                 }
 
@@ -1604,6 +1607,163 @@ function renderGameWarbandCard(
         </article>
 
     `;
+
+}
+
+
+/*
+ * Read-only equivalent of showFighterGameUpdate's data, for a
+ * warband you don't own but share this game with - via a security
+ * definer RPC (get_game_warband_fighters) rather than any change
+ * to warbands'/fighters' own RLS, so it can't reopen the
+ * recursion issues fixed earlier. Shows the same injuries/XP/
+ * skills as the owner's view, just with no editing controls.
+ */
+
+async function showWarbandGameOutcomeReadOnly(
+    warbandId,
+    gameId
+) {
+
+    const warband =
+        getWarbandOrStub(warbandId);
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_game_warband_fighters",
+            {
+                target_warband_id:
+                    warbandId,
+
+                target_game_id:
+                    gameId
+            }
+        );
+
+
+    if (error) {
+
+        alert(
+            "Unable to load this warband's game outcome: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    const fighters =
+        (data || []).map(
+            row => ({
+
+                id:
+                    row.id,
+
+                name:
+                    row.name,
+
+                category:
+                    row.category,
+
+                typeName:
+                    row.type_name,
+
+                experience:
+                    row.experience,
+
+                injuries:
+                    Array.isArray(row.injuries)
+                        ? row.injuries
+                        : [],
+
+                skills:
+                    Array.isArray(row.skills)
+                        ? row.skills
+                        : []
+
+            })
+        );
+
+
+    openModal(`
+
+        <div class="mm-modal mm-modal-large">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    <span class="mm-badge">
+                        Read Only
+                    </span>
+
+                    <h2>
+                        ${escapeHtml(
+                            warband?.name ||
+                            "Warband"
+                        )}
+                    </h2>
+
+                </div>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                ${
+                    fighters.length
+                        ? `
+                            <div class="mm-fighter-list">
+
+                                ${fighters
+                                    .map(
+                                        fighter =>
+                                            renderFighterGameCard(
+                                                fighter,
+                                                true
+                                            )
+                                    )
+                                    .join("")}
+
+                            </div>
+                        `
+                        : `
+                            <p class="mm-muted">
+                                No fighters to show.
+                            </p>
+                        `
+                }
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
 
 }
 

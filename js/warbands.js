@@ -1497,9 +1497,15 @@ function renderWarbandInGamePage() {
 
                     ${
                         warband.fighters.length
-                            ? warband.fighters
-                                .map(renderFighterGameCard)
-                                .join("")
+                            ? `
+                                <div class="mm-fighter-list">
+
+                                    ${warband.fighters
+                                        .map(renderFighterGameCard)
+                                        .join("")}
+
+                                </div>
+                            `
                             : `
                                 <div class="mm-empty-state mm-empty-small">
 

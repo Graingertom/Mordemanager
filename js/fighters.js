@@ -958,7 +958,8 @@ function renderFighter(fighter) {
    ============================================================ */
 
 function renderFighterGameCard(
-    fighter
+    fighter,
+    readOnly
 ) {
 
     const isHero =
@@ -1069,16 +1070,22 @@ function renderFighterGameCard(
                 </span>
 
 
-                <div>
+                ${
+                    readOnly
+                        ? ""
+                        : `
+                            <div>
 
-                    <button
-                        class="mm-button mm-button-small mm-button-primary"
-                        onclick="showFighterGameUpdate('${escapeAttribute(fighter.id)}')"
-                    >
-                        Record Game Outcome
-                    </button>
+                                <button
+                                    class="mm-button mm-button-small mm-button-primary"
+                                    onclick="showFighterGameUpdate('${escapeAttribute(fighter.id)}')"
+                                >
+                                    Record Game Outcome
+                                </button>
 
-                </div>
+                            </div>
+                        `
+                }
 
             </div>
 
