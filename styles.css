@@ -352,6 +352,74 @@ a {
     margin-top: 3px;
 }
 
+.mm-header-actions {
+    display: flex;
+
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.mm-error-page {
+    max-width: 560px;
+
+    margin: 80px auto;
+    padding: 30px;
+
+    text-align: center;
+}
+
+.mm-error-page p {
+    color: var(--muted);
+}
+
+.mm-source {
+    margin-top: 20px;
+    padding: 14px 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .15);
+}
+
+.mm-source strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--gold-light);
+
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.mm-source p {
+    margin: 0 0 6px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.mm-acknowledgement {
+    max-width: 1500px;
+
+    margin: 40px auto 0;
+    padding: 24px 30px 40px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.mm-acknowledgement p {
+    margin: 0 0 6px;
+}
+
 .mm-main {
     width: 100%;
 
@@ -664,6 +732,211 @@ a {
 
 
 /* ============================================================
+   FIGHTER ROSTER
+
+   Every fighter card was missing its internal layout entirely -
+   .mm-fighter-card never got .mm-card's padding, and none of
+   main/name/type/equipment/footer had any spacing rules, so
+   everything (including the Edit/Remove buttons) touched its
+   neighbours directly.
+   ============================================================ */
+
+.mm-fighter-group {
+    margin-bottom: 32px;
+}
+
+.mm-fighter-group:last-child {
+    margin-bottom: 0;
+}
+
+.mm-fighter-group h3 {
+    margin: 0 0 14px;
+}
+
+.mm-fighter-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.mm-fighter-main {
+    padding: 18px 18px 0;
+}
+
+.mm-fighter-name {
+    display: flex;
+
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 4px;
+}
+
+.mm-fighter-type {
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.mm-fighter-equipment {
+    padding: 16px 18px;
+}
+
+.mm-fighter-equipment > strong {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.mm-equipment-tags {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.mm-fighter-footer {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 14px 18px;
+
+    border-top: 1px solid var(--border);
+}
+
+.mm-fighter-footer > span {
+    color: var(--gold-light);
+
+    font-weight: 700;
+}
+
+.mm-fighter-footer > div {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+/* ============================================================
+   DETAIL MODALS
+
+   .mm-detail-section is the same stacked-with-divider pattern
+   as .mm-editor-section, used in the read-only fighter detail
+   modal (Profile/Special Rules/Summary/Equipment/Skills/
+   Injuries/Notes) - also had no rule at all.
+   ============================================================ */
+
+.mm-detail-section {
+    margin-bottom: 28px;
+
+    padding-bottom: 28px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.mm-detail-section:last-of-type {
+    margin-bottom: 0;
+
+    padding-bottom: 0;
+
+    border-bottom: 0;
+}
+
+.mm-detail-section h3 {
+    margin: 0 0 6px;
+}
+
+.mm-detail-section > p {
+    margin: 0 0 14px;
+
+    color: var(--muted);
+}
+
+.mm-detail-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(140px, 1fr));
+
+    gap: 10px;
+}
+
+.mm-detail-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.mm-detail-row {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .15);
+}
+
+.mm-detail-row strong {
+    display: block;
+}
+
+.mm-detail-row-button {
+    width: 100%;
+
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease;
+}
+
+.mm-detail-row-button:hover {
+    border-color: var(--gold-dark);
+
+    background: rgba(196, 154, 82, .06);
+}
+
+.mm-notes-display {
+    padding: 14px 16px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .15);
+
+    white-space: pre-wrap;
+}
+
+
+/* ============================================================
    FIGHTER NAME BUTTON
    ============================================================ */
 
@@ -747,6 +1020,42 @@ a {
 }
 
 .mm-stat strong {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--text);
+}
+
+.mm-profile-editor {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(70px, 1fr));
+
+    gap: 8px;
+}
+
+.mm-stat-editor {
+    padding: 8px 5px;
+
+    text-align: center;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .12);
+}
+
+.mm-stat-editor span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.mm-stat-editor strong {
     display: block;
 
     margin-top: 3px;
@@ -1088,6 +1397,183 @@ a {
     margin-top: 4px;
 
     color: var(--muted);
+}
+
+.mm-equipment-selection {
+    max-height: 340px;
+
+    overflow-y: auto;
+
+    padding-right: 4px;
+}
+
+.mm-equipment-traits {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin-top: 8px;
+}
+
+.mm-mini-trait {
+    display: inline-flex;
+
+    padding: 2px 8px;
+
+    border: 1px solid var(--border);
+    border-radius: 20px;
+
+    background: rgba(0, 0, 0, .2);
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   RULE / TRAIT / SKILL CHIPS
+
+   .mm-equipment-tag, .mm-skill-tag and .mm-trait are the same
+   clickable pill shape everywhere they appear (fighter cards,
+   the equipment/skill detail rows) - shared here instead of
+   redefined three times.
+   ============================================================ */
+
+.mm-equipment-tag,
+.mm-skill-tag,
+.mm-trait {
+    display: inline-flex;
+
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 20px;
+
+    background: var(--panel);
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition:
+        border-color .15s ease,
+        background .15s ease;
+}
+
+.mm-equipment-tag:hover,
+.mm-skill-tag:hover,
+.mm-trait:hover {
+    border-color: var(--gold);
+
+    background: var(--panel-hover);
+}
+
+.mm-trait-dot {
+    color: var(--gold-light);
+
+    font-size: 8px;
+}
+
+.mm-trait-list {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.mm-rule-stat {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    margin-bottom: 8px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .15);
+}
+
+.mm-rule-stat:last-child {
+    margin-bottom: 0;
+}
+
+.mm-rule-stat span {
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.mm-rule-stat strong {
+    color: var(--text);
+}
+
+.mm-rule-block {
+    margin-top: 16px;
+}
+
+.mm-rule-block h3 {
+    margin: 0 0 8px;
+
+    color: var(--gold-light);
+}
+
+.mm-rule-description {
+    margin: 0;
+
+    color: var(--text);
+
+    line-height: 1.6;
+}
+
+.mm-rules-card {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.mm-restrictions {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-top: 8px;
+}
+
+.mm-restrictions > div {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: rgba(0, 0, 0, .15);
+}
+
+.mm-restrictions span {
+    color: var(--muted);
+
+    font-size: 13px;
 }
 
 .mm-badge-count {
