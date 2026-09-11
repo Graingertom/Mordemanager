@@ -383,7 +383,10 @@ function showEquipment(
                 }
 
 
-                ${renderSourceInformation(item)}
+                ${renderSourceInformation(
+                    state.equipment,
+                    item.sourcePage
+                )}
 
             </div>
 

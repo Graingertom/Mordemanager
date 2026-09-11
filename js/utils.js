@@ -564,7 +564,19 @@ function handleModalBackdrop(event) {
    SOURCE INFORMATION
    ============================================================ */
 
-function renderSourceInformation(sourceObject) {
+/*
+ * `page`, when known, is the page number within source.url's PDF.
+ * Browsers' built-in PDF viewers (Chrome/Firefox/Edge) honour a
+ * #page=N fragment and jump straight there - so a page number
+ * turns a link to "the whole rulebook" into a link to the exact
+ * page. Left undefined wherever we don't have a page number we
+ * actually trust, rather than guessing.
+ */
+
+function renderSourceInformation(
+    sourceObject,
+    page
+) {
 
     const source =
         sourceObject?.source;
@@ -575,6 +587,17 @@ function renderSourceInformation(sourceObject) {
         return "";
 
     }
+
+
+    const pageNumber =
+        page ??
+        sourceObject?.sourcePage;
+
+
+    const url =
+        source.url && pageNumber
+            ? `${source.url}#page=${encodeURIComponent(pageNumber)}`
+            : source.url;
 
 
     return `
@@ -590,17 +613,22 @@ function renderSourceInformation(sourceObject) {
                     source.document ||
                     "Mordheim Rules"
                 )}
+                ${
+                    pageNumber
+                        ? ` (p.${escapeHtml(pageNumber)})`
+                        : ""
+                }
             </p>
 
             ${
-                source.url
+                url
 
                 ?
 
                 `
                     <a
                         href="${escapeAttribute(
-                            source.url
+                            url
                         )}"
                         target="_blank"
                         rel="noopener noreferrer"
