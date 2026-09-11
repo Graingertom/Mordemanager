@@ -72,6 +72,11 @@
             "firstFree": true,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "An enemy wounded by a dagger gets a +1 bonus to his Armour Save (or a 6+ save if he has none)."
+            },
             "source": "mordheim-core"
         },
 
@@ -83,6 +88,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Concussion - a Stunned result on the Injury chart of 2-4 (not just 2) knocks the target out."
+            },
             "source": "mordheim-core"
         },
 
@@ -94,6 +104,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Concussion - a Stunned result on the Injury chart of 2-4 (not just 2) knocks the target out."
+            },
             "source": "mordheim-core"
         },
 
@@ -105,6 +120,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Cutting Edge - the target's Armour Save is reduced by 1."
+            },
             "source": "mordheim-core"
         },
 
@@ -118,6 +138,11 @@
             "traits": [
                 "parry"
             ],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Parry - may attempt to parry an incoming hit, discarding it on a successful roll."
+            },
             "source": "mordheim-core"
         },
 
@@ -131,6 +156,11 @@
             "traits": [
                 "unwieldy"
             ],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User +1",
+                "special": "Unwieldy - the Strength bonus only applies in the first round of a combat."
+            },
             "source": "mordheim-core"
         },
 
@@ -145,6 +175,11 @@
                 "requires-two-hands",
                 "unwieldy"
             ],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User +2",
+                "special": "Two-handed - always strikes last, even when charging."
+            },
             "source": "mordheim-core"
         },
 
@@ -158,6 +193,11 @@
             "traits": [
                 "strike-first"
             ],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Strike First on the charge; can also be used by a model in the second rank."
+            },
             "source": "mordheim-core"
         },
 
@@ -171,6 +211,11 @@
             "traits": [
                 "requires-two-hands"
             ],
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User +1",
+                "special": "Two-handed - may not be used with a shield, buckler or additional weapon."
+            },
             "source": "mordheim-core"
         },
 
@@ -182,6 +227,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "30\"",
+                "strength": "4",
+                "special": "Move or Fire - may move and shoot, but suffers the usual move-and-fire penalty."
+            },
             "source": "mordheim-core"
         },
 
@@ -193,6 +243,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "6\"",
+                "strength": "4",
+                "special": "-2 Armour Save modifier. May be used in hand-to-hand combat as a close combat weapon."
+            },
             "source": "mordheim-core"
         },
 
@@ -204,6 +259,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "10\"",
+                "strength": "4",
+                "special": "+1 to Hit, -2 Armour Save modifier. May be used in hand-to-hand combat as a close combat weapon."
+            },
             "source": "mordheim-core"
         },
 
@@ -215,6 +275,11 @@
             "firstFree": false,
             "availability": "common",
             "traits": [],
+            "weaponProfile": {
+                "range": "24\"",
+                "strength": "3",
+                "special": ""
+            },
             "source": "mordheim-core"
         },
 

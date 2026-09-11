@@ -1680,6 +1680,24 @@ function renderEquipmentCheckbox(
                         : `${item.cost ?? 0} gc`}
                 </small>
 
+
+                ${
+                    item.weaponProfile
+                        ? `
+                            <small class="mm-weapon-profile">
+                                S: ${escapeHtml(item.weaponProfile.strength || "-")}
+                                &middot;
+                                R: ${escapeHtml(item.weaponProfile.range || "-")}
+                                ${
+                                    item.weaponProfile.special
+                                        ? ` &middot; ${escapeHtml(item.weaponProfile.special)}`
+                                        : ""
+                                }
+                            </small>
+                        `
+                        : ""
+                }
+
             </span>
 
 

@@ -276,6 +276,77 @@ function showEquipment(
 
 
                 ${
+                    item.weaponProfile
+
+                    ?
+
+                    `
+                        <div class="mm-rule-stat">
+
+                            <span>
+                                Range
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    item.weaponProfile.range || "-"
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="mm-rule-stat">
+
+                            <span>
+                                Strength
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    item.weaponProfile.strength || "-"
+                                )}
+                            </strong>
+
+                        </div>
+
+
+                        ${
+                            item.weaponProfile.special
+
+                            ?
+
+                            `
+                                <div class="mm-rule-block">
+
+                                    <h3>
+                                        Special Rules
+                                    </h3>
+
+                                    <p class="mm-rule-description">
+
+                                        ${escapeHtml(
+                                            item.weaponProfile.special
+                                        )}
+
+                                    </p>
+
+                                </div>
+                            `
+
+                            :
+
+                            ""
+                        }
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
                     item.description
 
                     ?
