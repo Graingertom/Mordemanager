@@ -1041,14 +1041,12 @@ function renderFighterGameCard(
                         fighter.injuries.length
                             ? fighter.injuries
                                 .map(
-                                    injury => `
-                                        <span class="mm-equipment-tag">
-                                            ${escapeHtml(
-                                                injury.name ||
-                                                injury
-                                            )}
-                                        </span>
-                                    `
+                                    injury =>
+                                        renderInjuryTag(
+                                            typeof injury === "string"
+                                                ? injury
+                                                : injury.id
+                                        )
                                 )
                                 .join("")
                             : `<span class="mm-muted">None recorded</span>`
@@ -1074,14 +1072,12 @@ function renderFighterGameCard(
                                     fighter.skills.length
                                         ? fighter.skills
                                             .map(
-                                                skill => `
-                                                    <span class="mm-equipment-tag">
-                                                        ${escapeHtml(
-                                                            skill.name ||
-                                                            skill
-                                                        )}
-                                                    </span>
-                                                `
+                                                skill =>
+                                                    renderSkillTag(
+                                                        typeof skill === "string"
+                                                            ? skill
+                                                            : skill.id
+                                                    )
                                             )
                                             .join("")
                                         : `<span class="mm-muted">None recorded</span>`
@@ -2312,29 +2308,6 @@ function renderCharacteristicChoicePicker(
     }
 
 
-    const statNames = {
-
-        M: "Movement",
-
-        WS: "Weapon Skill",
-
-        BS: "Ballistic Skill",
-
-        S: "Strength",
-
-        T: "Toughness",
-
-        W: "Wounds",
-
-        I: "Initiative",
-
-        A: "Attacks",
-
-        Ld: "Leadership"
-
-    };
-
-
     /*
      * "Henchmen never add more than +1 point to any of their
      * initial characteristics" (rulebook p83) - a Hero has no
@@ -2383,8 +2356,7 @@ function renderCharacteristicChoicePicker(
                             >
                                 <strong>
                                     +1 ${escapeHtml(
-                                        statNames[stat] ||
-                                        stat
+                                        getStatName(stat)
                                     )}
                                 </strong>
 
@@ -3136,6 +3108,171 @@ function setupFighterEquipmentValidation(
      */
 
     validateSelection();
+
+}
+
+
+/* ============================================================
+   INJURY TAG / DETAIL
+
+   Same clickable-pill-plus-detail-modal pattern as
+   renderEquipmentTag (equipment.js) and renderSkillTag (skills.js)
+   - an injury tag shown anywhere on a fighter should open what it
+   actually means, not just repeat the name.
+   ============================================================ */
+
+function renderInjuryTag(
+    injuryId
+) {
+
+    const injury =
+        RulesEngine.findInjury(
+            injuryId,
+            state.injuries
+        );
+
+
+    if (!injury) {
+
+        return `
+
+            <span class="mm-equipment-tag">
+                ${escapeHtml(injuryId)}
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <button
+            type="button"
+            class="mm-equipment-tag"
+            onclick="showInjury('${escapeAttribute(injury.id)}')"
+        >
+
+            ${escapeHtml(injury.name)}
+
+        </button>
+
+    `;
+
+}
+
+
+function showInjury(
+    injuryId
+) {
+
+    const injury =
+        RulesEngine.findInjury(
+            injuryId,
+            state.injuries
+        );
+
+
+    if (!injury) {
+
+        return;
+
+    }
+
+
+    const canGoBack =
+        modalCanGoBack();
+
+
+    const statModifierRows =
+        injury.statModifiers &&
+        Object.keys(injury.statModifiers).length
+            ? Object.entries(injury.statModifiers)
+                .map(
+                    ([stat, value]) => `
+                        <div class="mm-rule-stat">
+                            <span>
+                                ${escapeHtml(stat)}
+                            </span>
+                            <strong>
+                                ${value > 0 ? "+" : ""}${value}
+                            </strong>
+                        </div>
+                    `
+                )
+                .join("")
+            : "";
+
+
+    pushModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        injury.rollRange
+                            ? `
+                                <span class="mm-badge">
+                                    ${escapeHtml(injury.rollRange)}
+                                </span>
+                            `
+                            : ""
+                    }
+
+                    <h2>
+                        ${escapeHtml(injury.name)}
+                    </h2>
+
+                </div>
+
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                ${statModifierRows}
+
+                <div class="mm-rule-description">
+                    ${formatRuleText(
+                        injury.description ||
+                        "No description available."
+                    )}
+                </div>
+
+                ${renderSourceInformation(
+                    state.injuries,
+                    injury.sourcePage
+                )}
+
+            </div>
+
+        </div>
+
+    `);
 
 }
 

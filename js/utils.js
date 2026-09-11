@@ -41,6 +41,45 @@ function escapeAttribute(value) {
 
 
 /* ============================================================
+   CHARACTERISTIC NAMES
+
+   Shared between anywhere a profile stat abbreviation (M, WS,
+   BS, S, T, W, I, A, Ld) needs to be shown in full - the
+   Advance-recording pickers and the read-only fighter detail
+   view both need this.
+   ============================================================ */
+
+const STAT_NAMES = {
+
+    M: "Movement",
+
+    WS: "Weapon Skill",
+
+    BS: "Ballistic Skill",
+
+    S: "Strength",
+
+    T: "Toughness",
+
+    W: "Wounds",
+
+    I: "Initiative",
+
+    A: "Attacks",
+
+    Ld: "Leadership"
+
+};
+
+
+function getStatName(stat) {
+
+    return STAT_NAMES[stat] || stat;
+
+}
+
+
+/* ============================================================
    DATES
    ============================================================ */
 

@@ -268,7 +268,14 @@ function renderFighterDetailModal(warband, fighter) {
                                 <div class="mm-trait-list">
 
                                     ${skills
-                                        .map(renderSkillTag)
+                                        .map(
+                                            skill =>
+                                                renderSkillTag(
+                                                    typeof skill === "string"
+                                                        ? skill
+                                                        : skill.id
+                                                )
+                                        )
                                         .join("")}
 
                                 </div>
@@ -484,9 +491,24 @@ function renderFighterInjury(injury) {
         `;
     }
 
+
+    /*
+     * Clickable when there's an id to look up the canonical rules
+     * text for (roll range, full description, source) - a plain
+     * row otherwise, same fallback as renderFighterEquipmentDetail.
+     */
+
+    const tag =
+        injury.id
+            ? "button"
+            : "div";
+
     return `
 
-        <div class="mm-detail-row">
+        <${tag}
+            ${tag === "button" ? `type="button" onclick="showInjury('${escapeAttribute(injury.id)}')"` : ""}
+            class="mm-detail-row${tag === "button" ? " mm-detail-row-button" : ""}"
+        >
 
             <div>
 
@@ -522,7 +544,7 @@ function renderFighterInjury(injury) {
                     : ""
             }
 
-        </div>
+        </${tag}>
 
     `;
 }
@@ -531,6 +553,62 @@ function renderFighterInjury(injury) {
 /* ============================================================
    ADVANCES
    ============================================================ */
+
+/*
+ * Advance log entries come from the Record Advance flow
+ * (fighters.js) in one of three shapes - a permanent
+ * characteristic increase, a new skill, or (Henchmen only) a
+ * promotion to Hero. Format each into a readable label rather
+ * than showing the raw internal "type" string.
+ */
+
+function formatAdvanceLabel(advance) {
+
+    if (advance.type === "characteristic") {
+
+        return `+1 ${getStatName(advance.stat)}`;
+
+    }
+
+    if (advance.type === "new-skill") {
+
+        return `New Skill: ${advance.skillName || "Unknown"}`;
+
+    }
+
+    if (advance.type === "promote-to-hero") {
+
+        return "Promoted to Hero";
+
+    }
+
+    return (
+        advance.name ||
+        advance.type ||
+        "Advance"
+    );
+
+}
+
+
+function formatAdvanceDetail(advance) {
+
+    if (
+        advance.type === "promote-to-hero" &&
+        Array.isArray(advance.skillCategories)
+    ) {
+
+        return (
+            "Skill lists gained: " +
+            advance.skillCategories.join(", ")
+        );
+
+    }
+
+    return advance.description || "";
+
+}
+
 
 function renderFighterAdvance(advance) {
 
@@ -549,6 +627,9 @@ function renderFighterAdvance(advance) {
         `;
     }
 
+    const detail =
+        formatAdvanceDetail(advance);
+
     return `
 
         <div class="mm-detail-row">
@@ -557,19 +638,15 @@ function renderFighterAdvance(advance) {
 
                 <strong>
                     ${escapeHtml(
-                        advance.name ||
-                        advance.type ||
-                        "Advance"
+                        formatAdvanceLabel(advance)
                     )}
                 </strong>
 
                 ${
-                    advance.description
+                    detail
                         ? `
                             <p class="mm-muted">
-                                ${escapeHtml(
-                                    advance.description
-                                )}
+                                ${escapeHtml(detail)}
                             </p>
                         `
                         : ""
@@ -578,10 +655,10 @@ function renderFighterAdvance(advance) {
             </div>
 
             ${
-                advance.xp
+                advance.xpAtAdvance
                     ? `
                         <span>
-                            +${escapeHtml(advance.xp)} XP
+                            ${escapeHtml(advance.xpAtAdvance)} XP
                         </span>
                     `
                     : ""
@@ -594,90 +671,6 @@ function renderFighterAdvance(advance) {
 
 
 /* ============================================================
-   SKILLS
-   ============================================================ */
-
-async function addFighterSkill(fighterId, skillId) {
-
-    const warband = getCurrentWarband();
-
-    const fighter =
-        warband?.fighters.find(
-            item => item.id === fighterId
-        );
-
-    if (!fighter) {
-        return;
-    }
-
-    if (!Array.isArray(fighter.skills)) {
-        fighter.skills = [];
-    }
-
-    if (fighter.skills.includes(skillId)) {
-        return;
-    }
-
-    const previousSkills =
-        [...fighter.skills];
-
-    fighter.skills.push(skillId);
-
-    const { error } =
-        await supabaseClient
-            .from("fighters")
-            .update({ skills: fighter.skills })
-            .eq("id", fighter.id);
-
-    if (error) {
-        alert("Unable to save skill: " + error.message);
-        fighter.skills = previousSkills;
-        return;
-    }
-
-    renderApplication();
-}
-
-
-async function removeFighterSkill(fighterId, skillId) {
-
-    const warband = getCurrentWarband();
-
-    const fighter =
-        warband?.fighters.find(
-            item => item.id === fighterId
-        );
-
-    if (!fighter) {
-        return;
-    }
-
-    const previousSkills =
-        [...(fighter.skills || [])];
-
-    fighter.skills =
-        (fighter.skills || [])
-            .filter(
-                id => id !== skillId
-            );
-
-    const { error } =
-        await supabaseClient
-            .from("fighters")
-            .update({ skills: fighter.skills })
-            .eq("id", fighter.id);
-
-    if (error) {
-        alert("Unable to remove skill: " + error.message);
-        fighter.skills = previousSkills;
-        return;
-    }
-
-    renderApplication();
-}
-
-
-/* ============================================================
    PUBLIC API
    ============================================================ */
 
@@ -685,11 +678,7 @@ window.MordeManagerFighters = {
 
     showFighterDetails,
 
-    renderFighterDetailModal,
-
-    addFighterSkill,
-
-    removeFighterSkill
+    renderFighterDetailModal
 
 };
 
@@ -701,9 +690,3 @@ window.MordeManagerFighters = {
 
 window.showFighterDetails =
     showFighterDetails;
-
-window.addFighterSkill =
-    addFighterSkill;
-
-window.removeFighterSkill =
-    removeFighterSkill;

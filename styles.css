@@ -1458,14 +1458,24 @@ a {
     background:
         rgba(0, 0, 0, .15);
 
-    cursor: pointer;
-
     transition:
         border-color .15s ease,
         background .15s ease;
 }
 
-.mm-equipment-option:hover {
+/*
+ * This class is reused for plain display rows (friend requests,
+ * stash items) as well as the actual clickable checkbox label in
+ * the equipment picker - only the <label> case should look and
+ * feel clickable, so the pointer cursor and hover highlight are
+ * scoped to it specifically rather than the shared class.
+ */
+
+label.mm-equipment-option {
+    cursor: pointer;
+}
+
+label.mm-equipment-option:hover {
     border-color:
         var(--gold-dark);
 
