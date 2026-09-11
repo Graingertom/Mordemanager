@@ -1705,6 +1705,22 @@ a {
     background: rgba(0, 0, 0, .15);
 }
 
+.mm-injury-list li > span {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.mm-skill-description {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 .mm-injury-add {
     display: flex;
 
@@ -2194,5 +2210,56 @@ a {
 .mm-warband-select-option span {
     color: var(--muted);
     font-size: 13px;
+}
+
+.mm-warband-select-option:disabled {
+    opacity: 0.45;
+
+    cursor: not-allowed;
+}
+
+.mm-warband-select-option:disabled:hover {
+    border-color: var(--border);
+
+    background: var(--panel);
+}
+
+/*
+ * The "confirm this skill" step between picking a skill and it
+ * landing on the fighter - description text plus a Back/Confirm
+ * row, inside the advance picker's #advance-picker-body.
+ */
+
+.mm-skill-confirm {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    background: var(--panel);
+}
+
+.mm-skill-confirm h3 {
+    margin: 0;
+
+    color: var(--gold-light);
+}
+
+.mm-picker-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 16px;
+}
+
+.mm-picker-actions .mm-button {
+    flex: 1;
 }
 

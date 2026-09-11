@@ -2513,7 +2513,7 @@ function renderNewSkillPicker() {
                                 <button
                                     type="button"
                                     class="mm-warband-select-option"
-                                    onclick="selectNewSkillAdvance('${escapeAttribute(skill.id)}')"
+                                    onclick="confirmNewSkillChoice('${escapeAttribute(skill.id)}')"
                                 >
                                     <strong>
                                         ${escapeHtml(skill.name)}
@@ -2533,6 +2533,98 @@ function renderNewSkillPicker() {
                         </p>
                     `
             }
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+ * A confirmation step between picking a skill and it actually
+ * landing on the fighter - shows what the skill does (and its
+ * rules source) so the choice is informed, rather than committing
+ * the instant a name is clicked.
+ */
+
+function confirmNewSkillChoice(
+    skillId
+) {
+
+    const body =
+        document.getElementById(
+            "advance-picker-body"
+        );
+
+
+    if (!body) {
+
+        return;
+
+    }
+
+
+    const skill =
+        getSkill(skillId);
+
+
+    if (!skill) {
+
+        return;
+
+    }
+
+
+    body.innerHTML = `
+
+        <p class="mm-muted">
+            Confirm this skill?
+        </p>
+
+
+        <div class="mm-skill-confirm">
+
+            <span class="mm-badge">
+                ${escapeHtml(skill.category)}
+            </span>
+
+            <h3>
+                ${escapeHtml(skill.name)}
+            </h3>
+
+            <div class="mm-rule-description">
+                ${formatRuleText(
+                    skill.description ||
+                    "No description available."
+                )}
+            </div>
+
+            ${renderSourceInformation(
+                state.skills,
+                skill.sourcePage
+            )}
+
+        </div>
+
+
+        <div class="mm-picker-actions">
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="renderNewSkillPicker()"
+            >
+                ← Choose a different skill
+            </button>
+
+            <button
+                type="button"
+                class="mm-button mm-button-primary"
+                onclick="selectNewSkillAdvance('${escapeAttribute(skill.id)}')"
+            >
+                Confirm Skill
+            </button>
 
         </div>
 
@@ -3267,6 +3359,18 @@ function renderSkillsEditorList() {
                                                     skill.category
                                                 )}
                                             </small>
+                                        `
+                                        : ""
+                                }
+
+                                ${
+                                    skill.description
+                                        ? `
+                                            <p class="mm-skill-description">
+                                                ${escapeHtml(
+                                                    skill.description
+                                                )}
+                                            </p>
                                         `
                                         : ""
                                 }
