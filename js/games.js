@@ -1836,6 +1836,12 @@ function showAddWarbandToGame(
                                         id="warband-search-input"
                                         type="text"
                                         placeholder="Search by warband name"
+                                        onkeydown="
+                                            if (event.key === 'Enter') {
+                                                event.preventDefault();
+                                                searchWarbandsForGame('${escapeAttribute(gameId)}');
+                                            }
+                                        "
                                     >
 
                                     <button

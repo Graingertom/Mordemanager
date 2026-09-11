@@ -254,6 +254,12 @@ function renderFriendsPage() {
                             id="friend-search-input"
                             type="text"
                             placeholder="Search by display name"
+                            onkeydown="
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    searchUsersForFriends();
+                                }
+                            "
                         >
 
                         <button
