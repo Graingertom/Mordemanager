@@ -578,13 +578,6 @@ function renderDashboard() {
                                         `
                                         : ""}
                                 </button>
-
-                                <button
-                                    class="mm-button mm-button-primary"
-                                    onclick="showCreateWarband()"
-                                >
-                                    + New Warband
-                                </button>
                             `
                             : ""
                     }
@@ -600,26 +593,38 @@ function renderDashboard() {
                     user
                         ? `
 
-                            <section class="mm-page-title">
+                            <section class="mm-section">
 
-                                <div>
+                                <div class="mm-section-header">
 
-                                    <h1>
-                                        My Warbands
-                                    </h1>
+                                    <div>
 
-                                    <p>
-                                        Manage your warbands,
-                                        fighters, equipment
-                                        and campaigns.
-                                    </p>
+                                        <h2>
+                                            My Warbands
+                                        </h2>
+
+                                        <p>
+                                            Manage your warbands,
+                                            fighters, equipment
+                                            and campaigns.
+                                        </p>
+
+                                    </div>
+
+
+                                    <button
+                                        class="mm-button mm-button-primary"
+                                        onclick="showCreateWarband()"
+                                    >
+                                        + New Warband
+                                    </button>
 
                                 </div>
 
+
+                                ${renderWarbandCards()}
+
                             </section>
-
-
-                            ${renderWarbandCards()}
 
 
                             ${renderActiveGames()}

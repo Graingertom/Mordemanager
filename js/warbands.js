@@ -161,29 +161,18 @@ function renderWarbandCards() {
 
         return `
 
-            <section class="mm-empty-state">
+            <div class="mm-empty-state mm-empty-small">
 
                 <div class="mm-empty-icon">
                     ⚔
                 </div>
 
-                <h2>
-                    No Warbands Yet
-                </h2>
-
                 <p>
-                    Create your first warband
-                    to get started.
+                    No warbands yet - create one
+                    above to get started.
                 </p>
 
-                <button
-                    class="mm-button mm-button-primary"
-                    onclick="showCreateWarband()"
-                >
-                    Create Warband
-                </button>
-
-            </section>
+            </div>
 
         `;
 
