@@ -29,6 +29,38 @@ let editingSkills = [];
 let editingSkillOptions = [];
 
 
+/*
+ * Advance-related staging for the fighter game-update modal.
+ * editingProfile/editingCategory are working copies so a
+ * characteristic increase or a promotion doesn't touch the real
+ * fighter until Save, same as everything else in this modal.
+ * gameUpdateFighterId tracks which fighter is currently staged, so
+ * showFighterGameUpdate() can be safely re-invoked (e.g. right
+ * after recording an advance, or after a promotion changes which
+ * sections should show) WITHOUT re-seeding over staged-but-unsaved
+ * changes - pushModal snapshots the parent modal's HTML as a
+ * static string, so goBackModal() can't reflect state changes made
+ * while a child modal was open; re-rendering via
+ * showFighterGameUpdate() directly is what actually shows them.
+ */
+
+let editingAdvances = [];
+
+let editingProfile = {};
+
+let editingCategory = null;
+
+let gameUpdateFighterId = null;
+
+/*
+ * The deduplicated advance-outcome rows currently shown by
+ * showRecordAdvance() - selectAdvanceOutcome() looks a row up by
+ * index rather than encoding it into the onclick string.
+ */
+
+let pendingAdvanceTable = [];
+
+
 /* ============================================================
    DATA NORMALISATION
    ============================================================ */
@@ -1067,6 +1099,20 @@ function renderFighterGameCard(
 
                 <span>
                     ${fighter.experience || 0} XP
+
+                    ${
+                        !readOnly &&
+                        RulesEngine.isEligibleForAdvance(
+                            fighter,
+                            state.advances
+                        )
+                            ? `
+                                <span class="mm-badge mm-badge-highlight">
+                                    Advance available
+                                </span>
+                            `
+                            : ""
+                    }
                 </span>
 
 
@@ -1474,26 +1520,60 @@ function showFighterGameUpdate(
     }
 
 
+    /*
+     * Safe to call this again for the SAME fighter mid-session
+     * (e.g. right after recording an advance) without losing
+     * staged-but-unsaved changes - only re-seed from the real
+     * fighter when this is a fresh open, or a different fighter.
+     */
+
+    const isFreshOpen =
+        gameUpdateFighterId !== fighterId;
+
+
+    gameUpdateFighterId =
+        fighterId;
+
+
+    if (isFreshOpen) {
+
+        editingInjuries =
+            [...fighter.injuries];
+
+        editingSkills =
+            [...fighter.skills];
+
+        editingAdvances =
+            [...fighter.advances];
+
+        editingProfile =
+            { ...fighter.profile };
+
+        editingCategory =
+            fighter.category;
+
+    }
+
+
     const isHero =
-        fighter.category === "hero";
-
-
-    editingInjuries =
-        [...fighter.injuries];
-
-    editingSkills =
-        [...fighter.skills];
+        editingCategory === "hero";
 
 
     /*
      * Which skills this fighter is even eligible to learn -
      * henchmen never get skills (see the verified rulebook
      * text), and a Hero is restricted to the skill lists his
-     * warband entry grants him.
+     * warband entry grants him. A promoted former-Henchman has
+     * no entry under their fighterType.id, so fall back to the
+     * skill lists they chose at promotion time instead.
      */
 
     const accessibleCategories =
         state.skills?.warbandAccess?.[warband.type]?.[fighterType.id] ||
+        editingAdvances.find(
+            advance =>
+                advance.type === "promote-to-hero"
+        )?.skillCategories ||
         [];
 
     editingSkillOptions =
@@ -1517,7 +1597,7 @@ function showFighterGameUpdate(
 
                     <span class="mm-badge">
                         ${escapeHtml(
-                            fighter.category
+                            editingCategory
                         )}
                     </span>
 
@@ -1533,7 +1613,7 @@ function showFighterGameUpdate(
 
                 <button
                     class="mm-modal-close"
-                    onclick="closeModal()"
+                    onclick="cancelFighterGameUpdate()"
                 >
                     ×
                 </button>
@@ -1550,21 +1630,30 @@ function showFighterGameUpdate(
                     </h3>
 
 
-                    <div class="mm-profile-editor">
+                    <div
+                        class="mm-profile-editor"
+                        id="fighter-profile-grid"
+                    >
 
-                        ${Object.entries(
-                            RulesEngine.calculateEffectiveProfile(
-                                fighter
-                            )
-                        )
-                            .map(
-                                ([stat, value]) =>
-                                    renderReadOnlyStat(
-                                        stat,
-                                        value
-                                    )
-                            )
-                            .join("")}
+                        ${renderFighterGameUpdateProfile()}
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-editor-section">
+
+                    <h3>
+                        Advance
+                    </h3>
+
+
+                    <div id="fighter-advance-section">
+
+                        ${renderAdvanceSection(
+                            fighter
+                        )}
 
                     </div>
 
@@ -1703,7 +1792,7 @@ function showFighterGameUpdate(
 
                 <button
                     class="mm-button"
-                    onclick="closeModal()"
+                    onclick="cancelFighterGameUpdate()"
                 >
                     Cancel
                 </button>
@@ -1721,6 +1810,782 @@ function showFighterGameUpdate(
         </div>
 
     `);
+
+}
+
+
+function cancelFighterGameUpdate() {
+
+    gameUpdateFighterId =
+        null;
+
+
+    closeModal();
+
+}
+
+
+function getGameUpdateFighter() {
+
+    const warband =
+        getCurrentWarband();
+
+
+    return (
+        warband?.fighters.find(
+            item =>
+                item.id === gameUpdateFighterId
+        ) || null
+    );
+
+}
+
+
+/* ============================================================
+   FIGHTER GAME UPDATE - PROFILE (REFLECTS STAGED ADVANCES)
+   ============================================================ */
+
+function renderFighterGameUpdateProfile() {
+
+    const effective =
+        RulesEngine.calculateEffectiveProfile({
+            profile: editingProfile,
+            injuries: editingInjuries
+        });
+
+
+    return Object.entries(effective)
+        .map(
+            ([stat, value]) =>
+                renderReadOnlyStat(
+                    stat,
+                    value
+                )
+        )
+        .join("");
+
+}
+
+
+function refreshFighterGameUpdateProfile() {
+
+    const grid =
+        document.getElementById(
+            "fighter-profile-grid"
+        );
+
+
+    if (grid) {
+
+        grid.innerHTML =
+            renderFighterGameUpdateProfile();
+
+    }
+
+}
+
+
+/* ============================================================
+   ADVANCE SECTION (ELIGIBILITY)
+   ============================================================ */
+
+function renderAdvanceSection(
+    fighter
+) {
+
+    const stagedFighter = {
+
+        category:
+            editingCategory,
+
+        experience:
+            fighter.experience,
+
+        advances:
+            editingAdvances
+
+    };
+
+
+    const threshold =
+        RulesEngine.getNextAdvanceThreshold(
+            stagedFighter,
+            state.advances
+        );
+
+
+    if (threshold === null) {
+
+        return `
+
+            <p class="mm-muted">
+                No further advances are
+                defined for this fighter.
+            </p>
+
+        `;
+
+    }
+
+
+    const eligible =
+        RulesEngine.isEligibleForAdvance(
+            stagedFighter,
+            state.advances
+        );
+
+
+    return `
+
+        <div class="mm-rule-stat">
+
+            <span>
+                Next Advance At
+            </span>
+
+            <strong>
+                ${threshold} XP
+            </strong>
+
+        </div>
+
+        ${
+            eligible
+                ? `
+                    <button
+                        type="button"
+                        class="mm-button mm-button-primary"
+                        onclick="showRecordAdvance('${escapeAttribute(fighter.id)}')"
+                    >
+                        Record Advance
+                    </button>
+                `
+                : `
+                    <p class="mm-muted">
+                        ${fighter.experience || 0} / ${threshold} XP
+                        towards the next advance.
+                    </p>
+                `
+        }
+
+    `;
+
+}
+
+
+function refreshAdvanceSection() {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const section =
+        document.getElementById(
+            "fighter-advance-section"
+        );
+
+
+    if (section) {
+
+        section.innerHTML =
+            renderAdvanceSection(
+                fighter
+            );
+
+    }
+
+}
+
+
+/* ============================================================
+   RECORD ADVANCE
+
+   A drill-down from the fighter game-update modal - lets the
+   player pick which of the (real, table-rolled) outcomes their
+   fighter got, then applies it. Rows sharing an identical
+   outcome (both "New Skill" results on the Hero table) are only
+   shown once.
+   ============================================================ */
+
+function showRecordAdvance(
+    fighterId
+) {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!fighter || fighter.id !== fighterId) {
+
+        return;
+
+    }
+
+
+    const fullTable =
+        RulesEngine.getAdvanceTable(
+            { category: editingCategory },
+            state.advances
+        );
+
+
+    const seen =
+        new Set();
+
+    pendingAdvanceTable =
+        fullTable.filter(
+            row => {
+
+                const key =
+                    row.result + "|" + row.label;
+
+
+                if (seen.has(key)) {
+
+                    return false;
+
+                }
+
+
+                seen.add(key);
+
+                return true;
+
+            }
+        );
+
+
+    const canGoBack =
+        modalCanGoBack();
+
+
+    pushModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <h2>
+                        Record Advance
+                    </h2>
+
+                </div>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="goBackModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="mm-modal-body"
+                id="advance-picker-body"
+            >
+
+                ${renderAdvanceOutcomeList(
+                    fighter
+                )}
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+function renderAdvanceOutcomeList(
+    fighter
+) {
+
+    return `
+
+        <p class="mm-muted">
+            What did ${escapeHtml(fighter.name)}
+            roll on the Advance table?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${pendingAdvanceTable
+                .map(
+                    (row, index) => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="selectAdvanceOutcome(${index})"
+                        >
+                            <strong>
+                                ${escapeHtml(row.label)}
+                            </strong>
+
+                            <span>
+                                Roll ${escapeHtml(row.roll)}
+                            </span>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function selectAdvanceOutcome(
+    index
+) {
+
+    const row =
+        pendingAdvanceTable[index];
+
+
+    if (!row) {
+
+        return;
+
+    }
+
+
+    if (row.result === "characteristic") {
+
+        applyCharacteristicAdvance(
+            row.stat
+        );
+
+        return;
+
+    }
+
+
+    if (row.result === "characteristic-choice") {
+
+        renderCharacteristicChoicePicker(
+            row
+        );
+
+        return;
+
+    }
+
+
+    if (row.result === "new-skill") {
+
+        applyNewSkillAdvance();
+
+        return;
+
+    }
+
+
+    if (row.result === "promote-to-hero") {
+
+        renderPromoteToHeroPicker();
+
+        return;
+
+    }
+
+}
+
+
+function renderCharacteristicChoicePicker(
+    row
+) {
+
+    const body =
+        document.getElementById(
+            "advance-picker-body"
+        );
+
+
+    if (!body) {
+
+        return;
+
+    }
+
+
+    const statNames = {
+
+        M: "Movement",
+
+        WS: "Weapon Skill",
+
+        BS: "Ballistic Skill",
+
+        S: "Strength",
+
+        T: "Toughness",
+
+        W: "Wounds",
+
+        I: "Initiative",
+
+        A: "Attacks",
+
+        Ld: "Leadership"
+
+    };
+
+
+    body.innerHTML = `
+
+        <p class="mm-muted">
+            ${escapeHtml(row.label)} -
+            which one?
+        </p>
+
+
+        <div class="mm-warband-select-list">
+
+            ${row.options
+                .map(
+                    stat => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="applyCharacteristicAdvance('${escapeAttribute(stat)}')"
+                        >
+                            <strong>
+                                +1 ${escapeHtml(
+                                    statNames[stat] ||
+                                    stat
+                                )}
+                            </strong>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+    `;
+
+}
+
+
+function applyCharacteristicAdvance(
+    stat
+) {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    editingProfile[stat] =
+        (Number(editingProfile[stat]) || 0) + 1;
+
+
+    editingAdvances.push({
+
+        type:
+            "characteristic",
+
+        stat,
+
+        xpAtAdvance:
+            fighter.experience || 0,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
+    showFighterGameUpdate(
+        fighter.id
+    );
+
+}
+
+
+function applyNewSkillAdvance() {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    editingAdvances.push({
+
+        type:
+            "new-skill",
+
+        xpAtAdvance:
+            fighter.experience || 0,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
+    showFighterGameUpdate(
+        fighter.id
+    );
+
+}
+
+
+/*
+ * Working set of skill categories for the promote-to-hero picker
+ * below - separate from editingSkillOptions/editingSkills, which
+ * are about picking an actual skill, not a skill LIST.
+ */
+
+let pendingPromotionCategories = [];
+
+
+function renderPromoteToHeroPicker() {
+
+    const body =
+        document.getElementById(
+            "advance-picker-body"
+        );
+
+
+    if (!body) {
+
+        return;
+
+    }
+
+
+    pendingPromotionCategories = [];
+
+
+    const categories =
+        state.skills?.skillCategories || [];
+
+
+    body.innerHTML = `
+
+        <p class="mm-muted">
+            Promoted to Hero - pick exactly
+            two skill lists this fighter can
+            now choose skills from.
+        </p>
+
+
+        <div
+            class="mm-warband-select-list"
+            id="promotion-category-list"
+        >
+
+            ${categories
+                .map(
+                    category => `
+                        <button
+                            type="button"
+                            class="mm-warband-select-option"
+                            onclick="togglePromotionCategory('${escapeAttribute(category.id)}')"
+                        >
+                            <strong>
+                                ${escapeHtml(category.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    category.description || ""
+                                )}
+                            </span>
+                        </button>
+                    `
+                )
+                .join("")}
+
+        </div>
+
+
+        <button
+            type="button"
+            class="mm-button mm-button-primary"
+            onclick="confirmPromoteToHero()"
+            ${
+                pendingPromotionCategories.length === 2
+                    ? ""
+                    : "disabled"
+            }
+        >
+            Confirm Promotion
+        </button>
+
+    `;
+
+}
+
+
+function togglePromotionCategory(
+    categoryId
+) {
+
+    const index =
+        pendingPromotionCategories.indexOf(
+            categoryId
+        );
+
+
+    if (index === -1) {
+
+        if (pendingPromotionCategories.length >= 2) {
+
+            return;
+
+        }
+
+        pendingPromotionCategories.push(
+            categoryId
+        );
+
+    } else {
+
+        pendingPromotionCategories.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    const list =
+        document.getElementById(
+            "promotion-category-list"
+        );
+
+
+    if (list) {
+
+        Array.from(
+            list.children
+        ).forEach(
+            (button, buttonIndex) => {
+
+                const category =
+                    (state.skills?.skillCategories || [])[
+                        buttonIndex
+                    ];
+
+
+                if (!category) {
+
+                    return;
+
+                }
+
+
+                button.classList.toggle(
+                    "mm-warband-select-option-active",
+                    pendingPromotionCategories.includes(
+                        category.id
+                    )
+                );
+
+            }
+        );
+
+    }
+
+
+    const confirmButton =
+        document.querySelector(
+            "#advance-picker-body .mm-button-primary"
+        );
+
+
+    if (confirmButton) {
+
+        confirmButton.disabled =
+            pendingPromotionCategories.length !== 2;
+
+    }
+
+}
+
+
+function confirmPromoteToHero() {
+
+    const fighter =
+        getGameUpdateFighter();
+
+
+    if (
+        !fighter ||
+        pendingPromotionCategories.length !== 2
+    ) {
+
+        return;
+
+    }
+
+
+    editingCategory =
+        "hero";
+
+
+    editingAdvances.push({
+
+        type:
+            "promote-to-hero",
+
+        skillCategories:
+            [...pendingPromotionCategories],
+
+        xpAtAdvance:
+            fighter.experience || 0,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
+    showFighterGameUpdate(
+        fighter.id
+    );
 
 }
 
@@ -2736,14 +3601,32 @@ async function saveFighterGameUpdate(
     const previousExperience =
         fighter.experience;
 
+    const previousProfile =
+        { ...fighter.profile };
+
+    const previousCategory =
+        fighter.category;
+
+    const previousAdvances =
+        [...(fighter.advances || [])];
+
 
     fighter.injuries =
         [...editingInjuries];
 
     fighter.skills =
-        fighter.category === "hero"
+        editingCategory === "hero"
             ? [...editingSkills]
             : fighter.skills;
+
+    fighter.profile =
+        { ...editingProfile };
+
+    fighter.category =
+        editingCategory;
+
+    fighter.advances =
+        [...editingAdvances];
 
 
     const xpInput =
@@ -2779,7 +3662,16 @@ async function saveFighterGameUpdate(
                     fighter.skills,
 
                 experience:
-                    fighter.experience
+                    fighter.experience,
+
+                profile:
+                    fighter.profile,
+
+                category:
+                    fighter.category,
+
+                advances:
+                    fighter.advances
 
             })
             .eq(
@@ -2805,9 +3697,21 @@ async function saveFighterGameUpdate(
         fighter.experience =
             previousExperience;
 
+        fighter.profile =
+            previousProfile;
+
+        fighter.category =
+            previousCategory;
+
+        fighter.advances =
+            previousAdvances;
+
         return;
 
     }
+
+
+    gameUpdateFighterId = null;
 
 
     closeModal();

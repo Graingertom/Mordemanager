@@ -695,6 +695,19 @@ a {
     letter-spacing: .5px;
 }
 
+.mm-badge-highlight {
+    margin-left: 8px;
+
+    background:
+        rgba(90, 168, 104, .16);
+
+    border-color:
+        rgba(90, 168, 104, .45);
+
+    color:
+        var(--success, #5aa868);
+}
+
 
 /* ============================================================
    WARBAND / FIGHTER CARDS
@@ -1880,7 +1893,7 @@ a {
     margin: 0.25rem 0;
 }
 
-.mm-modal-footer .mm-button:disabled {
+.mm-button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }
@@ -2146,6 +2159,13 @@ a {
     border-color: var(--gold);
 
     background: var(--panel-hover);
+}
+
+.mm-warband-select-option-active {
+    border-color: var(--gold);
+
+    background:
+        rgba(196, 154, 82, .12);
 }
 
 .mm-warband-select-option span {

@@ -960,6 +960,104 @@ function calculateEffectiveProfile(
 
 
 /* ============================================================
+   ADVANCES (EXPERIENCE THRESHOLDS)
+   ============================================================ */
+//
+// A fighter's advances are a log of what's already been recorded
+// (see fighters.js's saveFighterGameUpdate) - how many entries are
+// in that log tells us which XP threshold comes next, for their
+// category (Hero vs Henchman use different threshold tables).
+
+function getAdvancesUsed(
+    fighter
+) {
+
+    return Array.isArray(fighter?.advances)
+        ? fighter.advances.length
+        : 0;
+
+}
+
+
+function getNextAdvanceThreshold(
+    fighter,
+    advancesData
+) {
+
+    const thresholds =
+        advancesData?.experienceThresholds?.[
+            fighter?.category
+        ];
+
+
+    if (!Array.isArray(thresholds)) {
+
+        return null;
+
+    }
+
+
+    const used =
+        getAdvancesUsed(fighter);
+
+
+    if (used >= thresholds.length) {
+
+        return null;
+
+    }
+
+
+    return thresholds[used];
+
+}
+
+
+function isEligibleForAdvance(
+    fighter,
+    advancesData
+) {
+
+    const threshold =
+        getNextAdvanceThreshold(
+            fighter,
+            advancesData
+        );
+
+
+    if (threshold === null) {
+
+        return false;
+
+    }
+
+
+    return (
+        Number(fighter?.experience) || 0
+    ) >= threshold;
+
+}
+
+
+function getAdvanceTable(
+    fighter,
+    advancesData
+) {
+
+    const table =
+        fighter?.category === "hero"
+            ? advancesData?.heroTable
+            : advancesData?.henchmanTable;
+
+
+    return Array.isArray(table)
+        ? table
+        : [];
+
+}
+
+
+/* ============================================================
    EQUIPMENT COST
    ============================================================ */
 
@@ -1986,7 +2084,15 @@ return {
 
     findInjury,
 
-    calculateEffectiveProfile
+    calculateEffectiveProfile,
+
+    getAdvancesUsed,
+
+    getNextAdvanceThreshold,
+
+    isEligibleForAdvance,
+
+    getAdvanceTable
 
 };
 

@@ -1,0 +1,97 @@
+{
+    "source": {
+        "organisation": "Broheim",
+        "document": "Mordheim Post Battle Sequence (cheat sheet), cross-referenced with Mordheim Core Rules Printable pages 82-83",
+        "website": "https://broheim.net",
+        "url": "https://broheim.net/downloads/resources/Post%20Game%20Cheat%20Sheet.pdf"
+    },
+
+    "experienceThresholds": {
+
+        "hero": [
+            2, 4, 6, 8, 11, 14, 17, 20, 24, 28,
+            32, 36, 41, 46, 51, 57, 63, 69, 76, 83, 90
+        ],
+
+        "henchman": [
+            2, 5, 9, 14
+        ]
+
+    },
+
+    "heroTable": [
+        {
+            "roll": "2-5",
+            "label": "New Skill",
+            "result": "new-skill"
+        },
+        {
+            "roll": "6",
+            "label": "+1 Strength or Attack",
+            "result": "characteristic-choice",
+            "options": ["S", "A"]
+        },
+        {
+            "roll": "7",
+            "label": "+1 Weapon Skill or Ballistic Skill",
+            "result": "characteristic-choice",
+            "options": ["WS", "BS"]
+        },
+        {
+            "roll": "8",
+            "label": "+1 Initiative or Leadership",
+            "result": "characteristic-choice",
+            "options": ["I", "Ld"]
+        },
+        {
+            "roll": "9",
+            "label": "+1 Wound or Toughness",
+            "result": "characteristic-choice",
+            "options": ["W", "T"]
+        },
+        {
+            "roll": "10-12",
+            "label": "New Skill",
+            "result": "new-skill"
+        }
+    ],
+
+    "henchmanTable": [
+        {
+            "roll": "2-4",
+            "label": "+1 Initiative",
+            "result": "characteristic",
+            "stat": "I"
+        },
+        {
+            "roll": "5",
+            "label": "+1 Strength",
+            "result": "characteristic",
+            "stat": "S"
+        },
+        {
+            "roll": "6-7",
+            "label": "+1 Weapon Skill or Ballistic Skill",
+            "result": "characteristic-choice",
+            "options": ["WS", "BS"]
+        },
+        {
+            "roll": "8",
+            "label": "+1 Attack",
+            "result": "characteristic",
+            "stat": "A"
+        },
+        {
+            "roll": "9",
+            "label": "+1 Leadership",
+            "result": "characteristic",
+            "stat": "Ld"
+        },
+        {
+            "roll": "10-12",
+            "label": "Lad's Got Talent - Promote to Hero",
+            "result": "promote-to-hero",
+            "note": "A Henchman may only receive each characteristic improvement once - see the rulebook's Henchmen advance rules."
+        }
+    ]
+}
