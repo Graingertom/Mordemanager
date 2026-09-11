@@ -433,10 +433,6 @@ function renderFighterEquipmentDetail(equipmentId) {
         `;
     }
 
-    const traits = Array.isArray(item.traits)
-        ? item.traits
-        : [];
-
     return `
 
         <button
@@ -454,20 +450,6 @@ function renderFighterEquipmentDetail(equipmentId) {
                 <strong>
                     ${escapeHtml(item.name)}
                 </strong>
-
-                ${
-                    traits.length
-                        ? `
-                            <div class="mm-trait-list">
-
-                                ${traits
-                                    .map(renderTraitButton)
-                                    .join("")}
-
-                            </div>
-                        `
-                        : ""
-                }
 
             </div>
 

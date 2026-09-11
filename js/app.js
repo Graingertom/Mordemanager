@@ -767,9 +767,7 @@ Object.assign(
 
         closeGame,
 
-        showEquipment,
-
-        showTrait
+        showEquipment
 
     }
 );

@@ -1,6 +1,6 @@
 /* ============================================================
    MORDEMANAGER
-   Equipment & Traits
+   Equipment
    ============================================================ */
 
 
@@ -72,27 +72,6 @@ function getEquipment(id) {
 
 
 /* ============================================================
-   GET TRAIT
-   ============================================================ */
-
-function getTrait(id) {
-
-    if (!id) {
-
-        return null;
-
-    }
-
-
-    return state.equipment
-        ?.traits
-        ?.[id]
-        || null;
-
-}
-
-
-/* ============================================================
    RENDER EQUIPMENT TAG
    ============================================================ */
 
@@ -121,11 +100,6 @@ function renderEquipmentTag(
     }
 
 
-    const hasTraits =
-        Array.isArray(item.traits) &&
-        item.traits.length > 0;
-
-
     return `
 
         <button
@@ -140,22 +114,6 @@ function renderEquipmentTag(
             ${escapeHtml(
                 item.name
             )}
-
-            ${
-                hasTraits
-
-                ?
-
-                `
-                    <span class="mm-trait-dot">
-                        ●
-                    </span>
-                `
-
-                :
-
-                ""
-            }
 
         </button>
 
@@ -181,12 +139,6 @@ function showEquipment(
         return;
 
     }
-
-
-    const traits =
-        Array.isArray(item.traits)
-            ? item.traits
-            : [];
 
 
     const canGoBack =
@@ -431,215 +383,7 @@ function showEquipment(
                 }
 
 
-                ${
-                    traits.length
-
-                    ?
-
-                    `
-
-                        <div class="mm-rule-block">
-
-                            <h3>
-                                Traits
-                            </h3>
-
-                            <div class="mm-trait-list">
-
-                                ${traits
-                                    .map(
-                                        renderTraitButton
-                                    )
-                                    .join("")}
-
-                            </div>
-
-                        </div>
-
-                    `
-
-                    :
-
-                    ""
-                }
-
-
                 ${renderSourceInformation(item)}
-
-            </div>
-
-        </div>
-
-    `);
-
-}
-
-
-/* ============================================================
-   TRAIT BUTTON
-   ============================================================ */
-
-function renderTraitButton(
-    traitId
-) {
-
-    const trait =
-        getTrait(traitId);
-
-
-    if (!trait) {
-
-        return `
-
-            <span class="mm-trait">
-
-                ${escapeHtml(
-                    traitId
-                )}
-
-            </span>
-
-        `;
-
-    }
-
-
-    return `
-
-        <button
-            class="mm-trait"
-            onclick="
-                showTrait(
-                    '${escapeAttribute(traitId)}'
-                )
-            "
-        >
-
-            ${escapeHtml(
-                trait.name
-            )}
-
-        </button>
-
-    `;
-
-}
-
-
-/* ============================================================
-   TRAIT MODAL
-   ============================================================ */
-
-function showTrait(
-    id
-) {
-
-    const trait =
-        getTrait(id);
-
-
-    if (!trait) {
-
-        return;
-
-    }
-
-
-    const canGoBack =
-        modalCanGoBack();
-
-
-    pushModal(`
-
-        <div class="mm-modal">
-
-            <div class="mm-modal-header">
-
-                <div>
-
-                    ${
-                        canGoBack
-                            ? `
-                                <button
-                                    class="mm-back-button mm-modal-back"
-                                    onclick="goBackModal()"
-                                >
-                                    ← Back
-                                </button>
-                            `
-                            : ""
-                    }
-
-                    <h2>
-
-                        ${escapeHtml(
-                            trait.name
-                        )}
-
-                    </h2>
-
-                </div>
-
-
-                <button
-                    class="mm-modal-close"
-                    onclick="closeModal()"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <div class="mm-modal-body">
-
-                ${
-                    trait.summary
-
-                    ?
-
-                    `
-                        <p class="mm-rule-description">
-
-                            ${escapeHtml(
-                                trait.summary
-                            )}
-
-                        </p>
-                    `
-
-                    :
-
-                    ""
-                }
-
-
-                ${
-                    trait.description
-
-                    ?
-
-                    `
-                        <div class="mm-rule-block">
-
-                            <p class="mm-rule-description">
-
-                                ${escapeHtml(
-                                    trait.description
-                                )}
-
-                            </p>
-
-                        </div>
-                    `
-
-                    :
-
-                    ""
-                }
-
-
-                ${renderSourceInformation(trait)}
 
             </div>
 
@@ -698,15 +442,9 @@ Object.assign(
 
         getEquipment,
 
-        getTrait,
-
         renderEquipmentTag,
 
         showEquipment,
-
-        renderTraitButton,
-
-        showTrait,
 
         calculateEquipmentCost
 

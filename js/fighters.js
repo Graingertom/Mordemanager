@@ -1636,14 +1636,6 @@ function renderEquipmentCheckbox(
         );
 
 
-    const traits =
-        Array.isArray(
-            item.traits
-        )
-            ? item.traits
-            : [];
-
-
     return `
 
         <label
@@ -1714,47 +1706,6 @@ function renderEquipmentCheckbox(
                 }
 
             </span>
-
-
-            ${
-                traits.length
-
-                    ? `
-
-                        <span class="mm-equipment-traits">
-
-                            ${traits
-                                .map(
-                                    traitId => {
-
-                                        const trait =
-                                            getTrait(
-                                                traitId
-                                            );
-
-
-                                        return `
-
-                                            <span
-                                                class="mm-mini-trait"
-                                            >
-                                                ${escapeHtml(
-                                                    trait?.name ||
-                                                    traitId
-                                                )}
-                                            </span>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")}
-
-                        </span>
-
-                    `
-                    : ""
-            }
 
         </label>
 

@@ -1407,43 +1407,21 @@ a {
     padding-right: 4px;
 }
 
-.mm-equipment-traits {
-    display: flex;
-    flex-wrap: wrap;
-
-    gap: 6px;
-
-    margin-top: 8px;
-}
-
-.mm-mini-trait {
-    display: inline-flex;
-
-    padding: 2px 8px;
-
-    border: 1px solid var(--border);
-    border-radius: 20px;
-
-    background: rgba(0, 0, 0, .2);
-
-    color: var(--muted);
-
-    font-size: 11px;
-}
-
-
 /* ============================================================
-   RULE / TRAIT / SKILL CHIPS
+   EQUIPMENT / SKILL CHIPS
 
-   .mm-equipment-tag, .mm-skill-tag and .mm-trait are the same
-   clickable pill shape everywhere they appear (fighter cards,
-   the equipment/skill detail rows) - shared here instead of
-   redefined three times.
+   .mm-equipment-tag and .mm-skill-tag are the same clickable
+   pill shape everywhere they appear (fighter cards, the skills
+   list) - shared here instead of redefined twice. Equipment used
+   to carry a separate "traits" system alongside its weapon/armour
+   special-rules text, which just duplicated the same information
+   in two conflicting places - removed, keeping the special-rules
+   text as the single source (matches Mordheim's own "Special
+   Rules" terminology, confirmed against Broheim's rules text).
    ============================================================ */
 
 .mm-equipment-tag,
-.mm-skill-tag,
-.mm-trait {
+.mm-skill-tag {
     display: inline-flex;
 
     align-items: center;
@@ -1468,17 +1446,10 @@ a {
 }
 
 .mm-equipment-tag:hover,
-.mm-skill-tag:hover,
-.mm-trait:hover {
+.mm-skill-tag:hover {
     border-color: var(--gold);
 
     background: var(--panel-hover);
-}
-
-.mm-trait-dot {
-    color: var(--gold-light);
-
-    font-size: 8px;
 }
 
 .mm-trait-list {
