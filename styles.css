@@ -731,6 +731,28 @@ a {
         var(--success, #5aa868);
 }
 
+.mm-badge-danger {
+    background:
+        rgba(169, 75, 66, .16);
+
+    border-color:
+        rgba(169, 75, 66, .45);
+
+    color:
+        var(--danger-light);
+}
+
+.mm-badge-muted {
+    background:
+        rgba(255, 255, 255, .04);
+
+    border-color:
+        var(--border-light);
+
+    color:
+        var(--muted);
+}
+
 
 /* ============================================================
    WARBAND / FIGHTER CARDS

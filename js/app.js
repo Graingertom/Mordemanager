@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 6;
+const DATA_VERSION = 7;
 
 const DATA_PATHS = {
 
@@ -86,6 +86,10 @@ const state = {
      */
 
     showRetiredWarbands: false,
+
+    showRetiredFighters: false,
+
+    showDeadFighters: false,
 
     /*
      * Minimal {id, name, owner, fighterCount} entries for
@@ -371,7 +375,9 @@ async function loadPlayerData() {
                 skills,
                 experience,
                 advances,
-                injuries
+                injuries,
+                status,
+                wounds
             `),
 
         supabaseClient
@@ -384,6 +390,7 @@ async function loadPlayerData() {
                 createdAt:created_at,
                 scenarioName:scenario_name,
                 scenarioDescription:scenario_description,
+                scenarioRound:scenario_round,
                 gameMaster:profiles(display_name)
             `),
 
@@ -498,7 +505,10 @@ async function loadPlayerData() {
                                 row.scenarioName || "",
 
                             description:
-                                row.scenarioDescription || ""
+                                row.scenarioDescription || "",
+
+                            round:
+                                Number(row.scenarioRound) || 1
 
                         }
 

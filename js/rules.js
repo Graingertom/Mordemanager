@@ -959,6 +959,73 @@ function calculateEffectiveProfile(
 }
 
 
+/*
+ * A fighter's wounds record (js/fighters.js writes it, keyed by
+ * game id) is only meaningful for the CURRENT battle - if it's
+ * missing, or its round doesn't match the game's current
+ * scenario_round (bumped only by "Start New Battle"), treat it as
+ * a fresh fighter at full Wounds rather than carrying over a
+ * result from a previous scenario. Single source of truth so the
+ * game-update modal and anywhere else that needs "is this fighter
+ * currently Out of Action" agree on the same answer.
+ */
+
+function getFighterWoundsState(
+    fighter,
+    gameId,
+    scenarioRound
+) {
+
+    const maxWounds =
+        Number(
+            calculateEffectiveProfile(fighter).W
+        ) || 1;
+
+
+    const stored =
+        fighter?.wounds?.[gameId];
+
+
+    if (
+        !stored ||
+        stored.round !== scenarioRound
+    ) {
+
+        return {
+
+            remaining:
+                maxWounds,
+
+            max:
+                maxWounds,
+
+            outOfAction:
+                false
+
+        };
+
+    }
+
+
+    return {
+
+        remaining:
+            Math.max(
+                0,
+                Number(stored.remaining) || 0
+            ),
+
+        max:
+            maxWounds,
+
+        outOfAction:
+            stored.outOfAction === true
+
+    };
+
+}
+
+
 /* ============================================================
    ADVANCES (EXPERIENCE THRESHOLDS)
    ============================================================ */
@@ -1467,17 +1534,40 @@ function calculateFighterCost(
    WARBAND VALUE
    ============================================================ */
 
+/*
+ * A dead or retired fighter no longer represents part of the
+ * warband as fielded - excluded from rating/value/experience the
+ * same way a retired warband already drops out of dashboard
+ * totals. Still fully present in warband.fighters (never deleted
+ * for 'dead', optionally for 'retired') - this only affects what
+ * counts, not what's stored.
+ */
+
+function isActiveFighter(
+    fighter
+) {
+
+    return (
+        fighter?.status !== "dead" &&
+        fighter?.status !== "retired"
+    );
+
+}
+
+
 function calculateWarbandValue(
     warband,
     equipmentData
 ) {
 
     const fighters =
-        Array.isArray(
-            warband?.fighters
-        )
-            ? warband.fighters
-            : [];
+        (
+            Array.isArray(
+                warband?.fighters
+            )
+                ? warband.fighters
+                : []
+        ).filter(isActiveFighter);
 
 
     const fighterValue =
@@ -1528,11 +1618,13 @@ function calculateExperience(
 ) {
 
     const fighters =
-        Array.isArray(
-            warband?.fighters
-        )
-            ? warband.fighters
-            : [];
+        (
+            Array.isArray(
+                warband?.fighters
+            )
+                ? warband.fighters
+                : []
+        ).filter(isActiveFighter);
 
 
     return fighters.reduce(
@@ -2412,6 +2504,10 @@ return {
     findInjury,
 
     calculateEffectiveProfile,
+
+    getFighterWoundsState,
+
+    isActiveFighter,
 
     getAdvancesUsed,
 

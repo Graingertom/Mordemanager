@@ -63,7 +63,10 @@ function normaliseGames(games) {
                         game.scenario?.name || "",
 
                     description:
-                        game.scenario?.description || ""
+                        game.scenario?.description || "",
+
+                    round:
+                        Number(game.scenario?.round) || 1
 
                 }
 
@@ -804,12 +807,23 @@ function renderGamePage() {
                         ${
                             isGameMaster(game)
                                 ? `
-                                    <button
-                                        class="mm-button"
-                                        onclick="showEditScenario('${escapeAttribute(game.id)}')"
-                                    >
-                                        Edit Scenario
-                                    </button>
+                                    <div class="mm-header-actions">
+
+                                        <button
+                                            class="mm-button"
+                                            onclick="showEditScenario('${escapeAttribute(game.id)}')"
+                                        >
+                                            Edit Scenario
+                                        </button>
+
+                                        <button
+                                            class="mm-button mm-button-primary"
+                                            onclick="showStartNewBattle('${escapeAttribute(game.id)}')"
+                                        >
+                                            Start New Battle
+                                        </button>
+
+                                    </div>
                                 `
                                 : ""
                         }
@@ -979,6 +993,10 @@ function renderScenario(
 
         <div class="mm-scenario-card">
 
+            <span class="mm-badge">
+                Battle ${escapeHtml(scenario.round || 1)}
+            </span>
+
             <h3>
                 ${escapeHtml(
                     scenario.name
@@ -1147,7 +1165,10 @@ async function saveScenario(
             nameInput?.value.trim() || "",
 
         description:
-            descriptionInput?.value.trim() || ""
+            descriptionInput?.value.trim() || "",
+
+        round:
+            previousScenario.round
 
     };
 
@@ -1189,6 +1210,215 @@ async function saveScenario(
 
     closeModal();
 
+
+    renderApplication();
+
+}
+
+
+/*
+ * Separate from "Edit Scenario" deliberately - that stays a plain
+ * correction (fixing a typo doesn't mean a new battle happened),
+ * while this is the one deliberate trigger for "wounds reset now":
+ * bumping scenario_round is what getFighterWoundsState (js/rules.js)
+ * compares a fighter's stored wounds record against to tell a
+ * current battle from a stale one.
+ */
+
+function showStartNewBattle(
+    gameId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    openModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <h2>
+                    Start New Battle
+                </h2>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="mm-modal-body">
+
+                <p class="mm-muted">
+                    This resets every fighter's Wounds
+                    for this game back to full - use it
+                    once you're about to play (or have
+                    just played) a new battle, not for
+                    correcting the current scenario's
+                    details.
+                </p>
+
+                <label class="mm-field">
+
+                    <span>
+                        Scenario Name
+                    </span>
+
+                    <input
+                        id="start-battle-scenario-name"
+                        type="text"
+                        placeholder="Chance Encounter"
+                        value=""
+                    >
+
+                </label>
+
+
+                <label class="mm-field">
+
+                    <span>
+                        Description
+                    </span>
+
+                    <textarea
+                        id="start-battle-scenario-description"
+                        class="mm-textarea"
+                        rows="4"
+                    ></textarea>
+
+                </label>
+
+            </div>
+
+
+            <div class="mm-modal-footer">
+
+                <button
+                    class="mm-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="mm-button mm-button-primary"
+                    onclick="startNewBattle('${escapeAttribute(gameId)}')"
+                >
+                    Start New Battle
+                </button>
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+async function startNewBattle(
+    gameId
+) {
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === gameId
+        );
+
+
+    if (!game) {
+
+        return;
+
+    }
+
+
+    const nameInput =
+        document.getElementById(
+            "start-battle-scenario-name"
+        );
+
+    const descriptionInput =
+        document.getElementById(
+            "start-battle-scenario-description"
+        );
+
+
+    const previousScenario =
+        { ...game.scenario };
+
+
+    game.scenario = {
+
+        name:
+            nameInput?.value.trim() || "",
+
+        description:
+            descriptionInput?.value.trim() || "",
+
+        round:
+            previousScenario.round + 1
+
+    };
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("games")
+            .update({
+
+                scenario_name:
+                    game.scenario.name,
+
+                scenario_description:
+                    game.scenario.description,
+
+                scenario_round:
+                    game.scenario.round
+
+            })
+            .eq(
+                "id",
+                gameId
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to start new battle: " +
+            error.message
+        );
+
+        game.scenario =
+            previousScenario;
+
+        return;
+
+    }
+
+
+    closeModal();
 
     renderApplication();
 

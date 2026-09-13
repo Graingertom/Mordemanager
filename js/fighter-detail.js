@@ -493,13 +493,21 @@ function renderFighterInjury(injury) {
 
 
     /*
-     * Clickable when there's an id to look up the canonical rules
-     * text for (roll range, full description, source) - a plain
-     * row otherwise, same fallback as renderFighterEquipmentDetail.
+     * Clickable only when the id actually resolves against the
+     * master Serious Injuries list - a Henchman's simple Out of
+     * Action outcome (see recordHenchmanOutcome, fighters.js) uses
+     * its own synthetic ids that aren't in that chart, so it stays
+     * a plain row rather than a button that would silently do
+     * nothing when clicked. Otherwise clickable to look up the
+     * canonical rules text (roll range, full description, source),
+     * same fallback pattern as renderFighterEquipmentDetail.
      */
 
     const tag =
-        injury.id
+        RulesEngine.findInjury(
+            injury.id,
+            state.injuries
+        )
             ? "button"
             : "div";
 

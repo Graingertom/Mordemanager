@@ -7,6 +7,13 @@
         "note": "The Heroes' Serious Injuries (D66) table, verified against the actual PDF text (pages 80-81) rather than a secondary extract - see sourcePage on each entry."
     },
 
+    "henchmanOutOfAction": {
+        "removedRoll": "1-2",
+        "fineRoll": "3-6",
+        "description": "Henchmen who are out of action at the end of the battle are removed permanently from the roster on a D6 roll of 1-2 - severely injured, died of wounds, or decided to quit. On a 3-6 they fight the next battle as normal.",
+        "sourcePage": 79
+    },
+
     "injuries": [
         {
             "id": "dead",

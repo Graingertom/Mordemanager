@@ -236,7 +236,21 @@ function normaliseFighter(
                 fighter.advances
             )
                 ? fighter.advances
-                : []
+                : [],
+
+
+        status:
+            fighter.status === "retired" ||
+            fighter.status === "dead"
+                ? fighter.status
+                : "active",
+
+
+        wounds:
+            fighter.wounds &&
+            typeof fighter.wounds === "object"
+                ? fighter.wounds
+                : {}
 
     };
 
@@ -752,8 +766,74 @@ function renderFighters(warband) {
     }
 
 
-    const heroes =
+    const activeFighters =
         warband.fighters.filter(
+            fighter =>
+                fighter.status === "active"
+        );
+
+    const retiredFighters =
+        warband.fighters.filter(
+            fighter =>
+                fighter.status === "retired"
+        );
+
+    const deadFighters =
+        warband.fighters.filter(
+            fighter =>
+                fighter.status === "dead"
+        );
+
+
+    const activeSection =
+        activeFighters.length
+            ? renderFighterCategoryGroups(
+                activeFighters
+            )
+            : `
+                <p class="mm-muted">
+                    No active fighters.
+                </p>
+            `;
+
+
+    return `
+
+        ${activeSection}
+
+        ${renderFighterStatusToggle(
+            "showRetiredFighters",
+            "Retired",
+            retiredFighters,
+            "toggleShowRetiredFighters"
+        )}
+
+        ${renderFighterStatusToggle(
+            "showDeadFighters",
+            "Dead",
+            deadFighters,
+            "toggleShowDeadFighters"
+        )}
+
+    `;
+
+}
+
+
+/*
+ * Heroes/Henchmen grouping, shared between the active list here
+ * and either "Show Retired/Dead Fighters" panel below - dead and
+ * retired fighters still deserve the same grouping, not a flat
+ * dump, so this is the same split renderFighters always used,
+ * just reusable now.
+ */
+
+function renderFighterCategoryGroups(
+    fighters
+) {
+
+    const heroes =
+        fighters.filter(
             fighter =>
                 fighter.category ===
                 "hero"
@@ -761,7 +841,7 @@ function renderFighters(warband) {
 
 
     const henchmen =
-        warband.fighters.filter(
+        fighters.filter(
             fighter =>
                 fighter.category ===
                 "henchman"
@@ -828,6 +908,76 @@ function renderFighters(warband) {
 }
 
 
+/*
+ * Same "Show/Hide X (N)" toggle-and-reveal pattern already used
+ * for retired warbands (warbands.js's renderWarbandCards) - two
+ * independent instances here since dead and retired are separate
+ * things worth filtering separately.
+ */
+
+function renderFighterStatusToggle(
+    stateKey,
+    label,
+    fighters,
+    toggleFunctionName
+) {
+
+    if (!fighters.length) {
+
+        return "";
+
+    }
+
+
+    return `
+
+        <div class="mm-retired-toggle">
+
+            <button
+                class="mm-button mm-button-small"
+                onclick="${toggleFunctionName}()"
+            >
+                ${state[stateKey] ? "Hide" : "Show"}
+                ${escapeHtml(label)} Fighters
+                (${fighters.length})
+            </button>
+
+        </div>
+
+
+        ${
+            state[stateKey]
+                ? renderFighterCategoryGroups(fighters)
+                : ""
+        }
+
+    `;
+
+}
+
+
+function toggleShowRetiredFighters() {
+
+    state.showRetiredFighters =
+        !state.showRetiredFighters;
+
+
+    renderApplication();
+
+}
+
+
+function toggleShowDeadFighters() {
+
+    state.showDeadFighters =
+        !state.showDeadFighters;
+
+
+    renderApplication();
+
+}
+
+
 /* ============================================================
    RENDER SINGLE FIGHTER
    ============================================================ */
@@ -861,6 +1011,20 @@ function renderFighter(fighter) {
                             fighter.category
                         )}
                     </span>
+
+                    ${
+                        fighter.status !== "active"
+                            ? `
+                                <span class="mm-badge mm-badge-${
+                                    fighter.status === "dead"
+                                        ? "danger"
+                                        : "muted"
+                                }">
+                                    ${fighter.status === "dead" ? "Dead" : "Retired"}
+                                </span>
+                            `
+                            : ""
+                    }
 
 
                     <button
@@ -995,24 +1159,45 @@ function renderFighter(fighter) {
 
                 <div>
 
-                    <button
-                        class="mm-button mm-button-small"
-                        onclick="showEditFighter('${escapeAttribute(fighter.id)}')"
-                    >
-                        Edit
-                    </button>
+                    ${
+                        fighter.status === "dead"
+                            ? ""
+                            : fighter.status === "retired"
+                                ? `
+                                    <button
+                                        class="mm-button mm-button-small mm-button-primary"
+                                        onclick="recoverFighter('${escapeAttribute(fighter.id)}')"
+                                    >
+                                        Recover
+                                    </button>
 
+                                    <button
+                                        class="
+                                            mm-button
+                                            mm-button-small
+                                            mm-button-danger
+                                        "
+                                        onclick="deleteFighter('${escapeAttribute(fighter.id)}')"
+                                    >
+                                        Remove
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        class="mm-button mm-button-small"
+                                        onclick="showEditFighter('${escapeAttribute(fighter.id)}')"
+                                    >
+                                        Edit
+                                    </button>
 
-                    <button
-                        class="
-                            mm-button
-                            mm-button-small
-                            mm-button-danger
-                        "
-                        onclick="deleteFighter('${escapeAttribute(fighter.id)}')"
-                    >
-                        Remove
-                    </button>
+                                    <button
+                                        class="mm-button mm-button-small"
+                                        onclick="retireFighter('${escapeAttribute(fighter.id)}')"
+                                    >
+                                        Retire
+                                    </button>
+                                `
+                    }
 
                 </div>
 
@@ -1082,11 +1267,12 @@ function renderFighterGameCard(
                             ? fighter.injuries
                                 .map(
                                     injury =>
-                                        renderInjuryTag(
-                                            typeof injury === "string"
-                                                ? injury
-                                                : injury.id
-                                        )
+                                        typeof injury === "string"
+                                            ? renderInjuryTag(injury)
+                                            : renderInjuryTag(
+                                                injury.id,
+                                                injury.name
+                                            )
                                 )
                                 .join("")
                             : `<span class="mm-muted">None recorded</span>`
@@ -1563,6 +1749,23 @@ function showFighterGameUpdate(
     }
 
 
+    const game =
+        state.games.find(
+            item =>
+                item.id === state.returnToGameId
+        );
+
+
+    const woundsState =
+        game
+            ? RulesEngine.getFighterWoundsState(
+                fighter,
+                game.id,
+                game.scenario.round
+            )
+            : null;
+
+
     /*
      * Safe to call this again for the SAME fighter mid-session
      * (e.g. right after recording an advance) without losing
@@ -1672,6 +1875,25 @@ function showFighterGameUpdate(
                 <section class="mm-editor-section">
 
                     <h3>
+                        Wounds
+                    </h3>
+
+
+                    <div id="fighter-wounds-section">
+
+                        ${renderWoundsSection(
+                            fighter,
+                            game
+                        )}
+
+                    </div>
+
+                </section>
+
+
+                <section class="mm-editor-section">
+
+                    <h3>
                         Advance
                     </h3>
 
@@ -1687,15 +1909,23 @@ function showFighterGameUpdate(
                 </section>
 
 
-                <section class="mm-editor-section">
+                <section
+                    class="mm-editor-section"
+                    id="fighter-injuries-section"
+                >
 
                     <h3>
                         Injuries
                     </h3>
 
-                    <p>
-                        Record what happened to this
-                        fighter after this game.
+                    <p
+                        class="mm-muted"
+                        id="fighter-injuries-intro"
+                    >
+                        ${renderInjuriesIntroText(
+                            woundsState?.outOfAction === true,
+                            isHero
+                        )}
                     </p>
 
 
@@ -1706,34 +1936,66 @@ function showFighterGameUpdate(
                     </div>
 
 
-                    <div class="mm-injury-add">
+                    ${
+                        isHero
+                            ? `
+                                <div class="mm-injury-add">
 
-                        <select
-                            id="new-injury-select"
-                        >
+                                    <select
+                                        id="new-injury-select"
+                                    >
 
-                            ${(state.injuries?.injuries || [])
-                                .map(
-                                    injury => `
-                                        <option value="${escapeAttribute(injury.id)}">
-                                            ${escapeHtml(injury.name)}
-                                            (${escapeHtml(injury.rollRange)})
-                                        </option>
-                                    `
-                                )
-                                .join("")}
+                                        ${(state.injuries?.injuries || [])
+                                            .map(
+                                                injury => `
+                                                    <option value="${escapeAttribute(injury.id)}">
+                                                        ${escapeHtml(injury.name)}
+                                                        (${escapeHtml(injury.rollRange)})
+                                                    </option>
+                                                `
+                                            )
+                                            .join("")}
 
-                        </select>
+                                    </select>
 
-                        <button
-                            type="button"
-                            class="mm-button"
-                            onclick="addInjuryToEditor()"
-                        >
-                            Add Injury
-                        </button>
+                                    <button
+                                        type="button"
+                                        class="mm-button"
+                                        onclick="addInjuryToEditor()"
+                                    >
+                                        Add Injury
+                                    </button>
 
-                    </div>
+                                </div>
+                            `
+                            : `
+                                <div class="mm-picker-actions">
+
+                                    <button
+                                        type="button"
+                                        class="mm-button mm-button-danger"
+                                        onclick="recordHenchmanOutcome('removed')"
+                                    >
+                                        Removed from Roster
+                                        (rolled ${escapeHtml(
+                                            state.injuries?.henchmanOutOfAction?.removedRoll || "1-2"
+                                        )})
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="mm-button"
+                                        onclick="recordHenchmanOutcome('fine')"
+                                    >
+                                        Fine, Fights On
+                                        (rolled ${escapeHtml(
+                                            state.injuries?.henchmanOutOfAction?.fineRoll || "3-6"
+                                        )})
+                                    </button>
+
+                                </div>
+                            `
+                    }
 
                 </section>
 
@@ -2017,6 +2279,408 @@ function refreshFighterGameUpdateProfile() {
 
         grid.innerHTML =
             renderFighterGameUpdateProfile();
+
+    }
+
+}
+
+
+/* ============================================================
+   WOUNDS
+
+   Unlike Injuries/Skills/Advances/XP below (staged, only written
+   on this modal's own Save), a recorded wound is persisted the
+   moment it happens - the same instant optimistic-update pattern
+   as retireFighter/retireWarband - since this is a moment-to-
+   moment "what's happening right now mid-battle" action that
+   needs to survive a closed browser before the battle report is
+   finished, not an end-of-battle summary. getFighterWoundsState
+   (js/rules.js) is what decides whether a stored value is for the
+   CURRENT battle (that game's scenario_round) or a stale one from
+   a previous scenario, resetting to full in the latter case.
+   ============================================================ */
+
+function refreshWoundsSection(
+    fighter,
+    game
+) {
+
+    const section =
+        document.getElementById(
+            "fighter-wounds-section"
+        );
+
+
+    if (section) {
+
+        section.innerHTML =
+            renderWoundsSection(
+                fighter,
+                game
+            );
+
+    }
+
+}
+
+
+function renderWoundsSection(
+    fighter,
+    game
+) {
+
+    if (!game) {
+
+        return `
+            <p class="mm-muted">
+                This warband isn't currently in a
+                game, so there's no battle to
+                track Wounds for.
+            </p>
+        `;
+
+    }
+
+
+    const wounds =
+        RulesEngine.getFighterWoundsState(
+            fighter,
+            game.id,
+            game.scenario.round
+        );
+
+
+    if (wounds.outOfAction) {
+
+        return `
+
+            <div class="mm-rule-stat">
+                <span>
+                    Wounds
+                </span>
+                <strong>
+                    0 / ${wounds.max}
+                </strong>
+            </div>
+
+            <p class="mm-muted">
+                Out of Action this battle - see
+                Injuries below.
+            </p>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div class="mm-rule-stat">
+            <span>
+                Wounds
+            </span>
+            <strong>
+                ${wounds.remaining} / ${wounds.max}
+            </strong>
+        </div>
+
+        <button
+            type="button"
+            class="mm-button"
+            onclick="recordFighterWound('${escapeAttribute(fighter.id)}')"
+        >
+            Record a Wound
+        </button>
+
+    `;
+
+}
+
+
+async function recordFighterWound(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === state.returnToGameId
+        );
+
+
+    if (
+        !fighter ||
+        !game
+    ) {
+
+        return;
+
+    }
+
+
+    const previous =
+        RulesEngine.getFighterWoundsState(
+            fighter,
+            game.id,
+            game.scenario.round
+        );
+
+
+    const nextRemaining =
+        Math.max(
+            0,
+            previous.remaining - 1
+        );
+
+
+    await persistFighterWounds(
+        fighter,
+        game,
+        {
+            remaining:
+                nextRemaining,
+
+            round:
+                game.scenario.round,
+
+            outOfAction:
+                false
+        }
+    );
+
+
+    if (nextRemaining > 0) {
+
+        refreshWoundsSection(
+            fighter,
+            game
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Wounds just hit zero - record what actually happened at the
+     * table rather than rolling it ourselves (the verified 1-2
+     * Knocked Down / 3-4 Stunned / 5-6 Out of Action chart already
+     * lives in combat.json, shown elsewhere as reference text -
+     * this is the one place it becomes something recorded).
+     */
+
+    const section =
+        document.getElementById(
+            "fighter-wounds-section"
+        );
+
+
+    if (section) {
+
+        section.innerHTML = `
+
+            <div class="mm-rule-stat">
+                <span>
+                    Wounds
+                </span>
+                <strong>
+                    0 / ${previous.max}
+                </strong>
+            </div>
+
+            <p class="mm-muted">
+                What happened when Wounds
+                reached zero?
+            </p>
+
+            <div class="mm-warband-select-list">
+
+                ${(state.combat?.outOfActionChart || [])
+                    .map(
+                        (row, index) => `
+                            <button
+                                type="button"
+                                class="mm-warband-select-option"
+                                onclick="selectOutOfActionResult('${escapeAttribute(fighter.id)}', ${index})"
+                            >
+                                <strong>
+                                    ${escapeHtml(row.label)}
+                                </strong>
+
+                                <span>
+                                    Roll ${escapeHtml(row.roll)}
+                                </span>
+                            </button>
+                        `
+                    )
+                    .join("")}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+async function selectOutOfActionResult(
+    fighterId,
+    index
+) {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+    const game =
+        state.games.find(
+            item =>
+                item.id === state.returnToGameId
+        );
+
+    const row =
+        (state.combat?.outOfActionChart || [])[index];
+
+
+    if (
+        !fighter ||
+        !game ||
+        !row
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * Knocked Down / Stunned are purely transient - the fighter
+     * gets back up before the post-battle report matters, so
+     * nothing further needs recording. Only Out of Action persists
+     * a flag, which is what unlocks the Injuries prompt below.
+     */
+
+    const isOutOfAction =
+        row.label === "Out of Action";
+
+
+    await persistFighterWounds(
+        fighter,
+        game,
+        {
+            remaining:
+                0,
+
+            round:
+                game.scenario.round,
+
+            outOfAction:
+                isOutOfAction
+        }
+    );
+
+
+    refreshWoundsSection(
+        fighter,
+        game
+    );
+
+
+    const injuriesIntro =
+        document.getElementById(
+            "fighter-injuries-intro"
+        );
+
+
+    if (injuriesIntro) {
+
+        injuriesIntro.textContent =
+            renderInjuriesIntroText(
+                isOutOfAction,
+                editingCategory === "hero"
+            );
+
+    }
+
+
+    if (isOutOfAction) {
+
+        const injuriesSection =
+            document.getElementById(
+                "fighter-injuries-section"
+            );
+
+
+        if (injuriesSection) {
+
+            injuriesSection.scrollIntoView({
+                block: "center",
+                behavior: "smooth"
+            });
+
+        }
+
+    }
+
+}
+
+
+async function persistFighterWounds(
+    fighter,
+    game,
+    entry
+) {
+
+    const previousWounds =
+        fighter.wounds;
+
+
+    fighter.wounds = {
+
+        ...fighter.wounds,
+
+        [game.id]:
+            entry
+
+    };
+
+
+    const { error } =
+        await supabaseClient
+            .from("fighters")
+            .update({
+                wounds: fighter.wounds
+            })
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to record wound: " +
+            error.message
+        );
+
+        fighter.wounds =
+            previousWounds;
 
     }
 
@@ -4534,7 +5198,7 @@ function confirmCombatCasualtyXP() {
 }
 
 
-function recordCombatWound() {
+async function recordCombatWound() {
 
     const fighterId =
         combatCalculatorFighterId;
@@ -4543,6 +5207,20 @@ function recordCombatWound() {
     closeCombatCalculator();
 
     showFighterGameUpdate(
+        fighterId
+    );
+
+
+    /*
+     * Actually decrements Wounds now, rather than just opening the
+     * Injuries section with nothing recorded yet - reuses the same
+     * immediate-persist action the Wounds section's own button
+     * calls, so a wound taken via the calculator behaves exactly
+     * like one recorded directly in the modal (including the
+     * Knocked Down/Stunned/Out of Action prompt if it hits zero).
+     */
+
+    await recordFighterWound(
         fighterId
     );
 
@@ -4729,7 +5407,8 @@ function setupFighterEquipmentValidation(
    ============================================================ */
 
 function renderInjuryTag(
-    injuryId
+    injuryId,
+    fallbackName
 ) {
 
     const injury =
@@ -4744,7 +5423,7 @@ function renderInjuryTag(
         return `
 
             <span class="mm-equipment-tag">
-                ${escapeHtml(injuryId)}
+                ${escapeHtml(fallbackName || injuryId)}
             </span>
 
         `;
@@ -5011,6 +5690,94 @@ function addInjuryToEditor() {
             new Date().toISOString()
 
     });
+
+
+    const list =
+        document.getElementById(
+            "fighter-injuries-list"
+        );
+
+
+    if (list) {
+
+        list.innerHTML =
+            renderInjuriesEditorList();
+
+    }
+
+}
+
+
+function renderInjuriesIntroText(
+    outOfAction,
+    isHero
+) {
+
+    return outOfAction
+        ? `Out of Action this battle - ${
+            isHero
+                ? "roll on the Serious Injuries chart below."
+                : "record the Henchman check below."
+        }`
+        : "Only a fighter who ends the battle Out of Action rolls for injuries - use this only if you already know the result.";
+
+}
+
+
+/*
+ * A Henchman's Out of Action check (rulebook p79, verified) is a
+ * simple D6, not the Hero D66 chart above - "removed" is what
+ * saveFighterGameUpdate looks for to set status: 'dead', matching
+ * how a Hero's literal "Dead" injury does the same. Replaces any
+ * previous henchman-outcome entry rather than stacking duplicates,
+ * since only one result is meaningful per game.
+ */
+
+function recordHenchmanOutcome(
+    outcome
+) {
+
+    editingInjuries =
+        editingInjuries.filter(
+            injury =>
+                injury.id !== "henchman-removed" &&
+                injury.id !== "henchman-fine"
+        );
+
+
+    editingInjuries.push(
+        outcome === "removed"
+            ? {
+
+                id:
+                    "henchman-removed",
+
+                name:
+                    "Removed from Roster",
+
+                description:
+                    state.injuries?.henchmanOutOfAction?.description || "",
+
+                date:
+                    new Date().toISOString()
+
+            }
+            : {
+
+                id:
+                    "henchman-fine",
+
+                name:
+                    "Fine, Fights On",
+
+                description:
+                    "Rolled 3-6 on the Henchman Out of Action check - no lasting effect.",
+
+                date:
+                    new Date().toISOString()
+
+            }
+    );
 
 
     const list =
@@ -5685,6 +6452,9 @@ async function saveFighterGameUpdate(
     const previousAdvances =
         [...(fighter.advances || [])];
 
+    const previousStatus =
+        fighter.status;
+
 
     fighter.injuries =
         [...editingInjuries];
@@ -5702,6 +6472,38 @@ async function saveFighterGameUpdate(
 
     fighter.advances =
         [...editingAdvances];
+
+
+    /*
+     * The one Hero Serious Injury result and the one Henchman Out
+     * of Action result that actually remove a fighter from the
+     * roster (both verified - see the rulebook text quoted in
+     * recordHenchmanOutcome and the "dead" injury's own
+     * description) - every other result stays exactly what it's
+     * always been, an informational tag with no status change.
+     */
+
+    const removalRecorded =
+        editingCategory === "hero"
+            ? editingInjuries.some(
+                injury =>
+                    injury.id === "dead"
+            )
+            : editingInjuries.some(
+                injury =>
+                    injury.id === "henchman-removed"
+            );
+
+
+    if (
+        removalRecorded &&
+        fighter.status === "active"
+    ) {
+
+        fighter.status =
+            "dead";
+
+    }
 
 
     const xpInput =
@@ -5746,7 +6548,10 @@ async function saveFighterGameUpdate(
                     fighter.category,
 
                 advances:
-                    fighter.advances
+                    fighter.advances,
+
+                status:
+                    fighter.status
 
             })
             .eq(
@@ -5780,6 +6585,9 @@ async function saveFighterGameUpdate(
 
         fighter.advances =
             previousAdvances;
+
+        fighter.status =
+            previousStatus;
 
         return;
 
@@ -6021,6 +6829,139 @@ function getAvailableEquipment(
 
 
 /* ============================================================
+   RETIRE / RECOVER FIGHTER
+
+   Same soft-status pattern as retireWarband/recoverWarband
+   (warbands.js) - a manual, reversible way to get a fighter off
+   the active roster (a recruiting mistake, or simply not fielding
+   them for now) without the financial refund/stash side effects
+   that deleteFighter below has. Retiring is what makes a fighter
+   eligible for that permanent delete afterwards.
+   ============================================================ */
+
+async function retireFighter(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const previousStatus =
+        fighter.status;
+
+
+    fighter.status =
+        "retired";
+
+
+    const { error } =
+        await supabaseClient
+            .from("fighters")
+            .update({
+                status: "retired"
+            })
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to retire fighter: " +
+            error.message
+        );
+
+        fighter.status =
+            previousStatus;
+
+        return;
+
+    }
+
+
+    renderApplication();
+
+}
+
+
+async function recoverFighter(
+    fighterId
+) {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        warband?.fighters.find(
+            item =>
+                item.id === fighterId
+        );
+
+
+    if (!fighter) {
+
+        return;
+
+    }
+
+
+    const previousStatus =
+        fighter.status;
+
+
+    fighter.status =
+        "active";
+
+
+    const { error } =
+        await supabaseClient
+            .from("fighters")
+            .update({
+                status: "active"
+            })
+            .eq(
+                "id",
+                fighter.id
+            );
+
+
+    if (error) {
+
+        alert(
+            "Unable to recover fighter: " +
+            error.message
+        );
+
+        fighter.status =
+            previousStatus;
+
+        return;
+
+    }
+
+
+    renderApplication();
+
+}
+
+
+/* ============================================================
    DELETE FIGHTER
    ============================================================ */
 
@@ -6057,6 +6998,20 @@ function deleteFighter(
 
 
     if (!fighter) {
+
+        return;
+
+    }
+
+
+    /*
+     * A dead fighter is permanent history (see the plan this was
+     * built from) - the roster card never renders this button for
+     * one, but guard here too in case it's ever called some other
+     * way.
+     */
+
+    if (fighter.status === "dead") {
 
         return;
 
