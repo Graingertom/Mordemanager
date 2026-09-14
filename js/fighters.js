@@ -4553,6 +4553,46 @@ function getCombatCalculatorFighter() {
 }
 
 
+/*
+ * Looked up separately from the fighter record itself since only
+ * the warband's definition knows whether this fighter type is a
+ * wizard (and which spell list it draws from) - used to decide
+ * whether the "Cast a Spell" reference shows up alongside the
+ * weapon picker.
+ */
+
+function getCombatCalculatorFighterType() {
+
+    const warband =
+        getCurrentWarband();
+
+    const fighter =
+        getCombatCalculatorFighter();
+
+
+    if (!warband || !fighter) {
+
+        return null;
+
+    }
+
+
+    const definition =
+        state.warbandDefinitions[
+            warband.type
+        ];
+
+
+    return (
+        definition?.fighterTypes?.find(
+            type =>
+                type.id === fighter.type
+        ) || null
+    );
+
+}
+
+
 function getCombatCalculatorGame() {
 
     return (
@@ -4679,7 +4719,7 @@ function showCombatCalculator(
                 id="combat-calc-body"
             >
 
-                ${renderCombatCalculatorMyWeaponStep(
+                ${renderCombatCalculatorEntryStep(
                     fighter
                 )}
 
@@ -4739,6 +4779,63 @@ function renderWeaponRangeLabel(
 }
 
 
+/*
+ * The entry step every Combat Calculator session starts on - the
+ * weapon picker (renderCombatCalculatorMyWeaponStep), plus, for a
+ * wizard, a "Cast a Spell" reference alongside it. Casting isn't
+ * folded into the weapon/opponent/results flow below because spell
+ * effects are too varied to resolve generically (heal, damage,
+ * movement, buffs...) - it's a rules lookup only, same "shows the
+ * numbers, never rolls, never applies the effect" boundary as the
+ * rest of this calculator.
+ */
+
+function renderCombatCalculatorEntryStep(
+    fighter
+) {
+
+    const fighterType =
+        getCombatCalculatorFighterType();
+
+    const weaponStep =
+        renderCombatCalculatorMyWeaponStep(
+            fighter
+        );
+
+
+    if (!fighterType?.wizard) {
+
+        return weaponStep;
+
+    }
+
+
+    return `
+
+        ${weaponStep}
+
+
+        <div class="mm-combat-calc-spell-entry">
+
+            <p class="mm-muted">
+                Or, instead of fighting -
+            </p>
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="showCombatCalculatorSpellStep()"
+            >
+                Cast a Spell
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
 function renderCombatCalculatorMyWeaponStep(
     fighter
 ) {
@@ -4754,12 +4851,18 @@ function renderCombatCalculatorMyWeaponStep(
 
     if (!weapons.length) {
 
+        const fighterType =
+            getCombatCalculatorFighterType();
+
         return `
 
             <p class="mm-muted">
                 ${escapeHtml(fighter.name)} has no
-                weapon equipped, so there's nothing
-                to calculate.
+                weapon equipped${
+                    fighterType?.wizard
+                        ? ""
+                        : ", so there's nothing to calculate."
+                }
             </p>
 
         `;
@@ -4816,6 +4919,158 @@ function selectCombatCalculatorMyWeapon(
     refreshCombatCalculatorBody(
         renderCombatCalculatorOpponentWarbandStep()
     );
+
+}
+
+
+/* ============================================================
+   COMBAT CALCULATOR - CAST A SPELL
+
+   A reference screen only - lists this fighter's known spells
+   with their Difficulty and full effect text. The actual 2D6 roll
+   happens at the table; nothing here is applied automatically, the
+   same boundary as the rest of the Combat Calculator. If the spell
+   causes a wound, record it the normal way (Fighter Game Update's
+   Injuries section) once it resolves.
+   ============================================================ */
+
+function showCombatCalculatorSpellStep() {
+
+    const fighter =
+        getCombatCalculatorFighter();
+
+    const fighterType =
+        getCombatCalculatorFighterType();
+
+
+    if (!fighter || !fighterType?.wizard) {
+
+        return;
+
+    }
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorSpellStep(
+            fighter,
+            fighterType
+        )
+    );
+
+}
+
+
+function renderCombatCalculatorSpellStep(
+    fighter,
+    fighterType
+) {
+
+    const wizardType =
+        fighterType.wizard;
+
+    const spellList =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.getSpellList === "function"
+            ? RulesEngine.getSpellList(
+                wizardType,
+                state.magic
+            )
+            : [];
+
+    const known =
+        (fighter.spells || [])
+            .map(
+                roll =>
+                    spellList.find(
+                        spell =>
+                            spell.roll === roll
+                    )
+            )
+            .filter(Boolean);
+
+
+    const castingRules =
+        state.magic?.castingRules?.description;
+
+
+    return `
+
+        <p class="mm-muted">
+            ${escapeHtml(fighter.name)}'s known spells.
+            Roll 2D6 and compare to the Difficulty at the
+            table - nothing here is applied automatically.
+        </p>
+
+
+        ${
+            castingRules
+                ? `
+                    <div class="mm-rule-description">
+                        ${formatRuleText(castingRules)}
+                    </div>
+                `
+                : ""
+        }
+
+
+        ${
+            known.length
+                ? `
+                    <ul class="mm-injury-list">
+
+                        ${known
+                            .map(
+                                spell => `
+
+                                    <li>
+
+                                        <span>
+
+                                            <strong>
+                                                ${escapeHtml(spell.name)}
+                                            </strong>
+
+                                            <small>
+                                                Difficulty ${spell.difficulty}+
+                                            </small>
+
+                                            <p class="mm-skill-description">
+                                                ${escapeHtml(spell.effect)}
+                                            </p>
+
+                                        </span>
+
+                                    </li>
+
+                                `
+                            )
+                            .join("")}
+
+                    </ul>
+                `
+                : `
+                    <p class="mm-muted">
+                        No spells recorded yet for
+                        ${escapeHtml(fighter.name)} -
+                        add one from Edit Fighter first.
+                    </p>
+                `
+        }
+
+
+        <div class="mm-picker-actions">
+
+            <button
+                type="button"
+                class="mm-button"
+                onclick="refreshCombatCalculatorBody(renderCombatCalculatorEntryStep(getCombatCalculatorFighter()))"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+    `;
 
 }
 
