@@ -628,6 +628,23 @@
             "special": "A model using a Short Bow, Bow, Long Bow or Elf Bow may use these arrows - they add +1 to all Injury rolls the weapon causes. The core rulebook prices this at a variable 25 + 1D6 gc; this app only supports a flat cost, so it uses the flat 35 gc the Halfling warband list itself prints.",
             "sourcePage": null,
             "source": "mordheim-core"
+        },
+
+        {
+            "id": "dwarf-axe",
+            "name": "Dwarf Axe",
+            "category": "close-combat",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "rare 8 (Dwarfs only)",
+            "parry": true,
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Cutting Edge - an extra -1 save modifier on top of the wielder's Strength-based modifier. Parry - when hit, may roll a D6; a score higher than the opponent's to-hit roll discards that attack, and cannot parry attacks made at double or more the axe's Strength. A model armed with two Dwarf axes (or a Dwarf axe and a sword etc.) does not get to parry two attacks, but may instead re-roll a failed parry."
+            },
+            "sourcePage": null,
+            "source": "new-mordheimer"
         }
 
     ]

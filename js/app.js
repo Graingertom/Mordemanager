@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 11;
+const DATA_VERSION = 12;
 
 const DATA_PATHS = {
 
@@ -67,7 +67,9 @@ const WARBAND_TYPES = [
 
     "possessed",
 
-    "halflings"
+    "halflings",
+
+    "dwarf-treasure-hunters"
 
 ];
 

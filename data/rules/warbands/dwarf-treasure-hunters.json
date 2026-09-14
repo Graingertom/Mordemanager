@@ -1,0 +1,400 @@
+{
+    "id": "dwarf-treasure-hunters",
+    "name": "Dwarf Treasure Hunters",
+    "faction": "The Dwarf Holds",
+    "race": "Dwarf",
+
+    "description": "A band of Dwarfs from a lost stronghold, drawn to Mordheim by the promise of wyrdstone wealth enough to restore their former glory.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 12,
+
+    "source": {
+        "organisation": "The New Mordheimer",
+        "document": "Grade 1a Warbands - Dwarf Treasure Hunters (originally Town Cryer #4, revised in the Mordheim Annual 2002; author Mark Havener)",
+        "website": "https://mordheimer.net",
+        "url": "https://mordheimer.net/docs/warbands/grade-1a-warbands/dwarf-treasure-hunters"
+    },
+
+    "specialRules": [
+        {
+            "id": "hard-to-kill",
+            "name": "Hard to Kill",
+            "summary": "A Dwarf is only taken Out of Action on a roll of 6 on the Injury chart, not 5-6 - treat 1-2 as Knocked Down, 3-5 as Stunned, and 6 as Out of Action."
+        },
+        {
+            "id": "hard-head",
+            "name": "Hard Head",
+            "summary": "Dwarfs ignore the special rules for maces, clubs and similar knockout weapons."
+        },
+        {
+            "id": "dwarf-armour",
+            "name": "Armour",
+            "summary": "Dwarfs never suffer a Movement penalty for wearing armour."
+        },
+        {
+            "id": "hate-orcs-and-goblins",
+            "name": "Hate Orcs and Goblins",
+            "summary": "All Dwarfs hate Orcs and Goblins, per the psychology rules for Hatred."
+        },
+        {
+            "id": "grudgebearers",
+            "name": "Grudgebearers",
+            "summary": "A Dwarf warband may never include any Elven Hired Sword or Dramatis Personae."
+        },
+        {
+            "id": "incomparable-miners",
+            "name": "Incomparable Miners",
+            "summary": "Add +1 to the number of wyrdstone pieces found at the end of a game."
+        }
+    ],
+
+    "fighterTypes": [
+        {
+            "id": "noble",
+            "name": "Dwarf Noble",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 85,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 3,
+                "WS": 5,
+                "BS": 4,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "dwarf-warrior",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": true,
+                "speed": false,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any model in the warband within 6\" of the Noble may use his Leadership instead of their own."
+                }
+            ]
+        },
+
+        {
+            "id": "engineer",
+            "name": "Dwarf Engineer",
+            "category": "hero",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 50,
+            "startingExperience": 10,
+
+            "profile": {
+                "M": 3,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "dwarf-thunderer",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": false,
+                "speed": false,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "expert-weaponsmith",
+                    "name": "Expert Weaponsmith",
+                    "summary": "While the Engineer takes part in a battle (even if not yet on the table, or already taken Out of Action), missile weapons bought from the warband's basic equipment lists get +3\" range for Pistols and +6\" for Crossbows and Handguns. Has no effect on Hired Swords' equipment. (This app does not apply the range bonus automatically - the Combat Calculator's shooting reference always shows base weapon range.)"
+                }
+            ]
+        },
+
+        {
+            "id": "troll-slayer",
+            "name": "Dwarf Troll Slayer",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 50,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 3,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "dwarf-troll-slayer",
+
+            "restrictions": {
+                "neverUseMissileWeapons": true,
+                "neverWearsArmour": true
+            },
+
+            "skills": {
+                "combat": true,
+                "shooting": false,
+                "academic": false,
+                "strength": true,
+                "speed": false,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "deathwish",
+                    "name": "Deathwish",
+                    "summary": "Troll Slayers are immune to all psychology and never need to test for being outnumbered when fighting alone."
+                },
+                {
+                    "id": "slayer-skills",
+                    "name": "Slayer Skills",
+                    "summary": "May choose a skill from the Troll Slayer skill list (Ferocious Charge, Monster Slayer, Berserker) as well as the normal skill tables available to them."
+                }
+            ]
+        },
+
+        {
+            "id": "clansmen",
+            "name": "Dwarf Clansmen",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 40,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 3,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "dwarf-warrior",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "thunderers",
+            "name": "Dwarf Thunderers",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 40,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 3,
+                "WS": 4,
+                "BS": 3,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "dwarf-thunderer",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "beardlings",
+            "name": "Beardlings",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 3,
+                "WS": 3,
+                "BS": 2,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "dwarf-warrior",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        }
+    ],
+
+    "equipmentLists": {
+
+        "dwarf-warrior": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "dwarf-axe",
+                "double-handed-weapon",
+                "spear",
+                "halberd"
+            ],
+
+            "missile": [
+                "pistol"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "dwarf-thunderer": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword"
+            ],
+
+            "missile": [
+                "pistol",
+                "crossbow",
+                "handgun"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "dwarf-troll-slayer": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "dwarf-axe",
+                "double-handed-weapon",
+                "spear",
+                "halberd"
+            ],
+
+            "missile": [],
+
+            "armour": [],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "noble": 20,
+        "engineer": 10,
+        "troll-slayer": 8,
+        "clansmen": 0,
+        "thunderers": 0,
+        "beardlings": 0
+    },
+
+    "rulesNotes": [
+        "This is a Grade 1a warband from The New Mordheimer (mordheimer.net) - originally published in Town Cryer #4 and revised in the Mordheim Annual 2002, not part of the base Games Workshop core rulebook.",
+        "A Dwarf warband must include a minimum of 3 models and may contain a maximum of 12.",
+        "The warband must include exactly one Dwarf Noble.",
+        "The warband may include a single Dwarf Engineer and up to two Dwarf Troll Slayers.",
+        "The warband may include any number of Dwarf Clansmen and Beardlings, and up to five Dwarf Thunderers.",
+        "Troll Slayers may never carry missile weapons or armour of any kind - their equipment list only offers close combat weapons from the Dwarf Warrior list.",
+        "Gromril weapons and Gromril armour (any item bought at 3x/1.5x its normal cost as a starting-warband exception) are not modelled as separate purchasable items in this app - the source text's own note that this pricing only applies at warband creation, with later purchases needing the standard rulebook price chart, doesn't map cleanly onto this app's flat per-item costs, so it's left as reference text only.",
+        "This warband's own Special-category skills (Master of Blades, Extra Tough, Resource Hunter, True Grit, Thick Skull, available to any Dwarf Hero, plus Ferocious Charge, Monster Slayer and Berserker, Troll Slayer only) are added to the Special category in skills.json.",
+        "Skill-category access for this warband's Heroes is taken directly from the source page's own (legible) skill table."
+    ]
+}

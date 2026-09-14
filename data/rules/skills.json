@@ -403,6 +403,63 @@
             "category": "special",
             "description": "Gains a bonus Attack that strikes first when charged.",
             "sourcePage": null
+        },
+
+        {
+            "id": "master-of-blades",
+            "name": "Master of Blades",
+            "category": "special",
+            "description": "Any Dwarf Hero - when using a weapon with the Parry special rule, this warrior parries successfully by matching (not just beating) his opponent's highest To Hit roll. If wielding two Parry weapons, he may parry two attacks instead of the usual maximum of one (each needing to match or beat the two highest Attack dice against him). Two Dwarf axes let him re-roll any failed parry.",
+            "sourcePage": null
+        },
+        {
+            "id": "extra-tough",
+            "name": "Extra Tough",
+            "category": "special",
+            "description": "Any Dwarf Hero - after being taken Out of Action, this Hero may re-roll the Heroes Serious Injury chart once; the second result must be accepted even if it's worse.",
+            "sourcePage": null
+        },
+        {
+            "id": "resource-hunter",
+            "name": "Resource Hunter",
+            "category": "special",
+            "description": "Any Dwarf Hero - when rolling on the Exploration chart at the end of a game, may modify one dice roll by +1 or -1.",
+            "sourcePage": null
+        },
+        {
+            "id": "true-grit",
+            "name": "True Grit",
+            "category": "special",
+            "description": "Any Dwarf Hero - on the Injury chart for this Hero, treat 1-3 as Knocked Down, 4-5 as Stunned, and 6 as Out of Action.",
+            "sourcePage": null
+        },
+        {
+            "id": "thick-skull",
+            "name": "Thick Skull",
+            "category": "special",
+            "description": "Any Dwarf Hero - has a 3+ save on a D6 to avoid being Stunned (treat a saved Stunned result as Knocked Down instead). If also wearing a Helmet, this save improves to 2+, replacing the Helmet's normal special rule.",
+            "sourcePage": null
+        },
+        {
+            "id": "ferocious-charge",
+            "name": "Ferocious Charge",
+            "category": "special",
+            "description": "Troll Slayer only - may double his Attacks on the turn he charges, but suffers a -1 To Hit penalty that turn.",
+            "sourcePage": null
+        },
+        {
+            "id": "monster-slayer",
+            "name": "Monster Slayer",
+            "category": "special",
+            "description": "Troll Slayer only - always wounds on a roll of 4+ regardless of the target's Toughness, unless his own (modified) Strength would already need a lower roll.",
+            "sourcePage": null
+        },
+        {
+            "id": "berserker",
+            "name": "Berserker",
+            "category": "special",
+            "description": "Troll Slayer only - adds +1 to his close combat To Hit rolls during the turn he charges.",
+            "sourcePage": null
         }
     ],
 
@@ -605,8 +662,27 @@
                 "speed",
                 "special"
             ]
+        },
+
+        "dwarf-treasure-hunters": {
+            "noble": [
+                "combat",
+                "shooting",
+                "strength",
+                "special"
+            ],
+            "engineer": [
+                "combat",
+                "shooting",
+                "special"
+            ],
+            "troll-slayer": [
+                "combat",
+                "strength",
+                "special"
+            ]
         }
     },
 
-    "warbandAccessNotes": "Exact skill-category checkmarks for Witch Hunters, Sisters of Sigmar, Undead, Skaven and the Middenheim/Marienburg Mercenary variants could not be read from the source PDF's tables (the checkmark glyphs did not survive text extraction). Reikland's own table did extract cleanly and is the verified basis for its access above; every other warband's access here is a best-effort judgement call following the same shape (leader gets the most categories, elite fighters get a combat-leaning subset, dedicated spellcasters lean Academic) - verify against the printed skill tables before relying on this for a competitive game. Halflings' access was read directly from their own source page's skill table, which was legible."
+    "warbandAccessNotes": "Exact skill-category checkmarks for Witch Hunters, Sisters of Sigmar, Undead, Skaven and the Middenheim/Marienburg Mercenary variants could not be read from the source PDF's tables (the checkmark glyphs did not survive text extraction). Reikland's own table did extract cleanly and is the verified basis for its access above; every other warband's access here is a best-effort judgement call following the same shape (leader gets the most categories, elite fighters get a combat-leaning subset, dedicated spellcasters lean Academic) - verify against the printed skill tables before relying on this for a competitive game. Halflings' and Dwarf Treasure Hunters' access was read directly from their own source pages' skill tables, which were legible."
 }
