@@ -82,7 +82,8 @@ function normaliseWarbands(warbands) {
                     ) =>
                         normaliseFighter(
                             fighter,
-                            fighterIndex
+                            fighterIndex,
+                            normalised.type
                         )
                 );
 
@@ -720,9 +721,21 @@ function showCreateWarband() {
                         id="new-warband-type"
                     >
 
-                        <option value="reikland">
-                            Reikland Mercenaries
-                        </option>
+                        ${WARBAND_TYPES
+                            .filter(
+                                type =>
+                                    state.warbandDefinitions[type]
+                            )
+                            .map(
+                                type => `
+                                    <option value="${escapeAttribute(type)}">
+                                        ${escapeHtml(
+                                            state.warbandDefinitions[type].name
+                                        )}
+                                    </option>
+                                `
+                            )
+                            .join("")}
 
                     </select>
 

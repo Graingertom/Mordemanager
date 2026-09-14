@@ -107,7 +107,8 @@ let combatCalculatorShootingModifiers = {
 
 function normaliseFighter(
     fighter,
-    index
+    index,
+    warbandType
 ) {
 
     const typeId =
@@ -116,13 +117,10 @@ function normaliseFighter(
         fighter.typeId;
 
 
-    /*
-     * At the moment Reikland is the only
-     * implemented warband definition.
-     */
-
     const definition =
-        state.warbandDefinitions.reikland;
+        state.warbandDefinitions[
+            warbandType || "reikland"
+        ];
 
 
     const fighterType =
@@ -700,7 +698,8 @@ async function addFighter(typeId) {
     const fighter =
         normaliseFighter(
             data,
-            currentWarband.fighters.length
+            currentWarband.fighters.length,
+            currentWarband.type
         );
 
 
@@ -1449,7 +1448,8 @@ function showEditFighter(
 
     const availableEquipment =
         getAvailableEquipment(
-            fighterType
+            fighterType,
+            warband.type
         );
 
 
@@ -6752,7 +6752,8 @@ function renderEquipmentValidation(
    ============================================================ */
 
 function getAvailableEquipment(
-    fighterType
+    fighterType,
+    warbandType
 ) {
 
     const listName =
@@ -6772,7 +6773,9 @@ function getAvailableEquipment(
      */
 
     const definition =
-        state.warbandDefinitions.reikland;
+        state.warbandDefinitions[
+            warbandType || "reikland"
+        ];
 
 
     const equipmentList =

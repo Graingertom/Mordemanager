@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 7;
+const DATA_VERSION = 8;
 
 const DATA_PATHS = {
 
@@ -32,11 +32,52 @@ const DATA_PATHS = {
 
     advances: `./data/rules/advances.json?v=${DATA_VERSION}`,
 
-    combat: `./data/rules/combat.json?v=${DATA_VERSION}`,
+    combat: `./data/rules/combat.json?v=${DATA_VERSION}`
 
-    reikland: `./data/rules/warbands/reikland.json?v=${DATA_VERSION}`
+    /*
+     * magic.json and mutations.json join here once the spellcasting/
+     * mutation framework (Phase 2 of the warbands plan) lands -
+     * needed by Witch Hunters onward, not by the Mercenary variants.
+     */
 
 };
+
+/*
+ * Every playable warband - each has its own
+ * data/rules/warbands/<id>.json, all built to the same schema as
+ * the original reikland.json (fighterTypes/equipmentLists/
+ * specialRules). loadRules() below fetches one per entry here
+ * instead of a single hardcoded path, so adding a warband is just
+ * adding its id to this list plus its data file.
+ */
+
+const WARBAND_TYPES = [
+
+    "reikland",
+
+    "middenheim",
+
+    "marienburg"
+
+    /*
+     * Witch Hunters, Sisters of Sigmar, Undead, Skaven and
+     * Possessed are next - each needs its own data/rules/warbands/
+     * <id>.json (same schema as reikland.json) added to this list
+     * once built, plus magic.json/mutations.json for the ones that
+     * need spellcasting or mutations. See the plan this was built
+     * from for the full roster/rules already verified against the
+     * rulebook for all five, ready to turn into data files.
+     */
+
+];
+
+function getWarbandDataPath(
+    warbandType
+) {
+
+    return `./data/rules/warbands/${warbandType}.json?v=${DATA_VERSION}`;
+
+}
 
 
 /* ============================================================
@@ -57,9 +98,12 @@ const state = {
 
     combat: null,
 
-    warbandDefinitions: {
-        reikland: null
-    },
+    warbandDefinitions:
+        Object.fromEntries(
+            WARBAND_TYPES.map(
+                type => [type, null]
+            )
+        ),
 
     warbands: [],
 
@@ -189,42 +233,44 @@ async function initialise() {
 
 async function loadRules() {
 
-    const responses = await Promise.all([
+    const fixedKeys = [
 
-        fetch(DATA_PATHS.core),
+        "core",
 
-        fetch(DATA_PATHS.equipment),
+        "equipment",
 
-        fetch(DATA_PATHS.skills),
+        "skills",
 
-        fetch(DATA_PATHS.injuries),
+        "injuries",
 
-        fetch(DATA_PATHS.advances),
+        "advances",
 
-        fetch(DATA_PATHS.combat),
+        "combat"
 
-        fetch(DATA_PATHS.reikland)
-
-    ]);
+    ];
 
 
     const paths = [
 
-        DATA_PATHS.core,
+        ...fixedKeys.map(
+            key =>
+                DATA_PATHS[key]
+        ),
 
-        DATA_PATHS.equipment,
-
-        DATA_PATHS.skills,
-
-        DATA_PATHS.injuries,
-
-        DATA_PATHS.advances,
-
-        DATA_PATHS.combat,
-
-        DATA_PATHS.reikland
+        ...WARBAND_TYPES.map(
+            getWarbandDataPath
+        )
 
     ];
+
+
+    const responses =
+        await Promise.all(
+            paths.map(
+                path =>
+                    fetch(path)
+            )
+        );
 
 
     responses.forEach(
@@ -242,46 +288,33 @@ async function loadRules() {
     );
 
 
-    const [
+    const payloads =
+        await Promise.all(
+            responses.map(
+                response =>
+                    response.json()
+            )
+        );
 
-        core,
 
-        equipment,
+    fixedKeys.forEach(
+        (key, index) => {
 
-        skills,
+            state[key] =
+                payloads[index];
 
-        injuries,
-
-        advances,
-
-        combat,
-
-        reikland
-
-    ] = await Promise.all(
-
-        responses.map(
-            response =>
-                response.json()
-        )
-
+        }
     );
 
 
-    state.core = core;
+    WARBAND_TYPES.forEach(
+        (type, index) => {
 
-    state.equipment = equipment;
+            state.warbandDefinitions[type] =
+                payloads[fixedKeys.length + index];
 
-    state.skills = skills;
-
-    state.injuries = injuries;
-
-    state.advances = advances;
-
-    state.combat = combat;
-
-    state.warbandDefinitions.reikland =
-        reikland;
+        }
+    );
 
 
     console.log(
