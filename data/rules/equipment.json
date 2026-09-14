@@ -560,6 +560,74 @@
             },
             "sourcePage": 67,
             "source": "mordheim-core"
+        },
+
+        {
+            "id": "crossbow-pistol",
+            "name": "Crossbow Pistol",
+            "category": "missile",
+            "cost": 35,
+            "firstFree": false,
+            "availability": "rare 9",
+            "weaponProfile": {
+                "range": "10\"",
+                "strength": "4",
+                "special": "Shoot in Hand-to-Hand Combat - may be fired once in the first round of a hand-to-hand combat, resolved before any blows are struck, at an extra -2 to hit (using Ballistic Skill); this shot is in addition to any close combat attacks. Hand-to-hand - as a pistol, may also be used alongside a close combat weapon for a bonus Attack at Strength 4, resolved once per combat (two Attacks in the first turn of combat if firing a brace)."
+            },
+            "sourcePage": null,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "throwing-knives",
+            "name": "Throwing Knives",
+            "category": "missile",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "rare 5",
+            "weaponProfile": {
+                "range": "6\"",
+                "strength": "As User",
+                "special": "Thrown Weapon - no penalty for range or moving. Cannot be used in close combat."
+            },
+            "sourcePage": null,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "rope-and-hook",
+            "name": "Rope and Hook",
+            "category": "miscellaneous",
+            "cost": 5,
+            "firstFree": false,
+            "availability": "common",
+            "special": "A model equipped with a rope and hook may re-roll failed Initiative tests when climbing up or down.",
+            "sourcePage": null,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "lock-picks",
+            "name": "Lock Picks",
+            "category": "miscellaneous",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "rare 8",
+            "special": "A model equipped with lock picks may make his test to open a locked door using his Initiative rather than his Strength characteristic, with no -1 modifier, and with no chance of the door being damaged beyond repair. General rules price this at 15 gc; the Halfling Thief equipment list prices it at 10 gc, used here since it's the only warband referencing it so far.",
+            "sourcePage": null,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "hunting-arrows",
+            "name": "Hunting Arrows",
+            "category": "miscellaneous",
+            "cost": 35,
+            "firstFree": false,
+            "availability": "rare 8",
+            "special": "A model using a Short Bow, Bow, Long Bow or Elf Bow may use these arrows - they add +1 to all Injury rolls the weapon causes. The core rulebook prices this at a variable 25 + 1D6 gc; this app only supports a flat cost, so it uses the flat 35 gc the Halfling warband list itself prints.",
+            "sourcePage": null,
+            "source": "mordheim-core"
         }
 
     ]

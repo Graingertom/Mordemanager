@@ -353,6 +353,56 @@
             "category": "special",
             "description": "Fights bare-handed with no penalty and counts as having two weapons (+1 Attack). Causes a critical hit on a To Wound roll of 5-6 instead of just 6. May be combined with Eshin Fighting Claws for +2 Attacks instead of +1.",
             "sourcePage": 75
+        },
+
+        {
+            "id": "quiet-as-a-mouse",
+            "name": "Quiet as a Mouse",
+            "category": "special",
+            "description": "Adept at staying quiet whilst hiding - enemy warriors must use half their Initiative value in inches (rounded down) when trying to detect this hidden Halfling.",
+            "sourcePage": null
+        },
+        {
+            "id": "crude-belch",
+            "name": "Crude Belch",
+            "category": "special",
+            "description": "During the first round of hand-to-hand combat, may release a withering belch upon all enemies in base contact. Each affected enemy must pass a Leadership test or miss its first attack that round (regardless of how many Attacks it has).",
+            "sourcePage": null
+        },
+        {
+            "id": "wizened-halfling",
+            "name": "Wizened Halfling",
+            "category": "special",
+            "description": "Leaders only - all Halflings may re-roll any failed Leadership test while within 6\" of this leader, and may use his Leadership for both the original and the re-rolled test.",
+            "sourcePage": null
+        },
+        {
+            "id": "stealthy-halfling",
+            "name": "Stealthy",
+            "category": "special",
+            "description": "Halfling Thieves only - may hide even after running, and may run within 8\" of enemy models if it starts and ends its move hidden.",
+            "sourcePage": null
+        },
+        {
+            "id": "skilled-huntsman",
+            "name": "Skilled Huntsman",
+            "category": "special",
+            "description": "May try to fire a ranged weapon and remain hidden. When shooting from hiding, roll a D6 - on a 3+ the shot stays inconspicuous and the Halfling remains hidden that turn. May not be combined with blackpowder weapons - they're too noisy.",
+            "sourcePage": null
+        },
+        {
+            "id": "layers-of-fat",
+            "name": "Layers of Fat",
+            "category": "special",
+            "description": "Always has a basic armour save of 6+, regardless of the attacker's Strength, on top of any armour already worn.",
+            "sourcePage": null
+        },
+        {
+            "id": "shifty",
+            "name": "Shifty",
+            "category": "special",
+            "description": "Gains a bonus Attack that strikes first when charged.",
+            "sourcePage": null
         }
     ],
 
@@ -529,8 +579,34 @@
                 "combat",
                 "strength"
             ]
+        },
+
+        "halflings": {
+            "elder": [
+                "combat",
+                "shooting",
+                "academic",
+                "speed",
+                "special"
+            ],
+            "cook": [
+                "strength",
+                "speed",
+                "special"
+            ],
+            "thief": [
+                "combat",
+                "shooting",
+                "speed",
+                "special"
+            ],
+            "youths": [
+                "shooting",
+                "speed",
+                "special"
+            ]
         }
     },
 
-    "warbandAccessNotes": "Exact skill-category checkmarks for Witch Hunters, Sisters of Sigmar, Undead, Skaven and the Middenheim/Marienburg Mercenary variants could not be read from the source PDF's tables (the checkmark glyphs did not survive text extraction). Reikland's own table did extract cleanly and is the verified basis for its access above; every other warband's access here is a best-effort judgement call following the same shape (leader gets the most categories, elite fighters get a combat-leaning subset, dedicated spellcasters lean Academic) - verify against the printed skill tables before relying on this for a competitive game."
+    "warbandAccessNotes": "Exact skill-category checkmarks for Witch Hunters, Sisters of Sigmar, Undead, Skaven and the Middenheim/Marienburg Mercenary variants could not be read from the source PDF's tables (the checkmark glyphs did not survive text extraction). Reikland's own table did extract cleanly and is the verified basis for its access above; every other warband's access here is a best-effort judgement call following the same shape (leader gets the most categories, elite fighters get a combat-leaning subset, dedicated spellcasters lean Academic) - verify against the printed skill tables before relying on this for a competitive game. Halflings' access was read directly from their own source page's skill table, which was legible."
 }

@@ -1,0 +1,596 @@
+{
+    "id": "halflings",
+    "name": "Halflings",
+    "faction": "The Moot",
+    "race": "Halfling",
+
+    "description": "A band of Halflings from the Moot, drawn away from village life by the promise of adventure and, more importantly, good food.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 20,
+
+    "source": {
+        "organisation": "The New Mordheimer",
+        "document": "Grade 2a Warbands - Halflings (fan-made supplement, not part of the official core rulebook)",
+        "website": "https://mordheimer.net",
+        "url": "https://mordheimer.net/docs/warbands/grade-2a-warbands/halflings"
+    },
+
+    "specialRules": [
+        {
+            "id": "pretty-much-human",
+            "name": "Pretty Much Human",
+            "summary": "Halflings are pretty much human and therefore may hire any Hired Sword available to human mercenary warbands."
+        },
+        {
+            "id": "too-big",
+            "name": "Too Big",
+            "summary": "Halflings may never use Long Bows, Elf Bows, Handguns, Long Rifles or Blunderbusses, even if an Advance roll would otherwise allow it - such big weapons aren't built for such tiny hands."
+        },
+        {
+            "id": "halfling-items",
+            "name": "Halfling Items",
+            "summary": "Halflings do not gain any bonus from Halfling-themed items (such as the Halfling Cookbook) - they already know all the knowledge such things could teach them."
+        }
+    ],
+
+    "fighterTypes": [
+        {
+            "id": "elder",
+            "name": "Halfling Elder",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 60,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 5,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 5,
+                "A": 1,
+                "Ld": 9
+            },
+
+            "equipmentList": "halfling-elder",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": true,
+                "strength": false,
+                "speed": true,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any warrior within 6\" of the Elder may use his Leadership when taking a Leadership test."
+                }
+            ]
+        },
+
+        {
+            "id": "cook",
+            "name": "Halfling Cook",
+            "category": "hero",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 35,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 2,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "halfling-cook",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": true,
+                "speed": true,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "master-chef",
+                    "name": "Master Chef",
+                    "summary": "Roll a D6 whenever the warband sells Treasure or Wyrdstone - on a 5+ the Cook has made a little food go a long way, and the warband is treated as one settlement size lower for that sale. (This app doesn't simulate the settlement-size trading economy, so this is recorded as reference text only.)"
+                }
+            ]
+        },
+
+        {
+            "id": "thief",
+            "name": "Halfling Thief",
+            "category": "hero",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 30,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 4,
+                "S": 2,
+                "T": 2,
+                "W": 1,
+                "I": 5,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "halfling-thief",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": false,
+                "speed": true,
+                "special": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "infiltrator",
+                    "name": "Infiltrator",
+                    "summary": "May always be placed on the battlefield after enemy warband(s), anywhere out of sight of the opposing warband and at least 12\" from any enemy model. If more than one model has Infiltrate, roll off to see who places first."
+                },
+                {
+                    "id": "pick-locks",
+                    "name": "Pick Locks",
+                    "summary": "When testing to open a locked door, the Thief needs only make a successful Initiative test."
+                },
+                {
+                    "id": "cutpurse",
+                    "name": "Cutpurse",
+                    "summary": "If the Thief took part in a battle and was not taken Out of Action, the warband gains +1 Treasure on top of what it would normally find."
+                }
+            ]
+        },
+
+        {
+            "id": "youths",
+            "name": "Halfling Youths",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 10,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 3,
+                "S": 2,
+                "T": 2,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "halfling-youths",
+
+            "skills": {
+                "combat": false,
+                "shooting": true,
+                "academic": false,
+                "strength": false,
+                "speed": true,
+                "special": true
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "scouts",
+            "name": "Halfling Scouts",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 7,
+
+            "cost": 20,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 4,
+                "S": 2,
+                "T": 2,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "halfling-scouts",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "warriors",
+            "name": "Halfling Warriors",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "halfling-warriors",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "piggies",
+            "name": "Piggies",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 4,
+
+            "cost": 20,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 5,
+                "WS": 4,
+                "BS": 0,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 4
+            },
+
+            "equipmentList": null,
+
+            "gainsExperience": false,
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "animal",
+                    "name": "Animal",
+                    "summary": "Piggies fight without penalty despite carrying no weapons or armour, and never gain experience."
+                }
+            ]
+        },
+
+        {
+            "id": "village-ogre",
+            "name": "Village Ogre",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 140,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 6,
+                "WS": 3,
+                "BS": 2,
+                "S": 4,
+                "T": 4,
+                "W": 3,
+                "I": 3,
+                "A": 2,
+                "Ld": 7
+            },
+
+            "equipmentList": "village-ogre",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "fear",
+                    "name": "Fear",
+                    "summary": "Ogre-kin are large and brutish creatures that cause Fear."
+                },
+                {
+                    "id": "large-target",
+                    "name": "Large Target",
+                    "summary": "Ogre-kin are huge, lumbering creatures - any model may shoot at the Ogre, even if it is not the closest model."
+                },
+                {
+                    "id": "skills-if-promoted",
+                    "name": "Skills If Promoted",
+                    "summary": "If the Ogre becomes a Hero, it may only choose skills from the Combat and Strength lists."
+                },
+                {
+                    "id": "slow-witted",
+                    "name": "Slow Witted",
+                    "summary": "Not the brightest of creatures - earns experience at half the normal rate. (This app doesn't track a half-rate experience accrual, so record this manually.)"
+                },
+                {
+                    "id": "protective",
+                    "name": "Protective",
+                    "summary": "Once a Village Ogre is purchased, it will scare off any Ogre Bodyguard hired sword that might otherwise join the warband, and drive out one already hired."
+                }
+            ]
+        }
+    ],
+
+    "equipmentLists": {
+
+        "halfling-elder": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear"
+            ],
+
+            "missile": [
+                "short-bow",
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": [
+                "hunting-arrows"
+            ]
+        },
+
+        "halfling-cook": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear"
+            ],
+
+            "missile": [
+                "short-bow",
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "halfling-thief": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword"
+            ],
+
+            "missile": [
+                "crossbow-pistol",
+                "pistol",
+                "throwing-knives"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler"
+            ],
+
+            "miscellaneous": [
+                "rope-and-hook",
+                "lock-picks"
+            ]
+        },
+
+        "halfling-youths": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear"
+            ],
+
+            "missile": [
+                "short-bow",
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "halfling-scouts": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword"
+            ],
+
+            "missile": [
+                "short-bow",
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": [
+                "hunting-arrows"
+            ]
+        },
+
+        "halfling-warriors": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear"
+            ],
+
+            "missile": [
+                "short-bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "village-ogre": {
+
+            "closeCombat": [
+                "dagger",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon"
+            ],
+
+            "missile": [
+                "long-bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "elder": 20,
+        "cook": 8,
+        "thief": 8,
+        "youths": 0,
+        "scouts": 0,
+        "warriors": 0,
+        "piggies": 0,
+        "village-ogre": 0
+    },
+
+    "rulesNotes": [
+        "This is a fan-made 'Grade 2a' warband from The New Mordheimer (mordheimer.net), not part of the official Games Workshop core rulebook - treat it as a community supplement.",
+        "A Halfling warband must include a minimum of 3 models and may contain a maximum of 20.",
+        "The warband must include exactly one Halfling Elder.",
+        "The warband may include a single Halfling Cook and a single Halfling Thief.",
+        "The warband may include up to two Halfling Youths.",
+        "The warband may include up to seven Halfling Scouts, five Halfling Warriors, and four Piggies.",
+        "The warband may include a single Village Ogre.",
+        "Halfling Warriors may not take a Bow. Only the Elder and Scouts may buy Hunting Arrows. Only Heroes and Warriors may take a Double-handed weapon or Spear - Scouts may not. These per-type restrictions are why this warband uses more separate equipment lists than most others in this app.",
+        "The source page flavour-names some of the Halfling Cook's weapons and armour (Pairing Knife for Dagger, Tenderiser for Hammer, Meat Cleaver for Axe, Machete for Sword, Cooking Pot for Helmet) - these are the same items mechanically, just renamed for a Cook, so this app lists them under their standard names.",
+        "Piggies are animals and never gain experience.",
+        "This warband's own Special skills (Quiet as a Mouse, Crude Belch, Wizened Halfling, Stealthy, Skilled Huntsman, Layers of Fat, Shifty) are added to the Special category in skills.json - note Wizened Halfling is leader-only and Stealthy is Thief-only per the source text, which this app does not enforce automatically.",
+        "Skill-category access for this warband's Heroes is taken directly from the source page's own skill table (its checkmarks were legible, unlike most core-rulebook warbands in this app, which needed a judgement call)."
+    ]
+}
