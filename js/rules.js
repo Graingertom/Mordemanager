@@ -878,6 +878,136 @@ function findInjury(
 
 
 /* ============================================================
+   MAGIC
+
+   Which spell list a fighter type draws from is a plain string
+   key on the fighter type (`wizard: "chaosRituals"`, etc.) set in
+   each warband's data file - these just resolve that key against
+   magic.json's four tables. Casting itself is never simulated
+   (see js/fighters.js's "Cast a Spell" reference in the game-
+   update modal) - a wizard's known spells are recorded the same
+   way skills are, and this only ever looks them up for display.
+   ============================================================ */
+
+function getSpellList(
+    wizardType,
+    magicData
+) {
+
+    const table =
+        magicData?.[wizardType];
+
+
+    return Array.isArray(table?.spells)
+        ? table.spells
+        : [];
+
+}
+
+
+function findSpell(
+    wizardType,
+    roll,
+    magicData
+) {
+
+    return getSpellList(
+        wizardType,
+        magicData
+    ).find(
+        spell =>
+            spell.roll === roll
+    ) || null;
+
+}
+
+
+/* ============================================================
+   MUTATIONS
+
+   Possessed/Mutant-only paid upgrades (rulebook p58-59) - bought
+   once at recruitment, never simulated (their combat effects are
+   reference text, same as every other special rule in the app).
+   ============================================================ */
+
+function findMutation(
+    mutationId,
+    mutationsData
+) {
+
+    if (
+        !mutationId ||
+        !mutationsData
+    ) {
+
+        return null;
+
+    }
+
+
+    const list =
+        Array.isArray(
+            mutationsData.mutations
+        )
+            ? mutationsData.mutations
+            : [];
+
+
+    return list.find(
+        item =>
+            item.id === mutationId
+    ) || null;
+
+}
+
+
+/*
+ * Second and subsequent mutations bought for the same model cost
+ * double (verified rule, p58) - this is the one place that
+ * doubling needs to happen, so both the recruit-time picker and
+ * any future summary can share it rather than reimplementing the
+ * reduce.
+ */
+
+function calculateMutationsCost(
+    mutationIds,
+    mutationsData
+) {
+
+    if (!Array.isArray(mutationIds)) {
+
+        return 0;
+
+    }
+
+
+    return mutationIds.reduce(
+        (total, mutationId, index) => {
+
+            const mutation =
+                findMutation(
+                    mutationId,
+                    mutationsData
+                );
+
+
+            const baseCost =
+                Number(mutation?.cost) || 0;
+
+
+            return total +
+                (index === 0
+                    ? baseCost
+                    : baseCost * 2);
+
+        },
+        0
+    );
+
+}
+
+
+/* ============================================================
    EFFECTIVE PROFILE
    ============================================================ */
 //
@@ -2502,6 +2632,14 @@ return {
     getEquipmentListForFighter,
 
     findInjury,
+
+    getSpellList,
+
+    findSpell,
+
+    findMutation,
+
+    calculateMutationsCost,
 
     calculateEffectiveProfile,
 

@@ -30,6 +30,21 @@ let editingSkillOptions = [];
 
 
 /*
+ * Same staging pattern, for showEditFighter's Spells/Mutations
+ * sections - only re-seeded from the real fighter on a fresh open
+ * of that modal (tracked via editFighterId), so adding a spell or
+ * mutation can re-render the modal in place without losing other
+ * unsaved staged changes.
+ */
+
+let editingFighterSpells = [];
+
+let editingFighterMutations = [];
+
+let editFighterId = null;
+
+
+/*
  * Advance-related staging for the fighter game-update modal.
  * editingProfile/editingCategory are working copies so a
  * characteristic increase or a promotion doesn't touch the real
@@ -248,7 +263,23 @@ function normaliseFighter(
             fighter.wounds &&
             typeof fighter.wounds === "object"
                 ? fighter.wounds
-                : {}
+                : {},
+
+
+        spells:
+            Array.isArray(
+                fighter.spells
+            )
+                ? fighter.spells
+                : [],
+
+
+        mutations:
+            Array.isArray(
+                fighter.mutations
+            )
+                ? fighter.mutations
+                : []
 
     };
 
@@ -1446,6 +1477,25 @@ function showEditFighter(
     }
 
 
+    const isFreshFighterEdit =
+        editFighterId !== fighterId;
+
+
+    editFighterId =
+        fighterId;
+
+
+    if (isFreshFighterEdit) {
+
+        editingFighterSpells =
+            [...(fighter.spells || [])];
+
+        editingFighterMutations =
+            [...(fighter.mutations || [])];
+
+    }
+
+
     const availableEquipment =
         getAvailableEquipment(
             fighterType,
@@ -1590,6 +1640,27 @@ function showEditFighter(
                 </section>
 
 
+                ${
+                    fighterType.wizard
+                        ? renderFighterSpellsSection(
+                            fighter,
+                            fighterType
+                        )
+                        : ""
+                }
+
+
+                ${
+                    fighterType.startsWithMutations ||
+                    editingFighterMutations.length
+                        ? renderFighterMutationsSection(
+                            fighter,
+                            fighterType
+                        )
+                        : ""
+                }
+
+
                 <section class="mm-editor-section">
 
                     <h3>
@@ -1654,7 +1725,8 @@ function showEditFighter(
 
                         ${renderFighterCostBreakdown(
                             fighter,
-                            fighter.equipment
+                            fighter.equipment,
+                            editingFighterMutations
                         )}
 
                     </div>
@@ -1693,6 +1765,705 @@ function showEditFighter(
         fighter,
         definition
     );
+
+}
+
+
+/* ============================================================
+   FIGHTER SPELLS (roster editor only - learning a spell is a
+   roster change, not a battle event, same reasoning as equipment)
+   ============================================================ */
+
+function renderFighterSpellsSection(
+    fighter,
+    fighterType
+) {
+
+    const wizardType =
+        fighterType.wizard;
+
+
+    const spellList =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.getSpellList === "function"
+            ? RulesEngine.getSpellList(
+                wizardType,
+                state.magic
+            )
+            : [];
+
+
+    const known =
+        editingFighterSpells;
+
+
+    const availableToLearn =
+        spellList.filter(
+            spell =>
+                !known.includes(spell.roll)
+        );
+
+
+    return `
+
+        <section class="mm-editor-section">
+
+            <div class="mm-section-header">
+
+                <div>
+
+                    <h3>
+                        Spells
+                    </h3>
+
+                    <p>
+                        A wizard starts with one randomly
+                        determined spell and gains more through
+                        play - record whichever the table says
+                        you rolled.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            ${
+                known.length
+                    ? `
+                        <ul class="mm-injury-list">
+
+                            ${known
+                                .map(
+                                    roll => {
+
+                                        const spell =
+                                            spellList.find(
+                                                item =>
+                                                    item.roll === roll
+                                            );
+
+
+                                        return `
+
+                                            <li>
+
+                                                <span>
+
+                                                    <strong>
+                                                        <button
+                                                            type="button"
+                                                            class="mm-link-button"
+                                                            onclick="showFighterSpellDetail('${escapeAttribute(wizardType)}', ${roll})"
+                                                        >
+                                                            ${escapeHtml(
+                                                                spell?.name ||
+                                                                ("Roll " + roll)
+                                                            )}
+                                                        </button>
+                                                    </strong>
+
+                                                    ${
+                                                        spell
+                                                            ? `
+                                                                <small>
+                                                                    Roll ${spell.roll} · Difficulty ${spell.difficulty}+
+                                                                </small>
+                                                            `
+                                                            : ""
+                                                    }
+
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    class="mm-button mm-button-small mm-button-danger"
+                                                    onclick="removeFighterSpell('${escapeAttribute(fighter.id)}', ${roll})"
+                                                >
+                                                    Remove
+                                                </button>
+
+                                            </li>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")}
+
+                        </ul>
+                    `
+                    : `
+                        <p class="mm-muted">
+                            No spells known yet.
+                        </p>
+                    `
+            }
+
+
+            ${
+                availableToLearn.length
+                    ? `
+                        <div class="mm-injury-add">
+
+                            <select id="fighter-spell-picker">
+
+                                ${availableToLearn
+                                    .map(
+                                        spell => `
+                                            <option value="${spell.roll}">
+                                                ${escapeHtml(
+                                                    spell.roll + ". " + spell.name
+                                                )} (Diff ${spell.difficulty}+)
+                                            </option>
+                                        `
+                                    )
+                                    .join("")}
+
+                            </select>
+
+                            <button
+                                type="button"
+                                class="mm-button"
+                                onclick="
+                                    addFighterSpell(
+                                        '${escapeAttribute(fighter.id)}',
+                                        Number(document.getElementById('fighter-spell-picker').value)
+                                    )
+                                "
+                            >
+                                Add Spell
+                            </button>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+        </section>
+
+    `;
+
+}
+
+
+function addFighterSpell(
+    fighterId,
+    roll
+) {
+
+    if (
+        !roll ||
+        editingFighterSpells.includes(roll)
+    ) {
+
+        return;
+
+    }
+
+
+    editingFighterSpells.push(roll);
+
+
+    showEditFighter(fighterId);
+
+}
+
+
+function removeFighterSpell(
+    fighterId,
+    roll
+) {
+
+    editingFighterSpells =
+        editingFighterSpells.filter(
+            item =>
+                item !== roll
+        );
+
+
+    showEditFighter(fighterId);
+
+}
+
+
+function showFighterSpellDetail(
+    wizardType,
+    roll
+) {
+
+    const spell =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.findSpell === "function"
+            ? RulesEngine.findSpell(
+                wizardType,
+                roll,
+                state.magic
+            )
+            : null;
+
+
+    const canGoBack =
+        modalCanGoBack();
+
+
+    if (!spell) {
+
+        pushModal(`
+
+            <div class="mm-modal">
+
+                <div class="mm-modal-header">
+
+                    <div>
+
+                        ${
+                            canGoBack
+                                ? `
+                                    <button
+                                        class="mm-back-button mm-modal-back"
+                                        onclick="goBackModal()"
+                                    >
+                                        ← Back
+                                    </button>
+                                `
+                                : ""
+                        }
+
+                        <h2>
+                            Spell Not Found
+                        </h2>
+
+                    </div>
+
+                    <button
+                        class="mm-modal-close"
+                        onclick="closeModal()"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+                <div class="mm-modal-body">
+
+                    <p class="mm-muted">
+                        No detailed rules text is currently
+                        available for this spell.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `);
+
+        return;
+
+    }
+
+
+    pushModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <span class="mm-badge">
+                        Difficulty ${spell.difficulty}+
+                    </span>
+
+                    <h2>
+                        ${escapeHtml(spell.name)}
+                    </h2>
+
+                </div>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div class="mm-modal-body">
+
+                <div class="mm-rule-description">
+                    ${formatRuleText(spell.effect)}
+                </div>
+
+                ${
+                    spell.verified === false
+                        ? `
+                            <p class="mm-muted">
+                                ⚠ This spell's exact wording could
+                                not be fully verified against the
+                                source PDF - double check it
+                                against the rulebook before relying
+                                on it at the table.
+                            </p>
+                        `
+                        : ""
+                }
+
+                ${renderSourceInformation(
+                    state.magic,
+                    spell.sourcePage ||
+                    state.magic?.[wizardType]?.sourcePage
+                )}
+
+            </div>
+
+        </div>
+
+    `);
+
+}
+
+
+/* ============================================================
+   FIGHTER MUTATIONS (roster editor only - per the rules, only
+   buyable at recruitment, never afterwards)
+   ============================================================ */
+
+function renderFighterMutationsSection(
+    fighter,
+    fighterType
+) {
+
+    const mutationList =
+        state.mutations?.mutations || [];
+
+
+    const owned =
+        editingFighterMutations;
+
+
+    return `
+
+        <section class="mm-editor-section">
+
+            <div class="mm-section-header">
+
+                <div>
+
+                    <h3>
+                        Mutations
+                    </h3>
+
+                    <p>
+                        Per the rules, mutations may only be
+                        bought when this fighter is recruited -
+                        never afterwards. The second and later
+                        mutations on the same model cost double.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            ${
+                owned.length
+                    ? `
+                        <ul class="mm-injury-list">
+
+                            ${owned
+                                .map(
+                                    (mutationId, index) => {
+
+                                        const mutation =
+                                            mutationList.find(
+                                                item =>
+                                                    item.id === mutationId
+                                            );
+
+
+                                        const cost =
+                                            (Number(mutation?.cost) || 0) *
+                                            (index === 0 ? 1 : 2);
+
+
+                                        return `
+
+                                            <li>
+
+                                                <span>
+
+                                                    <strong>
+                                                        <button
+                                                            type="button"
+                                                            class="mm-link-button"
+                                                            onclick="showFighterMutationDetail('${escapeAttribute(mutationId)}')"
+                                                        >
+                                                            ${escapeHtml(
+                                                                mutation?.name ||
+                                                                mutationId
+                                                            )}
+                                                        </button>
+                                                    </strong>
+
+                                                    <small>
+                                                        ${cost} gc
+                                                    </small>
+
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    class="mm-button mm-button-small mm-button-danger"
+                                                    onclick="removeFighterMutation('${escapeAttribute(fighter.id)}', ${index})"
+                                                >
+                                                    Remove
+                                                </button>
+
+                                            </li>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")}
+
+                        </ul>
+                    `
+                    : `
+                        <p class="mm-muted">
+                            No mutations purchased yet.
+                        </p>
+                    `
+            }
+
+
+            ${
+                mutationList.length
+                    ? `
+                        <div class="mm-injury-add">
+
+                            <select id="fighter-mutation-picker">
+
+                                ${mutationList
+                                    .map(
+                                        mutation => `
+                                            <option value="${escapeAttribute(mutation.id)}">
+                                                ${escapeHtml(
+                                                    mutation.name
+                                                )} (${mutation.cost} gc base)
+                                            </option>
+                                        `
+                                    )
+                                    .join("")}
+
+                            </select>
+
+                            <button
+                                type="button"
+                                class="mm-button"
+                                onclick="
+                                    addFighterMutation(
+                                        '${escapeAttribute(fighter.id)}',
+                                        document.getElementById('fighter-mutation-picker').value
+                                    )
+                                "
+                            >
+                                Add Mutation
+                            </button>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+        </section>
+
+    `;
+
+}
+
+
+function addFighterMutation(
+    fighterId,
+    mutationId
+) {
+
+    if (!mutationId) {
+
+        return;
+
+    }
+
+
+    editingFighterMutations.push(mutationId);
+
+
+    showEditFighter(fighterId);
+
+}
+
+
+function removeFighterMutation(
+    fighterId,
+    index
+) {
+
+    editingFighterMutations.splice(
+        index,
+        1
+    );
+
+
+    showEditFighter(fighterId);
+
+}
+
+
+function showFighterMutationDetail(
+    mutationId
+) {
+
+    const mutation =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.findMutation === "function"
+            ? RulesEngine.findMutation(
+                mutationId,
+                state.mutations
+            )
+            : null;
+
+
+    const canGoBack =
+        modalCanGoBack();
+
+
+    if (!mutation) {
+
+        pushModal(`
+
+            <div class="mm-modal">
+
+                <div class="mm-modal-header">
+
+                    <div>
+
+                        ${
+                            canGoBack
+                                ? `
+                                    <button
+                                        class="mm-back-button mm-modal-back"
+                                        onclick="goBackModal()"
+                                    >
+                                        ← Back
+                                    </button>
+                                `
+                                : ""
+                        }
+
+                        <h2>
+                            Mutation Not Found
+                        </h2>
+
+                    </div>
+
+                    <button
+                        class="mm-modal-close"
+                        onclick="closeModal()"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+                <div class="mm-modal-body">
+
+                    <p class="mm-muted">
+                        No detailed rules text is currently
+                        available for this mutation.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `);
+
+        return;
+
+    }
+
+
+    pushModal(`
+
+        <div class="mm-modal">
+
+            <div class="mm-modal-header">
+
+                <div>
+
+                    ${
+                        canGoBack
+                            ? `
+                                <button
+                                    class="mm-back-button mm-modal-back"
+                                    onclick="goBackModal()"
+                                >
+                                    ← Back
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <span class="mm-badge">
+                        ${mutation.cost} gc base
+                    </span>
+
+                    <h2>
+                        ${escapeHtml(mutation.name)}
+                    </h2>
+
+                </div>
+
+                <button
+                    class="mm-modal-close"
+                    onclick="closeModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+            <div class="mm-modal-body">
+
+                <div class="mm-rule-description">
+                    ${formatRuleText(mutation.effect)}
+                </div>
+
+                ${renderSourceInformation(
+                    state.mutations,
+                    mutation.sourcePage
+                )}
+
+            </div>
+
+        </div>
+
+    `);
 
 }
 
@@ -5368,7 +6139,8 @@ function setupFighterEquipmentValidation(
             costContainer.innerHTML =
                 renderFighterCostBreakdown(
                     fighter,
-                    selectedEquipment
+                    selectedEquipment,
+                    editingFighterMutations
                 );
 
         }
@@ -6159,6 +6931,12 @@ async function saveFighterChanges(
     const previousEquipment =
         [...fighter.equipment];
 
+    const previousSpells =
+        [...(fighter.spells || [])];
+
+    const previousMutations =
+        [...(fighter.mutations || [])];
+
     const previousTreasury =
         warband.treasury;
 
@@ -6271,6 +7049,53 @@ async function saveFighterChanges(
 
 
     /*
+     * Mutations are only ever added/removed via the editor's own
+     * Add/Remove Mutation controls (editingFighterMutations), never
+     * read from the DOM the way equipment is - the picker cost
+     * doubling depends on array order, so it is simplest to keep
+     * editingFighterMutations as the single source of truth and
+     * charge the treasury for whatever it costs beyond what this
+     * fighter already cost before this edit.
+     */
+
+    const previousMutationsCost =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateMutationsCost === "function"
+            ? RulesEngine.calculateMutationsCost(
+                previousMutations,
+                state.mutations
+            )
+            : 0;
+
+    const newMutationsCost =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateMutationsCost === "function"
+            ? RulesEngine.calculateMutationsCost(
+                editingFighterMutations,
+                state.mutations
+            )
+            : 0;
+
+    const mutationsCostDelta =
+        newMutationsCost - previousMutationsCost;
+
+
+    if (mutationsCostDelta > warband.treasury) {
+
+        alert(
+            `These mutations cost ${mutationsCostDelta} gc, ` +
+            `but this warband only has ${warband.treasury} gc.`
+        );
+
+        fighter.name =
+            previousName;
+
+        return;
+
+    }
+
+
+    /*
      * Apply the validated equipment change.
      *
      * This updates both the fighter's
@@ -6309,6 +7134,16 @@ async function saveFighterChanges(
     }
 
 
+    fighter.spells =
+        [...editingFighterSpells];
+
+    fighter.mutations =
+        [...editingFighterMutations];
+
+    warband.treasury =
+        warband.treasury - mutationsCostDelta;
+
+
     /*
      * Persist only after ALL validation
      * and rule changes have succeeded.
@@ -6325,7 +7160,13 @@ async function saveFighterChanges(
                     fighter.name,
 
                 equipment:
-                    fighter.equipment
+                    fighter.equipment,
+
+                spells:
+                    fighter.spells,
+
+                mutations:
+                    fighter.mutations
 
             })
             .eq(
@@ -6347,6 +7188,12 @@ async function saveFighterChanges(
 
         fighter.equipment =
             previousEquipment;
+
+        fighter.spells =
+            previousSpells;
+
+        fighter.mutations =
+            previousMutations;
 
         warband.treasury =
             previousTreasury;
@@ -6387,6 +7234,9 @@ async function saveFighterChanges(
         );
 
     }
+
+
+    editFighterId = null;
 
 
     closeModal();
@@ -6611,7 +7461,8 @@ async function saveFighterGameUpdate(
 
 function renderFighterCostBreakdown(
     fighter,
-    equipmentIds
+    equipmentIds,
+    mutationIds
 ) {
 
     const baseCost =
@@ -6628,8 +7479,18 @@ function renderFighterCostBreakdown(
             : 0;
 
 
+    const mutationsCost =
+        typeof RulesEngine !== "undefined" &&
+        typeof RulesEngine.calculateMutationsCost === "function"
+            ? RulesEngine.calculateMutationsCost(
+                mutationIds || [],
+                state.mutations
+            )
+            : 0;
+
+
     const totalCost =
-        baseCost + equipmentCost;
+        baseCost + equipmentCost + mutationsCost;
 
 
     return `
@@ -6660,6 +7521,25 @@ function renderFighterCostBreakdown(
                 </strong>
 
             </div>
+
+
+            ${
+                mutationIds && mutationIds.length
+                    ? `
+                        <div class="mm-cost-row">
+
+                            <span>
+                                Mutations
+                            </span>
+
+                            <strong>
+                                ${mutationsCost} gc
+                            </strong>
+
+                        </div>
+                    `
+                    : ""
+            }
 
 
             <div class="mm-cost-row mm-cost-total">

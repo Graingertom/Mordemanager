@@ -18,7 +18,7 @@ const APP_VERSION = "0.2.1";
  * whenever any data/rules/*.json file changes.
  */
 
-const DATA_VERSION = 8;
+const DATA_VERSION = 10;
 
 const DATA_PATHS = {
 
@@ -32,13 +32,11 @@ const DATA_PATHS = {
 
     advances: `./data/rules/advances.json?v=${DATA_VERSION}`,
 
-    combat: `./data/rules/combat.json?v=${DATA_VERSION}`
+    combat: `./data/rules/combat.json?v=${DATA_VERSION}`,
 
-    /*
-     * magic.json and mutations.json join here once the spellcasting/
-     * mutation framework (Phase 2 of the warbands plan) lands -
-     * needed by Witch Hunters onward, not by the Mercenary variants.
-     */
+    magic: `./data/rules/magic.json?v=${DATA_VERSION}`,
+
+    mutations: `./data/rules/mutations.json?v=${DATA_VERSION}`
 
 };
 
@@ -57,17 +55,17 @@ const WARBAND_TYPES = [
 
     "middenheim",
 
-    "marienburg"
+    "marienburg",
 
-    /*
-     * Witch Hunters, Sisters of Sigmar, Undead, Skaven and
-     * Possessed are next - each needs its own data/rules/warbands/
-     * <id>.json (same schema as reikland.json) added to this list
-     * once built, plus magic.json/mutations.json for the ones that
-     * need spellcasting or mutations. See the plan this was built
-     * from for the full roster/rules already verified against the
-     * rulebook for all five, ready to turn into data files.
-     */
+    "witch-hunters",
+
+    "sisters-of-sigmar",
+
+    "undead",
+
+    "skaven",
+
+    "possessed"
 
 ];
 
@@ -97,6 +95,10 @@ const state = {
     advances: null,
 
     combat: null,
+
+    magic: null,
+
+    mutations: null,
 
     warbandDefinitions:
         Object.fromEntries(
@@ -245,7 +247,11 @@ async function loadRules() {
 
         "advances",
 
-        "combat"
+        "combat",
+
+        "magic",
+
+        "mutations"
 
     ];
 
@@ -410,7 +416,9 @@ async function loadPlayerData() {
                 advances,
                 injuries,
                 status,
-                wounds
+                wounds,
+                spells,
+                mutations
             `),
 
         supabaseClient

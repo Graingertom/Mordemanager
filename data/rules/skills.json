@@ -35,6 +35,11 @@
             "id": "speed",
             "name": "Speed",
             "description": "Skills based on movement and agility."
+        },
+        {
+            "id": "special",
+            "name": "Special",
+            "description": "A warband's own unique skill list, used instead of or alongside the standard five - currently the Sisters of Sigmar and Skaven each have one."
         }
     ],
 
@@ -276,10 +281,83 @@
             "category": "speed",
             "description": "May climb up or down a height equal to twice his normal Movement, without needing an Initiative test.",
             "sourcePage": 85
+        },
+
+        {
+            "id": "sign-of-sigmar",
+            "name": "Sign of Sigmar",
+            "category": "special",
+            "description": "Possessed or Undead opponents lose their first attack against the Sister in the first round of hand-to-hand combat (down to a minimum of 1).",
+            "sourcePage": 65
+        },
+        {
+            "id": "protection-of-sigmar",
+            "name": "Protection of Sigmar",
+            "category": "special",
+            "description": "Any spell which would affect her is nullified on a D6 roll of 4+. If the spell is nullified it does not affect any other models either.",
+            "sourcePage": 65
+        },
+        {
+            "id": "utter-determination",
+            "name": "Utter Determination",
+            "category": "special",
+            "description": "Only the Matriarch may take this skill - allows her to re-roll any failed Rout tests.",
+            "sourcePage": 65
+        },
+        {
+            "id": "righteous-fury",
+            "name": "Righteous Fury",
+            "category": "special",
+            "description": "Hates all Skaven, Undead or Possessed warbands and every model in them.",
+            "sourcePage": 65
+        },
+        {
+            "id": "absolute-faith",
+            "name": "Absolute Faith",
+            "category": "special",
+            "description": "May re-roll any failed Fear tests, and does not have to test if fighting alone against several opponents.",
+            "sourcePage": 65
+        },
+
+        {
+            "id": "black-hunger",
+            "name": "Black Hunger",
+            "category": "special",
+            "description": "May declare at the start of his turn that he is drawing on the Black Hunger, gaining +1 Attack and +D3\" Movement for the duration of the turn, but suffering D3 Strength 3 hits with no armour save possible at the end of the turn.",
+            "sourcePage": 75
+        },
+        {
+            "id": "tail-fighting",
+            "name": "Tail Fighting",
+            "category": "special",
+            "description": "May wield a shield, knife or sword with its tail - gains an extra attack with the appropriate weapon, or a +1 bonus to its armour save.",
+            "sourcePage": 75
+        },
+        {
+            "id": "wall-runner",
+            "name": "Wall Runner",
+            "category": "special",
+            "description": "Does not need to take an Initiative test when climbing walls or other sheer surfaces.",
+            "sourcePage": 75
+        },
+        {
+            "id": "infiltration",
+            "name": "Infiltration",
+            "category": "special",
+            "description": "Is always placed on the battlefield after the opposing warband, and may be placed anywhere out of sight of the enemy and more than 12\" from any enemy model.",
+            "sourcePage": 75
+        },
+        {
+            "id": "art-of-silent-death",
+            "name": "Art of Silent Death",
+            "category": "special",
+            "description": "Fights bare-handed with no penalty and counts as having two weapons (+1 Attack). Causes a critical hit on a To Wound roll of 5-6 instead of just 6. May be combined with Eshin Fighting Claws for +2 Attacks instead of +1.",
+            "sourcePage": 75
         }
     ],
 
     "warbandAccess": {
+
         "reikland": {
             "captain": [
                 "combat",
@@ -299,6 +377,160 @@
                 "combat",
                 "speed"
             ]
+        },
+
+        "middenheim": {
+            "captain": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+
+            "champion": [
+                "combat",
+                "shooting",
+                "strength"
+            ],
+
+            "youngblood": [
+                "combat",
+                "speed"
+            ]
+        },
+
+        "marienburg": {
+            "captain": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+
+            "champion": [
+                "combat",
+                "shooting",
+                "strength"
+            ],
+
+            "youngblood": [
+                "combat",
+                "speed"
+            ]
+        },
+
+        "witch-hunters": {
+            "witch-hunter-captain": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+
+            "warrior-priest": [
+                "combat",
+                "academic",
+                "strength"
+            ],
+
+            "witch-hunter": [
+                "combat",
+                "shooting",
+                "strength"
+            ]
+        },
+
+        "sisters-of-sigmar": {
+            "matriarch": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed",
+                "special"
+            ],
+
+            "sister-superior": [
+                "combat",
+                "shooting",
+                "strength",
+                "special"
+            ],
+
+            "augur": [
+                "academic",
+                "speed",
+                "special"
+            ]
+        },
+
+        "undead": {
+            "vampire": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+
+            "necromancer": [
+                "academic"
+            ],
+
+            "dreg": [
+                "combat",
+                "speed"
+            ]
+        },
+
+        "skaven": {
+            "assassin-adept": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed",
+                "special"
+            ],
+
+            "black-skaven": [
+                "combat",
+                "strength",
+                "special"
+            ],
+
+            "eshin-sorcerer": [
+                "academic",
+                "special"
+            ],
+
+            "night-runner": [
+                "speed",
+                "special"
+            ]
+        },
+
+        "possessed": {
+            "magister": [
+                "combat",
+                "shooting",
+                "academic",
+                "strength",
+                "speed"
+            ],
+            "the-possessed": [
+                "combat",
+                "strength"
+            ],
+            "mutant": [
+                "combat",
+                "strength"
+            ]
         }
-    }
+    },
+
+    "warbandAccessNotes": "Exact skill-category checkmarks for Witch Hunters, Sisters of Sigmar, Undead, Skaven and the Middenheim/Marienburg Mercenary variants could not be read from the source PDF's tables (the checkmark glyphs did not survive text extraction). Reikland's own table did extract cleanly and is the verified basis for its access above; every other warband's access here is a best-effort judgement call following the same shape (leader gets the most categories, elite fighters get a combat-leaning subset, dedicated spellcasters lean Academic) - verify against the printed skill tables before relying on this for a competitive game."
 }

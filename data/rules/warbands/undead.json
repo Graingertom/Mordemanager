@@ -1,0 +1,416 @@
+{
+    "id": "undead",
+    "name": "The Undead",
+    "faction": "Sylvania",
+    "race": "Undead",
+
+    "description": "Vampire-led legions of the restless dead, gathering wyrdstone in the name of Vlad von Carstein.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 15,
+
+    "source": {
+        "document": "Mordheim Core Rules / The Undead",
+        "publisher": "Games Workshop",
+        "providedBy": "Broheim",
+        "url": "https://www.broheim.net/downloads/warbands/official/Undead.pdf"
+    },
+
+    "specialRules": [],
+
+    "fighterTypes": [
+        {
+            "id": "vampire",
+            "name": "Vampire",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 110,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 6,
+                "WS": 4,
+                "BS": 4,
+                "S": 4,
+                "T": 4,
+                "W": 2,
+                "I": 5,
+                "A": 2,
+                "Ld": 8
+            },
+
+            "equipmentList": "undead",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": true,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any model in the warband within 6\" of the Vampire may use his Leadership instead of their own."
+                },
+                {
+                    "id": "cause-fear",
+                    "name": "Cause Fear",
+                    "summary": "A terrifying Undead creature - causes fear."
+                },
+                {
+                    "id": "immune-to-psychology",
+                    "name": "Immune to Psychology",
+                    "summary": "Not affected by psychology (such as fear) and never leaves combat."
+                },
+                {
+                    "id": "immune-to-poison",
+                    "name": "Immune to Poison",
+                    "summary": "Not affected by any poison."
+                },
+                {
+                    "id": "no-pain",
+                    "name": "No Pain",
+                    "summary": "Treats a Stunned result on the Injury chart as Knocked Down instead."
+                }
+            ]
+        },
+
+        {
+            "id": "necromancer",
+            "name": "Necromancer",
+            "category": "hero",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 35,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "undead",
+
+            "wizard": "necromancy",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": true,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "wizard",
+                    "name": "Wizard",
+                    "summary": "A wizard - uses Necromantic magic."
+                }
+            ]
+        },
+
+        {
+            "id": "dreg",
+            "name": "Dreg",
+            "category": "hero",
+
+            "min": 0,
+            "max": 3,
+
+            "cost": 20,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 2,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "undead",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": false,
+                "speed": true
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "zombie",
+            "name": "Zombie",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 15,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 0,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 1,
+                "A": 1,
+                "Ld": 5
+            },
+
+            "equipmentList": null,
+
+            "gainsExperience": false,
+
+            "restrictions": {
+                "mayNotRun": true
+            },
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "cause-fear",
+                    "name": "Cause Fear",
+                    "summary": "A terrifying Undead creature - causes fear."
+                },
+                {
+                    "id": "may-not-run",
+                    "name": "May Not Run",
+                    "summary": "Slow Undead creature - may not run, but may charge normally."
+                },
+                {
+                    "id": "immune-to-psychology",
+                    "name": "Immune to Psychology",
+                    "summary": "Not affected by psychology and never leaves combat."
+                },
+                {
+                    "id": "immune-to-poison",
+                    "name": "Immune to Poison",
+                    "summary": "Not affected by any poison."
+                },
+                {
+                    "id": "no-pain",
+                    "name": "No Pain",
+                    "summary": "Treats a Stunned result on the Injury chart as Knocked Down instead."
+                },
+                {
+                    "id": "no-brain",
+                    "name": "No Brain",
+                    "summary": "May not have any weapons or armour (suffers no penalty for this). Never gains experience."
+                }
+            ]
+        },
+
+        {
+            "id": "ghoul",
+            "name": "Ghoul",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 40,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 2,
+                "S": 3,
+                "T": 4,
+                "W": 1,
+                "I": 3,
+                "A": 2,
+                "Ld": 5
+            },
+
+            "equipmentList": null,
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "cause-fear",
+                    "name": "Cause Fear",
+                    "summary": "Twisted and repulsive creatures - cause fear."
+                },
+                {
+                    "id": "no-equipment",
+                    "name": "No Equipment",
+                    "summary": "Ghouls never carry any equipment, apart from a few bones which they use as primitive weapons."
+                }
+            ]
+        },
+
+        {
+            "id": "dire-wolf",
+            "name": "Dire Wolf",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 50,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 9,
+                "WS": 3,
+                "BS": 0,
+                "S": 4,
+                "T": 3,
+                "W": 1,
+                "I": 2,
+                "A": 1,
+                "Ld": 4
+            },
+
+            "equipmentList": null,
+
+            "gainsExperience": false,
+
+            "restrictions": {
+                "mayNotRun": true
+            },
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "charge",
+                    "name": "Charge",
+                    "summary": "Fights with 2 Attacks instead of 1 during the turn it charges."
+                },
+                {
+                    "id": "may-not-run",
+                    "name": "May Not Run",
+                    "summary": "Slow to react - may not run, but may charge normally."
+                },
+                {
+                    "id": "cause-fear",
+                    "name": "Cause Fear",
+                    "summary": "A terrifying Undead creature - causes fear."
+                },
+                {
+                    "id": "immune-to-psychology",
+                    "name": "Immune to Psychology",
+                    "summary": "Not affected by psychology and never leaves combat."
+                },
+                {
+                    "id": "immune-to-poison",
+                    "name": "Immune to Poison",
+                    "summary": "Not affected by any poison."
+                },
+                {
+                    "id": "unliving",
+                    "name": "Unliving",
+                    "summary": "Never gains experience."
+                },
+                {
+                    "id": "no-pain",
+                    "name": "No Pain",
+                    "summary": "Treats a Stunned result on the Injury chart as Knocked Down instead."
+                }
+            ]
+        }
+    ],
+
+    "equipmentLists": {
+
+        "undead": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear",
+                "halberd"
+            ],
+
+            "missile": [
+                "bow",
+                "short-bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "vampire": 20,
+        "necromancer": 8,
+        "dreg": 0,
+        "zombie": 0,
+        "ghoul": 0,
+        "dire-wolf": 0
+    },
+
+    "rulesNotes": [
+        "An Undead warband must include a minimum of 3 models.",
+        "An Undead warband may contain a maximum of 15 models.",
+        "The warband must include exactly one Vampire.",
+        "The warband may include a single Necromancer.",
+        "The warband may include up to three Dregs.",
+        "The warband may include any number of Zombies.",
+        "The warband may include any number of Ghouls (bought in groups of 1-5).",
+        "The warband may include up to five Dire Wolves.",
+        "Zombies, Ghouls and Dire Wolves may never carry weapons or armour.",
+        "Skill-category access could not be read from the source PDF's table for this warband (checkmark glyphs did not survive extraction) - set here as a best-effort judgement call (Vampire gets everything as the leader; the Necromancer leans purely Academic to suit spellcasting; the Dreg mirrors a basic Hero) - verify against the printed skill table before relying on it for a competitive game."
+    ]
+}

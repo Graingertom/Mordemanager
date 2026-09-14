@@ -1,0 +1,209 @@
+{
+    "source": {
+        "organisation": "Mordheim Core Rules",
+        "document": "Mordheim Core Rules Printable, Magic section (p40-45); Broheim's Ultimate FAQ used to confirm spell names/effects where the core PDF's text layer was unreadable",
+        "website": "https://broheim.net",
+        "url": "https://www.broheim.net/downloads/rules/Mordheim%20Core%20Rules%20Printable.pdf"
+    },
+
+    "castingRules": {
+        "description": "Spells are cast in the shooting phase, even if the caster is in hand-to-hand combat. Roll 2D6 and compare to the spell's Difficulty - equal or higher succeeds. A wizard may cast one spell per turn, may not use missile weapons that turn, and may not cast while wearing armour or carrying a shield/buckler - except Prayers of Sigmar, whose Sisters/Warrior-Priests may wear armour and still pray. Spells do not cause critical hits; targets still receive armour saves unless a spell says otherwise. A wizard starts with one randomly determined spell and may gain more through play.",
+        "sourcePage": 40
+    },
+
+    "chaosRituals": {
+        "wizardType": "Magister",
+        "sourcePage": 43,
+        "spells": [
+            {
+                "roll": 1,
+                "name": "Vision of Torment",
+                "difficulty": 10,
+                "effect": "The Chaos Mage summons horrible visions of the realm of Chaos, causing his enemy utter horror. (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p43, before relying on it.)",
+                "verified": false
+            },
+            {
+                "roll": 2,
+                "name": "Eye of God",
+                "difficulty": 7,
+                "effect": "Targets a single model within 6\". (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p43, before relying on it.)",
+                "verified": false
+            },
+            {
+                "roll": 3,
+                "name": "Dark Blood",
+                "difficulty": 8,
+                "effect": "Causes the target's blood to boil and curdle. (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p43, before relying on it.)",
+                "verified": false
+            },
+            {
+                "roll": 4,
+                "name": "Lure of Chaos",
+                "difficulty": 7,
+                "effect": "Draws a living model toward the Chaos Mage. (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p43, before relying on it. Per Broheim's Ultimate FAQ, strictly by the rules this spell does affect Vampires/Zombies/Dire Wolves, even though the flavour text implies only the living.)",
+                "verified": false
+            },
+            {
+                "roll": 5,
+                "name": "Wings of Darkness",
+                "difficulty": 7,
+                "effect": "The Chaos Mage is lifted from the ground by two shadowy Daemons and carried wherever he wants to go - he may immediately move up to 12\", including into base contact with an enemy (in which case he counts as charging).",
+                "verified": true
+            },
+            {
+                "roll": 6,
+                "name": "Word of Pain",
+                "difficulty": 7,
+                "effect": "Speaking the forbidden name of his dark god, the Chaos Mage causes indescribable pain to all who hear it. All models within 3\" of the Chaos Mage, friend or foe, suffer one Strength 3 hit. No armour saves are allowed.",
+                "verified": true
+            }
+        ]
+    },
+
+    "prayersOfSigmar": {
+        "wizardType": "Priest",
+        "sourcePage": 41,
+        "spells": [
+            {
+                "roll": 1,
+                "name": "The Hammer of Sigmar",
+                "difficulty": 7,
+                "effect": "This weapon of the faithful glows with a golden light, imbued with the righteous power of Sigmar. The wielder gains +2 Strength in hand-to-hand combat and all hits he inflicts cause double damage (2 wounds instead of 1). The Priest must test each shooting phase he wants to continue using the Hammer.",
+                "verified": true
+            },
+            {
+                "roll": 2,
+                "name": "Hearts of Steel",
+                "difficulty": 8,
+                "effect": "Grants the Priest's warband +1 to its Rout test. This bonus does not stack even if the prayer is cast (and succeeds) more than once. (Name and core effect confirmed via Broheim's Ultimate FAQ, including an official errata removing an original reference to Terror tests; full original flavour wording could not be reliably extracted from the source PDF.)",
+                "verified": false
+            },
+            {
+                "roll": 3,
+                "name": "Soulfire",
+                "difficulty": 9,
+                "effect": "Calls down a burst of holy fire against the Priest's enemies. (Name confirmed via Broheim's Ultimate FAQ, which also confirms the spell has an area of effect that works in three dimensions - it affects models above or below the Priest, not just on the same level. Exact damage/range mechanics could not be reliably extracted from the source PDF - verify against the rulebook, p41, before relying on this entry.)",
+                "verified": false
+            },
+            {
+                "roll": 4,
+                "name": "Shield of Faith",
+                "difficulty": 6,
+                "effect": "A shield of pure white light appears in front of the Priest. As long as his faith remains strong the shield will protect him - the Priest is immune to all spells. Roll at the beginning of each of his turns in the recovery phase; on a roll of 1 or 2 the shield disappears.",
+                "verified": true
+            },
+            {
+                "roll": 5,
+                "name": "Healing Hand",
+                "difficulty": 5,
+                "effect": "Laying hands upon a wounded comrade, the servant of Sigmar calls upon his Lord to heal the warrior. Restores wounds to a friendly model within 2\" (up to his starting number of Wounds), or, if the model is Stunned or Knocked Down, allows him to recover immediately.",
+                "verified": true
+            },
+            {
+                "roll": 6,
+                "name": "Armour of Righteousness",
+                "difficulty": 9,
+                "effect": "Impenetrable armour covers the Priest and the fiery image of a twin-tailed comet burns above his head. The Priest has an armour save of 2+, which replaces his normal save, and he causes fear in his enemies and is immune to fear himself. Lasts until the beginning of the Priest's next Shooting phase.",
+                "verified": true
+            }
+        ]
+    },
+
+    "necromancy": {
+        "wizardType": "Necromancer",
+        "sourcePage": 42,
+        "spells": [
+            {
+                "roll": 1,
+                "name": "Lifestealer",
+                "difficulty": 10,
+                "effect": "The Necromancer sucks out the very essence of life from his victim, stealing its vigour for himself. Choose a single model within 6\" - the target suffers a wound (no save allowed) and the Necromancer gains an extra Wound for the duration of the battle, which may take him above his original maximum. Does not affect the Possessed or any Undead models.",
+                "verified": true
+            },
+            {
+                "roll": 2,
+                "name": "Re-Animation",
+                "difficulty": 5,
+                "effect": "At the spoken command of the Necromancer, the dead rise to fight again. One Zombie that went Out of Action during the last hand-to-hand combat or Shooting phase immediately returns to the battle. Place the model within 6\" of the Necromancer, but not straight into hand-to-hand combat with an enemy model.",
+                "verified": true
+            },
+            {
+                "roll": 3,
+                "name": "Death Vision",
+                "difficulty": 6,
+                "effect": "The Necromancer calls on the power of Necromancy to reveal the moment of his enemies' death. The Necromancer causes fear in his enemies for the duration of the battle.",
+                "verified": true
+            },
+            {
+                "roll": 4,
+                "name": "Spell of Doom",
+                "difficulty": 9,
+                "effect": "The Necromancer whispers to the sleeping dead to rise up from the ground and seize his enemies. Choose one enemy model within 12\" - the model must immediately roll equal to or less than his Strength on a D6, or the dead emerging from the earth rend him with supernatural power. If he fails, roll on the Injury table to see what happens.",
+                "verified": true
+            },
+            {
+                "roll": 5,
+                "name": "Call of Vanhel",
+                "difficulty": 6,
+                "effect": "The Necromancer summons the world of the dead to invigorate his Undead servants. A single Zombie or Dire Wolf within 6\" of the Necromancer may immediately move again up to its maximum Movement distance (9\" for Dire Wolves). If this moves it into base contact with an enemy model, it counts as charging.",
+                "verified": true
+            },
+            {
+                "roll": 6,
+                "name": "Spell of Awakening",
+                "difficulty": "Auto",
+                "effect": "The Necromancer calls the soul of a slain Hero back to his body and enslaves him with corrupt magic. If an enemy Hero is killed (rolls 11-16 on the Serious Injury chart after the battle), the Necromancer may raise him to fight as a Zombie in his servitude. The dead Hero retains his characteristics, weapons and armour but may not use any other equipment or skills, may no longer run, counts as his own one-model Henchman group, and may not gain additional experience. Always succeeds. The new Zombie follows all normal Zombie rules (immune to poison, causes fear) except for retaining his profile, weapons and armour.",
+                "verified": true
+            }
+        ]
+    },
+
+    "magicOfTheHornedRat": {
+        "wizardType": "Eshin Sorcerer",
+        "sourcePage": 45,
+        "spells": [
+            {
+                "roll": 1,
+                "name": "Warpfire",
+                "difficulty": 8,
+                "effect": "A green flame leaps from the outstretched paw of the Sorcerer and burns its victims. (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p45, before relying on it.)",
+                "verified": false
+            },
+            {
+                "roll": 2,
+                "name": "Children of the Horned Rat",
+                "difficulty": null,
+                "effect": "Summons D3 Giant Rats, deployed within 6\" of the Sorcerer. Per Broheim's Ultimate FAQ, this spell is cast before the battle begins and the rats are placed on the table at the same time as the Sorcerer is deployed; it may only be cast successfully once per battle. Difficulty and full original wording could not be reliably extracted from the source PDF.",
+                "verified": false
+            },
+            {
+                "roll": 3,
+                "name": "Gnawdoom",
+                "difficulty": 7,
+                "effect": "The target is attacked by rats and soon is covered from head to foot in small, bleeding wounds. Causes 2D6 Strength 1 hits on a single model within 8\" of the caster.",
+                "verified": true
+            },
+            {
+                "roll": 4,
+                "name": "Black Fury",
+                "difficulty": 8,
+                "effect": "With a chittering incantation the Sorcerer turns into a monstrous rat-like creature, attacking with insane fury. The Sorcerer may immediately charge any enemy model within 12\" (ignoring terrain and interposing models) and gains 2 extra Attacks and +1 Strength during this turn's hand-to-hand combat phase only.",
+                "verified": true
+            },
+            {
+                "roll": 5,
+                "name": "Eye of the Warp",
+                "difficulty": 8,
+                "effect": "Opens a gateway to the Realm of Chaos. (Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p45, before relying on it.)",
+                "verified": false
+            },
+            {
+                "roll": 6,
+                "name": "Sorcerer's Curse",
+                "difficulty": 6,
+                "effect": "The Sorcerer points a claw towards one of his enemies and curses him in the name of the Horned One. Appears to impose a hit/combat penalty on a single enemy within roughly 12\" for the rest of the battle. Exact mechanical wording could not be reliably extracted from the source PDF - verify the full effect against the rulebook, p45, before relying on it.",
+                "verified": false
+            }
+        ]
+    }
+}

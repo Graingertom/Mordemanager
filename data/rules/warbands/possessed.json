@@ -1,0 +1,373 @@
+{
+    "id": "possessed",
+    "name": "Cult of the Possessed",
+    "faction": "Chaos",
+    "race": "Human / Mutant",
+
+    "description": "A warband of Chaos worshippers led by a Magister, seeking wyrdstone to fuel their dark rituals.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 15,
+
+    "source": {
+        "document": "Mordheim Core Rules / Cult of the Possessed",
+        "publisher": "Games Workshop",
+        "providedBy": "Broheim",
+        "url": "https://www.broheim.net/downloads/warbands/official/Possessed.pdf"
+    },
+
+    "specialRules": [],
+
+    "fighterTypes": [
+        {
+            "id": "magister",
+            "name": "Magister",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 70,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 4,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "possessed",
+
+            "wizard": "chaosRituals",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": true,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any warrior within 6\" of the Magister may use his Leadership instead of his own."
+                },
+                {
+                    "id": "chaos-rituals",
+                    "name": "Chaos Rituals",
+                    "summary": "A wizard - uses the Chaos Rituals."
+                }
+            ]
+        },
+
+        {
+            "id": "the-possessed",
+            "name": "The Possessed",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 90,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 5,
+                "WS": 4,
+                "BS": 0,
+                "S": 4,
+                "T": 4,
+                "W": 2,
+                "I": 2,
+                "A": 3,
+                "Ld": 7
+            },
+
+            "equipmentList": null,
+
+            "startsWithMutations": true,
+
+            "restrictions": {
+                "neverUsesWeaponsOrArmour": true
+            },
+
+            "skills": {
+                "combat": true,
+                "shooting": false,
+                "academic": false,
+                "strength": true,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "fear",
+                    "name": "Fear",
+                    "summary": "A warped and daemonic sight - causes fear."
+                },
+                {
+                    "id": "no-weapons-or-armour",
+                    "name": "No Weapons or Armour",
+                    "summary": "Fights only with its own daemonic body and mutations - may never use any weapon or armour."
+                },
+                {
+                    "id": "starts-with-mutations",
+                    "name": "Starts With Mutations",
+                    "summary": "Must be given at least one Mutation when recruited."
+                }
+            ]
+        },
+
+        {
+            "id": "mutant",
+            "name": "Mutant",
+            "category": "hero",
+
+            "min": 0,
+            "max": 2,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "possessed",
+
+            "startsWithMutations": true,
+
+            "skills": {
+                "combat": true,
+                "shooting": false,
+                "academic": false,
+                "strength": true,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "starts-with-mutations",
+                    "name": "Starts With Mutations",
+                    "summary": "Must be given at least one Mutation when recruited."
+                }
+            ]
+        },
+
+        {
+            "id": "darksoul",
+            "name": "Darksoul",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 35,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "possessed-darksoul",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "crazed",
+                    "name": "Crazed",
+                    "summary": "Utterly devoted to the cult - automatically passes any Leadership test taken as a result of psychology."
+                }
+            ]
+        },
+
+        {
+            "id": "brethren",
+            "name": "Brethren",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 25,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "possessed",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "beastman",
+            "name": "Beastman",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 3,
+
+            "cost": 45,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 5,
+                "WS": 4,
+                "BS": 3,
+                "S": 4,
+                "T": 4,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 6
+            },
+
+            "equipmentList": "possessed-darksoul",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "cause-fear",
+                    "name": "Cause Fear",
+                    "summary": "A twisted beastial creature - causes fear."
+                }
+            ]
+        }
+    ],
+
+    "equipmentLists": {
+
+        "possessed": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear",
+                "halberd"
+            ],
+
+            "missile": [
+                "bow",
+                "short-bow",
+                "crossbow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "possessed-darksoul": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "spear"
+            ],
+
+            "missile": [],
+
+            "armour": [
+                "light-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "magister": 20,
+        "the-possessed": 8,
+        "mutant": 0,
+        "darksoul": 0,
+        "brethren": 0,
+        "beastman": 0
+    },
+
+    "rulesNotes": [
+        "A Cult of the Possessed warband must include a minimum of 3 models.",
+        "A Cult of the Possessed warband may contain a maximum of 15 models.",
+        "The warband must include exactly one Magister.",
+        "The warband may include up to two of The Possessed.",
+        "The warband may include up to two Mutants.",
+        "The warband may include up to five Darksouls.",
+        "The warband may include any number of Brethren.",
+        "The warband may include up to three Beastmen.",
+        "The Possessed may never use any weapon or armour, and must be given at least one Mutation when recruited.",
+        "Mutants must be given at least one Mutation when recruited.",
+        "Per the rules, a model may only be given new Mutations at the point it is recruited - never afterwards.",
+        "Skill-category access could not be read from the source PDF's table for this warband (checkmark glyphs did not survive extraction) - set here as a best-effort judgement call (Magister gets a broad spread as the leader/wizard; The Possessed and Mutants lean Combat/Strength) - verify against the printed skill table before relying on it for a competitive game."
+    ]
+}

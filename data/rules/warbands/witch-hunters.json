@@ -1,0 +1,375 @@
+{
+    "id": "witch-hunters",
+    "name": "Witch Hunters",
+    "faction": "Order of the Templars of Sigmar",
+    "race": "Human",
+
+    "description": "Zealous hunters of heretics, witches and Daemon-worshippers, dedicated to Sigmar's holy purpose.",
+
+    "startingTreasury": 500,
+    "minimumWarbandSize": 3,
+    "maximumWarbandSize": 12,
+
+    "source": {
+        "document": "Mordheim Core Rules / Witch Hunters",
+        "publisher": "Games Workshop",
+        "providedBy": "Broheim",
+        "url": "https://www.broheim.net/downloads/warbands/official/Witch%20Hunters.pdf"
+    },
+
+    "specialRules": [],
+
+    "fighterTypes": [
+        {
+            "id": "witch-hunter-captain",
+            "name": "Witch Hunter Captain",
+            "category": "hero",
+
+            "min": 1,
+            "max": 1,
+
+            "cost": 60,
+            "startingExperience": 20,
+
+            "profile": {
+                "M": 4,
+                "WS": 4,
+                "BS": 4,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "witch-hunter",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": true,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "leader",
+                    "name": "Leader",
+                    "summary": "Any warrior within 6\" of the Witch Hunter Captain may use his Leadership value when taking Leadership tests."
+                },
+                {
+                    "id": "burn-the-witch",
+                    "name": "Burn the Witch!",
+                    "summary": "A Witch Hunter Captain hates all models who can cast spells."
+                }
+            ]
+        },
+
+        {
+            "id": "warrior-priest",
+            "name": "Warrior-Priest",
+            "category": "hero",
+
+            "min": 0,
+            "max": 1,
+
+            "cost": 40,
+            "startingExperience": 12,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 8
+            },
+
+            "equipmentList": "witch-hunter",
+
+            "wizard": "prayersOfSigmar",
+
+            "skills": {
+                "combat": true,
+                "shooting": false,
+                "academic": true,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "prayers",
+                    "name": "Prayers",
+                    "summary": "A servant of Sigmar - may use the Prayers of Sigmar."
+                }
+            ]
+        },
+
+        {
+            "id": "witch-hunter",
+            "name": "Witch Hunter",
+            "category": "hero",
+
+            "min": 0,
+            "max": 3,
+
+            "cost": 25,
+            "startingExperience": 8,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "witch-hunter",
+
+            "skills": {
+                "combat": true,
+                "shooting": true,
+                "academic": false,
+                "strength": true,
+                "speed": true
+            },
+
+            "specialRules": [
+                {
+                    "id": "burn-the-witch",
+                    "name": "Burn the Witch!",
+                    "summary": "Witch Hunters hate all models who can cast spells."
+                }
+            ]
+        },
+
+        {
+            "id": "flagellant",
+            "name": "Flagellant",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 40,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 3,
+                "BS": 3,
+                "S": 4,
+                "T": 4,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 10
+            },
+
+            "equipmentList": "flagellant",
+
+            "restrictions": {
+                "neverUseMissileWeapons": true,
+                "mayNotBecomeWarbandLeader": true
+            },
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "fanatical",
+                    "name": "Fanatical",
+                    "summary": "Automatically passes all Leadership-based tests. A Flagellant may never become the warband leader. Never uses missile weapons, even if an Advance roll would otherwise allow it."
+                }
+            ]
+        },
+
+        {
+            "id": "zealot",
+            "name": "Zealot",
+            "category": "henchman",
+
+            "min": 0,
+            "max": null,
+
+            "cost": 20,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 4,
+                "WS": 2,
+                "BS": 2,
+                "S": 3,
+                "T": 3,
+                "W": 1,
+                "I": 3,
+                "A": 1,
+                "Ld": 7
+            },
+
+            "equipmentList": "zealot",
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": []
+        },
+
+        {
+            "id": "warhound",
+            "name": "Warhound",
+            "category": "henchman",
+
+            "min": 0,
+            "max": 5,
+
+            "cost": 15,
+            "startingExperience": 0,
+
+            "profile": {
+                "M": 6,
+                "WS": 4,
+                "BS": 0,
+                "S": 4,
+                "T": 3,
+                "W": 1,
+                "I": 4,
+                "A": 1,
+                "Ld": 5
+            },
+
+            "equipmentList": null,
+
+            "gainsExperience": false,
+
+            "skills": {
+                "combat": false,
+                "shooting": false,
+                "academic": false,
+                "strength": false,
+                "speed": false
+            },
+
+            "specialRules": [
+                {
+                    "id": "animals",
+                    "name": "Animals",
+                    "summary": "Warhounds are animals and never use or need weapons and armour. They do not gain experience."
+                }
+            ]
+        }
+    ],
+
+    "equipmentLists": {
+
+        "witch-hunter": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon"
+            ],
+
+            "missile": [
+                "crossbow",
+                "pistol"
+            ],
+
+            "armour": [
+                "light-armour",
+                "heavy-armour",
+                "shield",
+                "buckler",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "zealot": {
+
+            "closeCombat": [
+                "dagger",
+                "mace",
+                "hammer",
+                "axe",
+                "sword",
+                "double-handed-weapon",
+                "spear"
+            ],
+
+            "missile": [
+                "bow"
+            ],
+
+            "armour": [
+                "light-armour",
+                "shield",
+                "helmet"
+            ],
+
+            "miscellaneous": []
+        },
+
+        "flagellant": {
+
+            "closeCombat": [
+                "morning-star",
+                "double-handed-weapon"
+            ],
+
+            "missile": [],
+
+            "armour": [],
+
+            "miscellaneous": []
+        }
+    },
+
+    "startingExperience": {
+        "witch-hunter-captain": 20,
+        "warrior-priest": 12,
+        "witch-hunter": 8,
+        "flagellant": 0,
+        "zealot": 0,
+        "warhound": 0
+    },
+
+    "rulesNotes": [
+        "A Witch Hunter warband must include a minimum of 3 models.",
+        "A Witch Hunter warband may contain a maximum of 12 models.",
+        "The warband must include exactly one Witch Hunter Captain.",
+        "The warband may include a single Warrior-Priest.",
+        "The warband may include up to three Witch Hunters.",
+        "The warband may include any number of Zealots.",
+        "The warband may include up to five Flagellants.",
+        "The warband may include up to five Warhounds.",
+        "Zealots use the Zealot Equipment List; Flagellants use the Flagellant Equipment List (close combat weapons only - no missile weapons or armour).",
+        "All other listed Witch Hunter fighters use the Witch Hunter Equipment List.",
+        "Skill-category access (which of Combat/Shooting/Academic/Strength/Speed each Hero can pick from) could not be read from the source PDF's table for this warband - set here to mirror the closest equivalent Reikland Hero (Captain gets all five; the Witch Hunter mirrors a Champion; the Warrior-Priest is a best-effort judgement call favouring Academic/Combat) - verify against the printed skill table before relying on it for a competitive game."
+    ]
+}

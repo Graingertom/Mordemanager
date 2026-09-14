@@ -314,6 +314,252 @@
             },
             "sourcePage": 35,
             "source": "mordheim-core"
+        },
+
+        {
+            "id": "flail",
+            "name": "Flail",
+            "category": "close-combat",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User +2",
+                "special": "Heavy - the +2 Strength bonus only applies in the first turn of each combat. Two-handed - may not use a shield, buckler or additional weapon (a shield still gives +1 Armour Save vs shooting)."
+            },
+            "sourcePage": 27,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "sling",
+            "name": "Sling",
+            "category": "missile",
+            "cost": 2,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "18\"",
+                "strength": "3",
+                "special": "Fire twice at half range - a slinger may fire twice in the shooting phase if the target is within half the sling's maximum range."
+            },
+            "sourcePage": 30,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "short-bow",
+            "name": "Short Bow",
+            "category": "missile",
+            "cost": 5,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "16\"",
+                "strength": "3",
+                "special": ""
+            },
+            "sourcePage": 28,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "long-bow",
+            "name": "Long Bow",
+            "category": "missile",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "rare 5",
+            "weaponProfile": {
+                "range": "30\"",
+                "strength": "3",
+                "special": ""
+            },
+            "sourcePage": 28,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "blunderbuss",
+            "name": "Blunderbuss",
+            "category": "missile",
+            "cost": 30,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "Special",
+                "strength": "3",
+                "special": "Shot - draw a straight line 16\" long and 1\" wide in any direction from the firer; every model in its path is automatically hit by a Strength 3 hit. Fire Once - may only be fired once per battle."
+            },
+            "sourcePage": 32,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "handgun",
+            "name": "Handgun",
+            "category": "missile",
+            "cost": 35,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "24\"",
+                "strength": "4",
+                "special": "Prepare Shot - takes a full turn to reload, so fires every other turn. Move or Fire - may not move and fire in the same turn (pivoting on the spot or standing up doesn't count as moving). Save Modifier - a further -2 to the target's Armour Save."
+            },
+            "sourcePage": 32,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "hunting-rifle",
+            "name": "Hochland Long Rifle",
+            "category": "missile",
+            "cost": 200,
+            "firstFree": false,
+            "availability": "common",
+            "weaponProfile": {
+                "range": "48\"",
+                "strength": "4",
+                "special": "Move or Fire - may not move and fire in the same turn (pivoting on the spot or standing up doesn't count as moving). Prepare Shot - takes a full turn to reload, so fires every other turn. Pick Target - can target any enemy model in sight, not just the closest. Save Modifier - a further -2 to the target's Armour Save."
+            },
+            "sourcePage": 33,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "holy-tome",
+            "name": "Holy Tome",
+            "category": "miscellaneous",
+            "cost": 120,
+            "firstFree": false,
+            "availability": "rare 8 (Warrior-Priest or Sisters of Sigmar only)",
+            "special": "A Warrior-Priest or Sister of Sigmar with a Holy Tome adds +1 to the roll when determining whether a Prayer of Sigmar is cast successfully.",
+            "sourcePage": 37,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "blessed-water",
+            "name": "Blessed Water",
+            "category": "miscellaneous",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "rare 6",
+            "special": "A single-use thrown weapon with a range of twice the thrower's Strength in inches - roll to hit using Ballistic Skill, with no modifiers for range or movement. Causes 1 automatic wound (no armour save) against Undead, Daemon or Possessed models only; has no effect on anything else. Undead or Possessed models may not use Blessed Water.",
+            "sourcePage": 37,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "holy-relic",
+            "name": "Holy Relic",
+            "category": "miscellaneous",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common",
+            "special": "Lets its bearer ignore one failed Leadership test in a game. Owning two or more Holy Relics does not let you ignore a second or subsequent failed test in the same game.",
+            "sourcePage": 38,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "blowpipe",
+            "name": "Blowpipe",
+            "category": "missile",
+            "cost": 25,
+            "firstFree": false,
+            "availability": "rare 7 (Skaven only)",
+            "weaponProfile": {
+                "range": "8\"",
+                "strength": "1",
+                "special": "Poison - a natural 6 To Hit automatically wounds the target; cannot cause critical hits. Armour Save modifier is positive (+1) rather than negative - a model that normally saves on 5+ gets 4+ against a blowpipe dart, and even a model with no normal save gets a 6+ save. Stealthy - can fire while hidden without revealing the firer's position; the target may take an Initiative test to try to spot him."
+            },
+            "sourcePage": 74,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "warplock-pistol",
+            "name": "Warplock Pistol",
+            "category": "missile",
+            "cost": 35,
+            "firstFree": false,
+            "availability": "rare 11 (Skaven only)",
+            "weaponProfile": {
+                "range": "8\"",
+                "strength": "5",
+                "special": "Fire every other turn - a further -3 to the target's Armour Save (70gc for a brace, which fires every turn)."
+            },
+            "sourcePage": 74,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "fighting-claws",
+            "name": "Fighting Claws",
+            "category": "close-combat",
+            "cost": 35,
+            "firstFree": false,
+            "availability": "rare 7 (Skaven only, sold per pair)",
+            "parry": true,
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Pair - grants an additional Attack. Climb - +1 Initiative when making Climbing tests. Parry - may re-roll a failed parry attempt once, the same way a sword-and-buckler combination can. Cumbersome - may not use any other weapon for the entire battle."
+            },
+            "sourcePage": 74,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "weeping-blades",
+            "name": "Weeping Blades",
+            "category": "close-combat",
+            "cost": 50,
+            "firstFree": false,
+            "availability": "rare 9 (Skaven only, sold per pair)",
+            "parry": true,
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Pair - grants an additional Attack. Venomous - permanently coated in a poison equivalent to Black Lotus; no additional poison may be applied. Parry - can be used to parry, the same as a sword."
+            },
+            "sourcePage": 74,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "sigmarite-warhammer",
+            "name": "Sigmarite Warhammer",
+            "category": "close-combat",
+            "cost": 15,
+            "firstFree": false,
+            "availability": "common (Sisters of Sigmar only)",
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User +1",
+                "special": "Concussion - a roll of 2-4 (not just 2) is treated as Stunned when rolling on the Injury chart. Holy Weapon - +1 bonus on all to wound rolls against any Possessed or Undead model (a natural 6 is still needed before modifiers to cause a critical hit). Only a Matriarch or Sister Superior may carry two."
+            },
+            "sourcePage": 67,
+            "source": "mordheim-core"
+        },
+
+        {
+            "id": "steel-whip",
+            "name": "Steel Whip",
+            "category": "close-combat",
+            "cost": 10,
+            "firstFree": false,
+            "availability": "common (Sisters of Sigmar only)",
+            "weaponProfile": {
+                "range": "Close Combat",
+                "strength": "As User",
+                "special": "Cannot be Parried - a model struck by a steel whip may not parry with a sword or buckler. Whipcrack - the wielder gains +1 Attack the turn they charge, or +1 Attack (usable only against the charger) the turn they are charged; only one whip's Whipcrack bonus applies even if wielding two."
+            },
+            "sourcePage": 67,
+            "source": "mordheim-core"
         }
 
     ]

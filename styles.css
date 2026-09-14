@@ -1603,6 +1603,34 @@ label.mm-equipment-option:hover {
     background: var(--panel-hover);
 }
 
+/*
+ * Underlined inline text button - used where a list row's own
+ * title needs to open a detail modal (spells, mutations), unlike
+ * .mm-skill-tag's pill shape which assumes it's the row itself.
+ */
+
+.mm-link-button {
+    padding: 0;
+
+    border: none;
+    background: none;
+
+    color: var(--text);
+
+    font: inherit;
+    font-weight: inherit;
+
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+
+    cursor: pointer;
+}
+
+.mm-link-button:hover {
+    color: var(--gold);
+    text-decoration-color: var(--gold);
+}
+
 .mm-trait-list {
     display: flex;
     flex-wrap: wrap;
