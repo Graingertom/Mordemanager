@@ -517,6 +517,46 @@ async function performDeleteWarband(warbandId) {
     }
 
 
+    /*
+     * The database cascades this deletion into game_warbands and
+     * nulls out any settlements.warband_id that pointed at it, but
+     * that happens server-side - state.games is still holding
+     * whatever warbandIds/settlements it had before the delete, so
+     * it has to be brought in line by hand here too, the same way
+     * removeWarbandFromGame() already does for a normal removal.
+     */
+
+    state.games.forEach(
+        game => {
+
+            game.warbandIds =
+                game.warbandIds.filter(
+                    id =>
+                        id !== warbandId
+                );
+
+
+            (game.settlements || []).forEach(
+                settlement => {
+
+                    if (settlement.warbandId === warbandId) {
+
+                        settlement.warbandId = null;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    delete state.warbandStubs[
+        warbandId
+    ];
+
+
     closeModal();
 
     renderApplication();

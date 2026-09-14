@@ -196,6 +196,21 @@ function renderGameCard(
     game
 ) {
 
+    /*
+     * game.warbandIds can briefly outlive an actually-deleted
+     * warband if this client's own state.games wasn't the thing
+     * that removed it (another player's session, a stale cache) -
+     * resolve each id the same way the game detail page does
+     * rather than trusting the raw array length.
+     */
+
+    const activeWarbandCount =
+        game.warbandIds.filter(
+            id =>
+                getWarbandOrStub(id)
+        ).length;
+
+
     return `
 
         <article class="mm-card mm-warband-card">
@@ -230,7 +245,7 @@ function renderGameCard(
 
                 <div>
                     <strong>
-                        ${game.warbandIds.length}
+                        ${activeWarbandCount}
                     </strong>
 
                     <span>
