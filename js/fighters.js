@@ -116,6 +116,19 @@ let combatCalculatorShootingModifiers = {
 };
 
 
+/*
+ * Only meaningful once "my weapon" turns out to be a one-handed
+ * melee weapon - like the shooting modifiers above, this is a
+ * manual toggle rather than something derived from the fighter's
+ * owned equipment, since a fighter can only ever own one of any
+ * given weapon id in this app's equipment model (a checkbox, not a
+ * quantity), so it has no way to represent someone actually
+ * carrying two of the same weapon (e.g. two Dwarf Axes).
+ */
+
+let combatCalculatorTwoWeapons = false;
+
+
 /* ============================================================
    DATA NORMALISATION
    ============================================================ */
@@ -4644,6 +4657,8 @@ function closeCombatCalculator() {
         largeTarget: false
     };
 
+    combatCalculatorTwoWeapons = false;
+
 
     closeModal();
 
@@ -4688,6 +4703,8 @@ function showCombatCalculator(
         movingAndShooting: false,
         largeTarget: false
     };
+
+    combatCalculatorTwoWeapons = false;
 
 
     openModal(`
@@ -4914,6 +4931,8 @@ function selectCombatCalculatorMyWeapon(
 
     combatCalculatorMyWeaponId =
         itemId;
+
+    combatCalculatorTwoWeapons = false;
 
 
     refreshCombatCalculatorBody(
@@ -5807,6 +5826,11 @@ function renderMeleeExchangeSections(
             `;
 
 
+    const canFightWithTwoWeapons =
+        myWeapon &&
+        !myWeapon.preventsSecondWeapon;
+
+
     return `
 
         <section class="mm-editor-section">
@@ -5815,6 +5839,32 @@ function renderMeleeExchangeSections(
                 ${escapeHtml(myFighter.name)} attacks
                 ${escapeHtml(opponent.name)}
             </h3>
+
+            ${
+                canFightWithTwoWeapons
+                    ? renderTwoWeaponsToggle()
+                    : ""
+            }
+
+            ${
+                canFightWithTwoWeapons &&
+                combatCalculatorTwoWeapons
+                    ? `
+                        <p class="mm-muted">
+                            Fighting with Two Weapons:
+                            ${escapeHtml(myFighter.name)}
+                            gets +1 Attack, added after any other
+                            Attack modifiers. If the second weapon
+                            is a different one to
+                            ${escapeHtml(myWeapon.name)}, choose
+                            which weapon covers which attack, and
+                            roll to hit/wound separately for the
+                            other weapon - re-run this calculator
+                            with it selected for its own numbers.
+                        </p>
+                    `
+                    : ""
+            }
 
             ${myAttack}
 
@@ -5878,6 +5928,53 @@ function toggleCombatCalculatorShootingModifier(
 
     combatCalculatorShootingModifiers[key] =
         !combatCalculatorShootingModifiers[key];
+
+
+    refreshCombatCalculatorBody(
+        renderCombatCalculatorResults()
+    );
+
+}
+
+
+/*
+ * Fighting with Two Weapons - a core rule this calculator had never
+ * surfaced: a warrior carrying two one-handed close combat weapons
+ * gets +1 Attack, made with whichever of the two weapons he
+ * chooses. Only offered when the selected weapon doesn't itself
+ * rule out a second weapon (two-handed, Heavy, etc.) - see
+ * equipment.json's preventsSecondWeapon flag.
+ */
+
+function renderTwoWeaponsToggle() {
+
+    return `
+
+        <label class="mm-equipment-option">
+
+            <input
+                type="checkbox"
+                ${combatCalculatorTwoWeapons ? "checked" : ""}
+                onchange="toggleCombatCalculatorTwoWeapons()"
+            >
+
+            <span>
+                <strong>
+                    Also fighting with a second one-handed weapon
+                </strong>
+            </span>
+
+        </label>
+
+    `;
+
+}
+
+
+function toggleCombatCalculatorTwoWeapons() {
+
+    combatCalculatorTwoWeapons =
+        !combatCalculatorTwoWeapons;
 
 
     refreshCombatCalculatorBody(

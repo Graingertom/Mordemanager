@@ -97,6 +97,8 @@
 
     "parryRule": "A defender carrying a sword or buckler may, when hit, roll a D6 - a score higher than the attacker's to-hit roll discards that attack entirely. It is impossible to parry a blow that scored a natural 6 to hit. A parry cannot be attempted against an attacker whose Strength is double the defender's own Strength or more. Only one blow per hand-to-hand combat phase may be parried.",
 
+    "twoWeaponsRule": "Fighting with Two Weapons: a warrior armed with two one-handed weapons may make 1 extra Attack with the additional weapon, added to his total Attacks after other modifiers (such as Frenzy) have been applied. If armed with two different weapons (a sword and a dagger, for example), he makes a single attack with whichever weapon he chooses and all the rest with the other weapon - roll to hit and wound for each weapon separately.",
+
     "knockedDownStunnedRule": "Attacks against an already Knocked Down or Stunned model hit automatically - no To Hit roll is made. A Knocked Down model may not parry. If a Stunned model is hit, it is automatically taken Out of Action with no To Wound or armour save roll.",
 
     "experienceRules": {
